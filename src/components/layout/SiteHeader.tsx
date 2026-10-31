@@ -1,20 +1,41 @@
+import Image from "next/image";
 import Link from "next/link";
 import { navigation } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-6 py-6">
-        <Link href="/" className="max-w-xs font-semibold">{siteConfig.name}</Link>
-        <nav aria-label="Main navigation">
-          <ul className="flex flex-wrap gap-6">
-            {navigation.map((item) => (
-              <li key={item.href}><Link href={item.href}>{item.label}</Link></li>
-            ))}
-          </ul>
-        </nav>
+    <header className="site-header">
+      <div className="site-width header-top">
+        <Link href="/" className="brand-link">
+          <Image
+            src="/images/brand/em-logo.webp"
+            alt=""
+            width={64}
+            height={64}
+            className="brand-logo"
+          />
+          <span>
+            EM Carpentry
+            <span className="brand-subtitle">&amp; Home Maintenance</span>
+          </span>
+          <span className="sr-only"> — {siteConfig.serviceArea}</span>
+        </Link>
+        <ThemeToggle />
       </div>
+      <nav aria-label="Main navigation" className="site-width main-navigation">
+        <ul>
+          {navigation.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href}>{item.label}</Link>
+            </li>
+          ))}
+        </ul>
+        <a className="header-phone" href={siteConfig.contact.phoneHref}>
+          {siteConfig.contact.phone}
+        </a>
+      </nav>
     </header>
   );
 }

@@ -11,10 +11,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --fix",
+    "lint": "biome lint . --error-on-warnings",
+    "lint:fix": "biome lint . --write",
     "typecheck": "next typegen && tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check": "npm run lint && npm run typecheck && npm run build",
+    "format": "biome format . --write",
+    "test": "node --test src/test/*.test.mjs"
   },
   "dependencies": {
     "next": "16.4.3",
@@ -22,12 +24,11 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.4",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "10.14.0",
-    "eslint-config-next": "16.4.3",
     "postcss": "^8",
     "tailwindcss": "4.3.3",
     "typescript": "^5"

@@ -1,5 +1,7 @@
 # Public assets
 
-Place the approved, optimised logo in images/brand/ and authentic approved portfolio photos in images/projects/ when available. The referenced em-logo.jpg was not present during initialisation; no replacement logo or project photography has been invented.
+images/brand/em-logo.webp is an optimised, proportion-preserving 800 × 800 WebP derived from the user-supplied root em-logo.jpg. The original is retained unchanged in the checkout. Confirm publication rights before launch.
 
-Everything in this directory is publicly served. Never store customer submissions, private photos, secrets or backups here. Create asset subdirectories only when they contain actual files.
+Only authentic approved portfolio photos should be added to images/projects/ when available. No project photography or completed work has been invented.
+
+Everything in this directory is publicly served. Never store customer submissions, private photos, secrets or backups here.

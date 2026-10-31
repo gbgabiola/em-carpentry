@@ -1,60 +1,52 @@
 # EM Carpentry & Home Maintenance
 
-Local project scaffold based on AGENTS.md. Next.js App Router, React, strict TypeScript and Tailwind CSS. This is an initialisation checkpoint, not the complete business website.
+Public-page development checkpoint based on AGENTS.md. Next.js App Router, React, strict TypeScript and Tailwind CSS, with Biome for linting and formatting.
 
-## Requirements and quick start
+## Run locally
 
-Use Node.js 24 LTS and npm 11 (see .nvmrc and package.json). From this directory:
+Use Node.js 24 LTS and npm 11. In WSL, use Linux Node and keep node_modules inside the Linux filesystem.
 
 ```sh
-nvm use # if using nvm; install Node 24 first if needed
+nvm use
 npm ci
 cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000. In WSL, run these commands inside Linux with a Linux Node installation; do not mix Windows and Linux node_modules.
+Open http://localhost:3000. Production preview: npm run build followed by npm start.
 
 ## Quality checks
 
 ```sh
-npm run lint
-npm run typecheck
-npm run build
-# Or run all three:
 npm run check
+npm test
+npm audit
 ```
 
-npm start serves the production build. Typecheck generates Next.js route types before running TypeScript. No test runner is installed yet: add meaningful validation, permission and workflow tests when those features exist.
+check runs lint, route type generation/strict TypeScript and production build. Tests use Node’s built-in runner against the production build; run check first. They start and stop a local server automatically, test public navigation/contact/error journeys and check text-token contrast in both themes. Run npm run format to format source. Browser QA is separate; HTTP tests cannot verify interactive theme persistence or responsive appearance.
 
-## Current scope
+## Implemented
 
-- Minimal responsive home page, shared header/footer and direct telephone, email and business Facebook links.
-- Central verified business information and navigation in src/config/.
-- Warm light-theme tokens in src/app/globals.css; final logo-derived colours and persistent theme switching are future work.
-- ESLint flat configuration, Tailwind PostCSS integration, strict TypeScript and @/* imports.
-- Search indexing disabled for the unfinished scaffold.
+- Home, About, Services, Projects, Reviews, Contact, FAQ and preview Privacy pages, each with metadata; friendly 404.
+- Responsive shared navigation/footer and the supplied logo in an optimised, proportion-preserving WebP.
+- Ivory/walnut/gold design tokens and keyboard focus/skip navigation.
+- Persistent dark mode using em-theme in browser localStorage. Light is the default; saved choice is applied before paint. Blocked storage does not disable switching. Preference changes sync between tabs.
+- Direct phone, email and business Facebook links. No unverified Messenger deep link.
+- Honest empty states for unapproved service inventory, project content and reviews.
+- Incomplete content remains noindex, with robots disallowing crawling.
 
-Only implemented routes appear in navigation. Public pages, project management, secure admin authentication, quotation forms, reviews, database/storage and theme switching remain to be built. No private submissions are collected or persisted. The supplied logo is referenced in AGENTS.md but is not in this checkout.
+## Configuration and structure
 
-## Structure
+Verified business data and navigation live in src/config/. Layout components live in src/components/layout/ and shared page sections in src/components/sections/. Routes live in src/app/. Theme tokens live in src/app/globals.css. src/test/ holds production-route and contrast checks. Add domain-specific features/ and lib/ directories when real backend functionality needs them.
 
-- src/app/: App Router layout, starter home page, global styles and robots directives.
-- src/components/layout/: shared page shell.
-- src/config/: verified business details and implemented navigation.
-- public/: approved public assets when available.
-- docs/: architectural decisions, deployment gates and owner content guide.
+.env.example reserves SITE_URL for the approved public origin. It is not consumed yet; canonical URLs, sitemap, structured data and Open Graph metadata are deferred to the SEO/launch checkpoint. Never commit credentials or customer data.
 
-Follow the target structure in AGENTS.md as features are implemented. Empty features/, lib/, types/, test/ and asset directories are deliberately deferred.
+## Still pending
 
-## Configuration and launch
+Owner-approved services, projects/photos and publication rights; authenticated owner management; database/storage; server-validated enquiry/review forms, moderation and rate limiting; project filters/details/before-after views; launch SEO and privacy review; deployment and final handover. The privacy page describes the current preview only. No website submissions are collected or stored.
 
-.env.example documents the reserved SITE_URL setting. It is not consumed yet; canonical URLs, sitemap and Open Graph metadata should be implemented once the public origin is approved. No backend provider, hosting account, email provider or domain is configured. Never commit .env.local or privileged credentials.
+See [provider comparison](docs/decisions/0002-provider-comparison.md), [lint decision](docs/decisions/0003-lint-toolchain.md), [deployment](docs/deployment.md), and [owner content guide](docs/content-guide.md). No provider has been provisioned, no paid service selected and no production deployment made.
 
-See [deployment](docs/deployment.md), [initial decision](docs/decisions/0001-project-foundation.md) and [owner content guide](docs/content-guide.md). Hosting and backend eligibility, current free-tier limits and Australian privacy implications must be researched before provider selection. Production deployment requires explicit authorisation.
+## Checkpoint verification
 
-## Initial validation notes
-
-Lint, route type generation, strict TypeScript and the production build passed. npm ci --dry-run --ignore-scripts also succeeded. No automated test suite exists at this configuration-only checkpoint.
-
-The initial full npm audit reports 15 moderate development-tool findings through minimatch in the ESLint dependency graph; npm audit --omit=dev reports zero vulnerabilities. Do not use npm audit fix --force: its proposed ESLint downgrade breaks this configuration. Recheck upstream updates during maintenance. ESLint 10 is accepted by eslint-config-next and passes lint, but bundled import, React and accessibility plugins still declare ESLint 9 peer ranges, so npm emits peer warnings during installation.
+A clean npm ci, lint, strict typecheck, production build, all 13 production-route/contrast checks, full npm audit (zero findings) and npm ls --all passed on 1 November 2026. Browser automation could not initialise because the local UI runtime failed before opening a browser. Visual checks at phone/tablet/desktop widths, keyboard operation, FAQ interaction and saved-theme reload behaviour still need browser verification. No performance score or full WCAG conformance is claimed.

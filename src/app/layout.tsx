@@ -11,17 +11,24 @@ export const metadata: Metadata = {
     template: "%s | EM Carpentry & Home Maintenance",
   },
   description: siteConfig.description,
-  // This is an unfinished scaffold. Revisit at the launch readiness gate.
   robots: { index: false, follow: false },
 };
 
+// Fixed script with no untrusted input; apply saved preference before the first paint.
+const themeScript = `try{document.documentElement.dataset.theme=localStorage.getItem('em-theme')==='dark'?'dark':'light'}catch{document.documentElement.dataset.theme='light'}`;
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang={siteConfig.locale}>
+    <html lang={siteConfig.locale} suppressHydrationWarning>
+      <head>
+        <script id="theme-init">{themeScript}</script>
+      </head>
       <body>
-        <a className="skip-link" href="#main-content">Skip to content</a>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
         <SiteHeader />
-        <main id="main-content" className="mx-auto w-full max-w-6xl px-6 py-16" tabIndex={-1}>
+        <main id="main-content" className="site-width page-main" tabIndex={-1}>
           {children}
         </main>
         <SiteFooter />

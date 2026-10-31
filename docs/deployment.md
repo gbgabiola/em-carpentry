@@ -2,7 +2,7 @@
 
 ## Current status
 
-Local scaffold only. No hosting/backend provider or paid service has been selected, no domain has been registered and nothing has been deployed. npm run build verifies the Next.js production build; it does not deploy it.
+Local public-page checkpoint only. No hosting/backend provider or paid service has been selected, no domain has been registered and nothing has been deployed. npm run build verifies the Next.js production build; it does not deploy it.
 
 ## Provider decision gate
 
@@ -26,3 +26,9 @@ Set the approved public origin, implement canonical/OG metadata and a sitemap fo
 ## Recovery at this checkpoint
 
 Keep source and package-lock.json in Git. Reinstall with npm ci on Node 24 and run npm run check. Copy .env.example to .env.local for local configuration. No customer data exists in this scaffold. Once persistent storage is introduced, document independent exports, photo backups and a tested restore procedure before launch.
+
+## Research and public-page checkpoint
+
+See [dated provider comparison](decisions/0002-provider-comparison.md). Vercel Hobby is excluded for this commercial website. Cloudflare Workers plus Supabase Sydney is a conditional candidate, not a configured deployment. Resolve runtime/CPU compatibility, pause recovery and sign-in before adopting it. No Cloudflare adapter has been installed.
+
+Run npm run check and npm test before deployment work. Keep noindex/robots restrictions until content, privacy and SEO are launch-ready. The supplied logo is now included; publication rights and project-photo consent remain launch gates.

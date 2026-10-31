@@ -16,3 +16,5 @@ References checked during initialisation:
 - [Tailwind CSS with Next.js](https://tailwindcss.com/docs/installation/framework-guides/nextjs)
 
 Dependency patch versions are recorded in package-lock.json. Review updates and security advisories as part of future maintenance.
+
+Update: the public-page checkpoint replaces ESLint with Biome; see decision 0003. Provider research is in decision 0002; provisioning and backend implementation remain gated.
