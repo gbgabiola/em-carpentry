@@ -1,0 +1,28 @@
+# Deployment and recovery
+
+## Current status
+
+Local scaffold only. No hosting/backend provider or paid service has been selected, no domain has been registered and nothing has been deployed. npm run build verifies the Next.js production build; it does not deploy it.
+
+## Provider decision gate
+
+Before implementing a backend or selecting hosting, record a dated comparison with primary-source links covering:
+
+- Commercial-use permission and framework/runtime compatibility.
+- Current free quotas for compute, database, authentication, storage, uploads, bandwidth/egress and builds.
+- Email delivery availability and limits; how the owner will learn about enquiries if notifications are unavailable.
+- Inactivity pauses, retention/deletion policies, backups and overage behaviour.
+- Data location and Australian privacy implications.
+- Data/photo export, restoration and migration procedures.
+
+Do not add paid infrastructure or register a domain without approval. Production deployment requires explicit authorisation. Provider quotas and migration steps cannot be documented as selected until a provider is selected.
+
+## Launch gate
+
+Confirm services, content/photo consent, service area wording, form fields, retention/deletion policy, review moderation, admin access and public subdomain. Implement and test server authorisation and database/storage permissions before enabling private data or uploads. No admin screen should be considered protected by robots directives.
+
+Set the approved public origin, implement canonical/OG metadata and a sitemap for published routes, replace scaffold indexing restrictions and complete privacy disclosures. Verify responsive layouts, accessibility, permissions, form workflows, lint, typecheck, tests and production build. Review actual provider terms and quotas again before launch.
+
+## Recovery at this checkpoint
+
+Keep source and package-lock.json in Git. Reinstall with npm ci on Node 24 and run npm run check. Copy .env.example to .env.local for local configuration. No customer data exists in this scaffold. Once persistent storage is introduced, document independent exports, photo backups and a tested restore procedure before launch.
