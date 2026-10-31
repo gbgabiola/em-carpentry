@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { siteConfig } from "@/config/site";
-export const metadata: Metadata = {
-  title: "Privacy notice",
-  description:
-    "Privacy information for the current EM Carpentry & Home Maintenance website preview and direct contact options.",
-};
+export const metadata = createPageMetadata(
+  "/privacy",
+  "Privacy notice",
+  "Privacy information for the current EM Carpentry & Home Maintenance website preview and direct contact options.",
+);
 export default function PrivacyPage() {
   return (
     <div className="page-stack">

@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { ContactCta } from "@/components/sections/ContactCta";
-export const metadata: Metadata = {
-  title: "Projects",
-  description:
-    "The EM Carpentry & Home Maintenance portfolio. Approved completed-project photographs and descriptions are coming soon.",
-};
+export const metadata = createPageMetadata(
+  "/projects",
+  "Projects",
+  "The EM Carpentry & Home Maintenance portfolio. Approved completed-project photographs and descriptions are coming soon.",
+);
 export default function ProjectsPage() {
   return (
     <div className="page-stack">

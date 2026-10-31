@@ -33,13 +33,14 @@ check runs lint, route type generation/strict TypeScript and production build. T
 - Persistent dark mode using em-theme in browser localStorage. Light is the default; saved choice is applied before paint. Blocked storage does not disable switching. Preference changes sync between tabs.
 - Direct phone, email and business Facebook links. No unverified Messenger deep link.
 - Honest empty states for unapproved service inventory, project content and reviews.
-- Incomplete content remains noindex, with robots disallowing crawling.
+- Canonical and Open Graph/Twitter metadata use a validated public origin. A sitemap and verified business JSON-LD are included.
+- Incomplete content remains noindex by default, with robots disallowing crawling and an empty sitemap.
 
 ## Configuration and structure
 
 Verified business data and navigation live in src/config/. Layout components live in src/components/layout/ and shared page sections in src/components/sections/. Routes live in src/app/. Theme tokens live in src/app/globals.css. src/test/ holds production-route and contrast checks. Add domain-specific features/ and lib/ directories when real backend functionality needs them.
 
-.env.example reserves SITE_URL for the approved public origin. It is not consumed yet; canonical URLs, sitemap, structured data and Open Graph metadata are deferred to the SEO/launch checkpoint. Never commit credentials or customer data.
+.env.example documents SITE_URL (approved public HTTPS origin, no path/query/credentials) and SITE_INDEXING_ENABLED (false by default). Both are read at build time. Canonical/sharing metadata is emitted only when an origin is supplied. Indexing can be enabled only with a valid origin and after the launch gate; an invalid configuration fails the build. Robots excludes admin/API routes from crawling when enabled. This is not access control. Never commit credentials or customer data.
 
 ## Still pending
 
@@ -50,3 +51,7 @@ See [provider comparison](docs/decisions/0002-provider-comparison.md), [lint dec
 ## Checkpoint verification
 
 A clean npm ci, lint, strict typecheck, production build, all 13 production-route/contrast checks, full npm audit (zero findings) and npm ls --all passed on 1 November 2026. Browser automation could not initialise because the local UI runtime failed before opening a browser. Visual checks at phone/tablet/desktop widths, keyboard operation, FAQ interaction and saved-theme reload behaviour still need browser verification. No performance score or full WCAG conformance is claimed.
+
+## SEO checkpoint verification
+
+The SEO checkpoint adds unit coverage for origin validation and explicit indexing opt-in, plus integration checks for parseable verified JSON-LD, canonical/Open Graph tags and sitemap filtering. Both default preview and configured-origin launch builds are tested; the checked-in defaults remain noindex. There are now 18 tests. No provider account or backend has been created. Backend/provider, owner sign-in and exact form-field confirmation remain pending under AGENTS.md.

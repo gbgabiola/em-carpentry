@@ -63,21 +63,23 @@ const routes = [
   "/privacy",
 ];
 for (const route of routes) {
-  test(
-    `public route ${route} is accessible and remains out of search`,
-    async () => {
-      const response = await fetch(origin + route);
-      assert.equal(response.status, 200);
-      const html = await response.text();
-      assert.match(html, /<html[^>]*lang="en-AU"/);
-      assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
-      assert.match(html, /<main[^>]*id="main-content"/);
-      assert.match(html, /href="#main-content"/);
-      assert.match(html, /name="robots" content="noindex, nofollow"/);
-      assert.match(html, /<title>[^<]+<\/title>/);
-      assert.match(html, /name="description"/);
-    },
-  );
+  test(`public route ${route} is accessible and respects the indexing policy`, async () => {
+    const response = await fetch(origin + route);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /<html[^>]*lang="en-AU"/);
+    assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
+    assert.match(html, /<main[^>]*id="main-content"/);
+    assert.match(html, /href="#main-content"/);
+    assert.match(
+      html,
+      process.env.SITE_INDEXING_ENABLED === "true"
+        ? /name="robots" content="index, follow"/
+        : /name="robots" content="noindex, nofollow"/,
+    );
+    assert.match(html, /<title>[^<]+<\/title>/);
+    assert.match(html, /name="description"/);
+  });
 }
 
 test("every internal navigation link resolves", async () => {
@@ -113,7 +115,12 @@ test("logo is served and robots blocks unfinished content", async () => {
   assert.equal(logo.status, 200);
   assert.match(logo.headers.get("content-type"), /image\/webp/);
   const robots = await (await fetch(`${origin}/robots.txt`)).text();
-  assert.match(robots, /Disallow: \//);
+  assert.match(
+    robots,
+    process.env.SITE_INDEXING_ENABLED === "true"
+      ? /Disallow: \/admin/
+      : /Disallow: \//,
+  );
 });
 
 function luminance(hex) {
@@ -162,5 +169,54 @@ test("both themes meet AA contrast for normal text and focus indicators", async 
       contrast(tokens["button-text"], tokens.button) >= 4.5,
       `${theme} button text`,
     );
+  }
+});
+
+test("verified business structured data is parseable and contains no invented claims", async () => {
+  const html = await (await fetch(origin)).text();
+  const match = html.match(
+    /<script[^>]*id="business-structured-data"[^>]*>([\s\S]*?)<\/script>/,
+  );
+  assert.ok(match, "JSON-LD script is rendered");
+  assert.match(html, /<title>EM Carpentry &amp; Home Maintenance<\/title>/);
+  const business = JSON.parse(match[1]);
+  assert.equal(business["@type"], "HomeAndConstructionBusiness");
+  assert.equal(business.name, "EM Carpentry & Home Maintenance");
+  assert.equal(business.telephone, "+61 497 175 163");
+  assert.equal(business.foundingDate, "2018");
+  assert.equal(business.areaServed.name, "Geelong, Victoria, Australia");
+  for (const key of [
+    "address",
+    "aggregateRating",
+    "review",
+    "priceRange",
+    "openingHours",
+  ])
+    assert.equal(business[key], undefined, key);
+});
+
+test("sitemap and canonical metadata follow the build-time indexing settings", async () => {
+  const expectedOrigin = process.env.SITE_URL?.replace(/\/$/, "");
+  const enabled = process.env.SITE_INDEXING_ENABLED === "true";
+  const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
+  assert.doesNotMatch(sitemap, /\/admin|\/api\//);
+  if (!enabled) assert.doesNotMatch(sitemap, /<loc>/);
+  else {
+    assert.ok(expectedOrigin);
+    assert.equal((sitemap.match(/<loc>/g) || []).length, routes.length);
+  }
+  for (const route of routes) {
+    const html = await (await fetch(origin + route)).text();
+    if (expectedOrigin) {
+      const canonical = new URL(route, expectedOrigin).href;
+      const canonicalTag = html.match(/rel="canonical" href="([^"]+)"/);
+      assert.ok(canonicalTag, route);
+      assert.equal(new URL(canonicalTag[1]).href, canonical, route);
+      const graphUrl = html.match(/property="og:url" content="([^"]+)"/);
+      assert.ok(graphUrl, route);
+      assert.equal(new URL(graphUrl[1]).href, canonical, route);
+      assert.match(html, /property="og:locale" content="en_AU"/);
+      assert.match(html, /name="twitter:card" content="summary"/);
+    } else assert.doesNotMatch(html, /rel="canonical"|property="og:url"/);
   }
 });

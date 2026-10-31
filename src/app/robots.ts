@@ -1,6 +1,13 @@
 import type { MetadataRoute } from "next";
+import { getSeoConfig } from "@/lib/seo/config";
 
 export default function robots(): MetadataRoute.Robots {
-  // Keep all unfinished routes out of search. This is not access control.
-  return { rules: { userAgent: "*", disallow: "/" } };
+  const { origin, indexingEnabled } = getSeoConfig();
+  if (!indexingEnabled || !origin)
+    return { rules: { userAgent: "*", disallow: "/" } };
+  // Crawling rules are not authentication or access control.
+  return {
+    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] },
+    sitemap: new URL("/sitemap.xml", origin).href,
+  };
 }

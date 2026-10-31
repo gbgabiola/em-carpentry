@@ -32,3 +32,11 @@ Keep source and package-lock.json in Git. Reinstall with npm ci on Node 24 and r
 See [dated provider comparison](decisions/0002-provider-comparison.md). Vercel Hobby is excluded for this commercial website. Cloudflare Workers plus Supabase Sydney is a conditional candidate, not a configured deployment. Resolve runtime/CPU compatibility, pause recovery and sign-in before adopting it. No Cloudflare adapter has been installed.
 
 Run npm run check and npm test before deployment work. Keep noindex/robots restrictions until content, privacy and SEO are launch-ready. The supplied logo is now included; publication rights and project-photo consent remain launch gates.
+
+## SEO configuration
+
+Set SITE_URL to the approved HTTPS origin (no path, query, fragment, credentials or custom port). Leave SITE_INDEXING_ENABLED=false for previews and unfinished content. It defaults to false. Canonical and sharing tags require SITE_URL; they never fall back to localhost. Only after launch readiness is confirmed, set SITE_INDEXING_ENABLED=true and rebuild. Invalid settings fail the build. With indexing off, robots disallows crawling and sitemap.xml has no URLs. With indexing on, only the eight implemented public routes are listed; no fake project pages or admin/API URLs are included. Future project URLs must come only from published records. No fabricated last-modified dates are supplied.
+
+JSON-LD uses verified business name, contact details, operating-since year, service city and business Facebook page. It omits unverified street address, business hours, pricing and ratings. Schema validity does not guarantee eligibility for Google rich results. No public origin or production deployment has been chosen at this checkpoint.
+
+Reference implementation guidance: [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [sitemap](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap), [JSON-LD](https://nextjs.org/docs/app/guides/json-ld).

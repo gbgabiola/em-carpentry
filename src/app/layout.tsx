@@ -1,3 +1,4 @@
+import { getSeoConfig } from "@/lib/seo/config";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -5,13 +6,16 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 
+const seo = getSeoConfig();
+
 export const metadata: Metadata = {
+  metadataBase: seo.origin ? new URL(seo.origin) : undefined,
   title: {
     default: siteConfig.name,
     template: "%s | EM Carpentry & Home Maintenance",
   },
   description: siteConfig.description,
-  robots: { index: false, follow: false },
+  robots: { index: seo.indexingEnabled, follow: seo.indexingEnabled },
 };
 
 // Fixed script with no untrusted input; apply saved preference before the first paint.

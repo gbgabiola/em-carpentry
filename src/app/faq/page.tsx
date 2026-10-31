@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
 import { PageIntro } from "@/components/sections/PageIntro";
-export const metadata: Metadata = {
-  title: "Frequently asked questions",
-  description:
-    "Contact details, service area and quotation information for EM Carpentry & Home Maintenance.",
-};
+export const metadata = createPageMetadata(
+  "/faq",
+  "Frequently asked questions",
+  "Contact details, service area and quotation information for EM Carpentry & Home Maintenance.",
+);
 const faqs = [
   {
     question: "Which areas do you serve?",

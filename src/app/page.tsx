@@ -1,10 +1,20 @@
+import { siteConfig } from "@/config/site";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import { BusinessStructuredData } from "@/components/sections/BusinessStructuredData";
 import Image from "next/image";
 import Link from "next/link";
 import { ContactCta } from "@/components/sections/ContactCta";
 
+export const metadata = createPageMetadata(
+  "/",
+  siteConfig.name,
+  siteConfig.description,
+);
+
 export default function HomePage() {
   return (
     <div className="page-stack">
+      <BusinessStructuredData />
       <section className="home-hero" aria-labelledby="home-heading">
         <div>
           <p className="eyebrow">Geelong &amp; nearby areas · Since 2018</p>

@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { siteConfig } from "@/config/site";
-export const metadata: Metadata = {
-  title: "Contact",
-  description:
-    "Request a quote or discuss your project with EM Carpentry & Home Maintenance in Geelong. Call +61 497 175 163 or email the business.",
-};
+export const metadata = createPageMetadata(
+  "/contact",
+  "Contact",
+  "Request a quote or discuss your project with EM Carpentry & Home Maintenance in Geelong. Call +61 497 175 163 or email the business.",
+);
 export default function ContactPage() {
   return (
     <div className="page-stack">

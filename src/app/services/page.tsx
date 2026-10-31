@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { ContactCta } from "@/components/sections/ContactCta";
-export const metadata: Metadata = {
-  title: "Services",
-  description:
-    "Discuss carpentry and home maintenance needs in Geelong and nearby areas with EM Carpentry & Home Maintenance.",
-};
+export const metadata = createPageMetadata(
+  "/services",
+  "Services",
+  "Discuss carpentry and home maintenance needs in Geelong and nearby areas with EM Carpentry & Home Maintenance.",
+);
 export default function ServicesPage() {
   return (
     <div className="page-stack">

@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { siteConfig } from "@/config/site";
-export const metadata: Metadata = {
-  title: "Reviews",
-  description:
-    "Customer feedback for EM Carpentry & Home Maintenance. Approved reviews will be published here.",
-};
+export const metadata = createPageMetadata(
+  "/reviews",
+  "Reviews",
+  "Customer feedback for EM Carpentry & Home Maintenance. Approved reviews will be published here.",
+);
 export default function ReviewsPage() {
   return (
     <div className="page-stack">
