@@ -2,7 +2,7 @@
 
 # Supabase setup and verification
 
-This checkpoint implements Supabase-backed owner workflows. The hosted project and first three migrations are now installed; real owner provisioning and public intake remain incomplete. Use an eligible Free project in Sydney (ap-southeast-2); the developer owns the source/hosting accounts initially. Record the project reference, account custodian and recovery arrangements securely outside Git.
+This checkpoint implements Supabase-backed owner workflows. The hosted project and first three migrations are now installed; the intended client account and website-admin membership are provisioned. Interactive Auth/Storage verification and public intake remain incomplete. Use an eligible Free project in Sydney (ap-southeast-2); the developer owns the source/hosting accounts initially. Record the project reference, account custodian and recovery arrangements securely outside Git.
 
 ## Provisioning
 
@@ -64,6 +64,6 @@ Export schema version 2 includes these tables and contact settings. Apply both m
 
 ## Client sign-in and password checks
 
-See [client onboarding](client-onboarding.md) for the manual Add user → Create new user flow. The client does not need organization membership or a Supabase dashboard login. Provider public sign-ups have now been verified disabled; the initial client Auth account is still needed.
+See [client onboarding](client-onboarding.md) for the manual Add user → Create new user flow. The client does not need organization membership or a Supabase dashboard login. Provider public sign-ups have now been verified disabled; the intended client Auth account and website-admin membership are now provisioned. Do not create a duplicate account.
 
 After provisioning, verify /admin/account: a wrong current password must not change anything; mismatched/short new passwords must be rejected; a correct current password with a valid new passphrase must update only the same account. Verify the current client can still use the dashboard and can sign out/sign in with the new password. Other-device revocation requests must not be described as immediately invalidating every access token. Tests use a provider-boundary fake and do not replace these live checks. No real account password should be pasted into chat or committed.

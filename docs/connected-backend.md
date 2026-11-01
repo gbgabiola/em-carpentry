@@ -32,22 +32,19 @@ The third migration keeps privileged membership lookup code in private.is_admin 
 - Anonymous SELECT on enquiries is denied and private membership is not exposed through the Data API.
 - The public owner-check RPC returns false for an anonymous caller.
 - Missing private photo downloads are denied.
-- The read-only script created no users, records or files. Existing content is the verified business settings row and four private FAQ drafts; there are no real projects, reviews, enquiries or owner memberships.
+- The read-only script created no users, records or files. The intended client Auth account was separately confirmed to have a verified email and a password, then granted website-admin membership through the trusted developer connection. No password or hash was read. Personal login details remain outside Git.
 
-These initial live checks run against empty public content tables. Full hosted publish/archive and Auth/Storage lifecycle tests with disposable fixtures still require the owner account. Local PostgreSQL tests exercise those policy transitions independently.
+Hosted database lifecycle checks also passed using disposable fixtures inside a transaction that ended with ROLLBACK: owner draft creation and enquiry access, denied anonymous/private reads, denied non-owner updates, project publication/archiving, review approval/rejection, and confirmed-service publication/archiving. All fixture changes were rolled back. These checks simulated database roles and request claims; they do not verify real JWT login, browser cookies or Storage API uploads.
 
-## Remaining Auth setup
+## Client account status and remaining verification
 
-The live Auth settings endpoint now confirms that public sign-ups are disabled. No Auth users/owner memberships existed at the latest account-setup check. The connected tools do not expose Auth configuration or account creation. The CLI is not authenticated either, so it cannot currently change that setting. Do not send passwords or access tokens in chat.
+Public sign-ups are verified disabled. The intended client account exists, its email is confirmed, a password is set and private.admin_users membership is enabled. This grants website-dashboard access only; no Supabase organization invitation was sent. Do not recreate the account or share passwords/access tokens in chat.
 
-1. Keep new user sign-ups disabled in [Auth settings](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/providers); this setting has now passed live verification.
-2. Create the intended confirmed owner email/password account through [Auth Users](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/users), using Create user rather than relying on an email invitation.
-3. Confirm the intended email to the assistant/developer so only that exact existing account can be granted private.admin_users membership. Passwords stay in the provider’s supported UI.
-4. Re-run npm run check:backend and complete sign-in, refresh, sign-out, revoked/non-owner access and photo lifecycle checks from backend-setup.md. This is not production-ready until those checks pass.
+The existing local preview serves /login with HTTP 200 and redirects anonymous /admin requests to /login with HTTP 307. Sign in privately using the agreed account. Then verify session refresh, sign-out, password change, revoked/non-owner access and actual photo upload/deletion using backend-setup.md. Interactive Auth/Storage and browser checks remain incomplete; the local preview is not a deployment.
 
 ## Verification commands
 
-npm run check, npm test and npm audit passed: lint, strict type checking, production build, 45 local tests and zero reported dependency vulnerabilities. The build was performed with the connected backend. The HTTP suite explicitly blanks Supabase configuration in its child server so automated tests never write to or depend on the real project.
+npm run check, npm test and npm audit passed: lint, strict type checking, production build, 52 local tests and zero reported dependency vulnerabilities. The build was performed with the connected backend. The HTTP suite explicitly blanks Supabase configuration in its child server so automated tests never write to or depend on the real project.
 
 npm run check:backend is a separate read-only check of the configured live project. It prints no keys or customer data. Exit 0 means read checks and disabled public sign-ups passed; exit 1 indicates failed read/config checks; exit 2 means the read checks passed but public sign-ups still require manual disabling. Its latest exit is now 0: read checks and disabled sign-ups pass. This does not verify that an owner Auth user exists or that the interactive sign-in lifecycle has been tested.
 
@@ -59,10 +56,10 @@ Performance advice includes [overlapping permissive policies](https://supabase.c
 
 Supabase’s current changelog was checked. The project uses Postgres 17.11.0.011, newer than the listed timezone fix. The upcoming old TLS cipher removal requires no legacy-compatibility downgrade for the Node 24 application. Relevant source: [TLS change](https://supabase.com/changelog/cbc-tls-ciphers-deprecated).
 
-No website deployment, public intake activation, automated email delivery, owner account creation or paid service change was performed.
+No website deployment, public intake activation, automated email delivery or paid service change was performed. The client account was created manually before this verification; the assistant granted only its website-admin membership.
 
 ## Client onboarding and password self-service
 
-The intended client login email was supplied privately and is not stored in this document or source configuration. No matching Auth user existed at the latest check, so no membership was granted. Follow [client onboarding](client-onboarding.md) for the one-time developer dashboard step; the client only receives a website login.
+The intended client login email was supplied privately and is not stored in this document or source configuration. Provisioning and membership are complete. Follow [client onboarding](client-onboarding.md) for the private sign-in check and handover; the client only receives a website login.
 
-A protected Account security screen and reauthenticated password-change action are now implemented. Lint, typecheck, production build and all 52 local tests pass. Live password/session testing remains pending the initial account. No real password was read, stored in source or changed by the assistant.
+A protected Account security screen and reauthenticated password-change action are now implemented. Lint, typecheck, production build and all 52 local tests pass. Live password/session testing remains pending private interactive verification. No real password was read, stored in source or changed by the assistant.

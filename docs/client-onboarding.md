@@ -2,7 +2,13 @@
 
 The business owner uses the website’s /login and /admin pages to make updates independently. They do not need to join the developer’s Supabase organization, access a database console, or receive API keys.
 
-## One-time developer setup
+## Current status
+
+On 2 November 2026, the exact intended client account was verified to exist with confirmed email and a password, and website-admin membership was granted. Public sign-ups are disabled. Do not create a duplicate account. Hosted database permission checks passed with all temporary fixtures rolled back; interactive sign-in, password changes and photo uploads still need verification. The local /login page returns 200 and anonymous /admin access redirects to it.
+
+Sign in privately at the local preview using the existing credentials, then follow the checks below. A localhost URL works only on the developer machine; it is not a hosted client handover URL. No password needs to be shared with the assistant.
+
+## One-time developer setup (reference for recovery or a replacement account)
 
 1. Confirm the intended client email privately. Do not assume the public business address is the login. Do not commit personal login addresses or passwords to the repository.
 2. In [Auth Users](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/users), choose Add user → Create new user. This creates a website Auth user, not a Supabase organization member.
@@ -17,6 +23,6 @@ The business owner uses the website’s /login and /admin pages to make updates 
 
 Revoking refresh sessions does not immediately invalidate all existing access tokens. For urgent access removal, the developer should remove the user’s private admin membership and revoke provider sessions. Do not promise instant sign-out everywhere after a routine password change. Forgotten-password recovery still needs developer assistance; no reset-email workflow is advertised.
 
-The new flow has local provider-boundary tests and protected-route checks. A real hosted password change, session refresh and browser interaction remain to be verified after provisioning; no live password was changed during implementation.
+The new flow has local provider-boundary tests and protected-route checks. A real hosted password change, session refresh and browser interaction remain to be verified interactively; no live password was changed during implementation.
 
 References: [Supabase users](https://supabase.com/docs/guides/auth/users), [password updates](https://supabase.com/docs/reference/javascript/auth-updateuser), [sign-out behaviour](https://supabase.com/docs/reference/javascript/auth-signout).
