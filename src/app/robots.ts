@@ -7,7 +7,11 @@ export default function robots(): MetadataRoute.Robots {
     return { rules: { userAgent: "*", disallow: "/" } };
   // Crawling rules are not authentication or access control.
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/admin", "/login", "/api/"],
+    },
     sitemap: new URL("/sitemap.xml", origin).href,
   };
 }

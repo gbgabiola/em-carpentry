@@ -40,3 +40,9 @@ Set SITE_URL to the approved HTTPS origin (no path, query, fragment, credentials
 JSON-LD uses verified business name, contact details, operating-since year, service city and business Facebook page. It omits unverified street address, business hours, pricing and ratings. Schema validity does not guarantee eligibility for Google rich results. No public origin or production deployment has been chosen at this checkpoint.
 
 Reference implementation guidance: [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [sitemap](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap), [JSON-LD](https://nextjs.org/docs/app/guides/json-ld).
+
+## Backend checkpoint
+
+Supabase schema, RLS/private image storage and owner workflows are implemented. Follow [backend setup](backend-setup.md) to provision the approved Sydney project/owner and complete live tests. [Owner workflow](owner-workflow.md) covers export, separate image backups, pause recovery and orphan cleanup. No hosted migration or deployment has been applied.
+
+The Node-native Sharp upload processor is not a verified Worker runtime feature. Do not deploy this build to Cloudflare merely because a Next.js adapter exists: resolve native image processing, memory/CPU limits and actual compatibility first. Do not silently migrate frameworks or enable billing. Public submissions require a new reviewed handler/policy migration after retention is agreed; changing an environment flag alone cannot enable them.

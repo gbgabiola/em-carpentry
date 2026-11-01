@@ -22,6 +22,21 @@ export default function PrivacyPage() {
           light or dark theme preference is stored in your browser as em-theme.
           Clear your browser’s site storage to remove it.
         </p>
+        <h2>Owner sign-in and published content</h2>
+        <p>
+          Owner-only sign-in uses Supabase authentication when configured.
+          Session cookies are restricted to server access; they are separate
+          from customer accounts, which this website does not offer. Supabase
+          stores the owner’s account, portfolio photos, business content and
+          approved testimonials. Sydney is the intended project region, but
+          provider support and related processing may involve other countries.
+        </p>
+        <p>
+          Selected Facebook testimonials are published manually with permission
+          and source attribution. Visiting a Facebook link opens Facebook; this
+          website does not embed its tracking widgets or automatically import
+          reviews.
+        </p>
         <h2>Contacting the business</h2>
         <p>
           Telephone, email and Facebook links open external services. Those

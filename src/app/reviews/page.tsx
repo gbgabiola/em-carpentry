@@ -1,35 +1,69 @@
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { siteConfig } from "@/config/site";
+import { getReviews } from "@/features/reviews/data";
 export const metadata = createPageMetadata(
   "/reviews",
   "Reviews",
-  "Customer feedback for EM Carpentry & Home Maintenance. Approved reviews will be published here.",
+  "Approved customer feedback and attributed Facebook testimonials for EM Carpentry & Home Maintenance.",
 );
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
+  const data = await getReviews();
   return (
     <div className="page-stack">
       <PageIntro
         eyebrow="Customer feedback"
         title="Your experience matters."
-        description="This page will share customer feedback that has been approved for publication."
+        description="Customer feedback and selected Facebook testimonials, published with permission."
       />
-      <section className="empty-panel">
-        <h2>No reviews published yet.</h2>
-        <p>
-          There are no published ratings or testimonials on this website at
-          present.
-        </p>
-      </section>
+      <p>
+        <a className="text-link" href={siteConfig.contact.facebookHref}>
+          Visit our business Facebook page for existing recommendations ↗
+        </a>
+      </p>
+      {data.reviews.length ? (
+        <div className="project-grid">
+          {data.reviews.map((review) => (
+            <figure key={review.id} className="empty-panel">
+              <blockquote className="preserve-lines">{review.body}</blockquote>
+              <figcaption>
+                <strong>{review.display_name}</strong>
+                {review.rating !== null && (
+                  <p>{review.rating} out of 5 · Website review</p>
+                )}
+                {review.source === "facebook" && review.source_url && (
+                  <p>
+                    <a className="text-link" href={review.source_url}>
+                      Originally shared on Facebook ↗
+                    </a>
+                  </p>
+                )}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ) : (
+        <section className="empty-panel">
+          <h2>
+            {data.unavailable
+              ? "Reviews are temporarily unavailable."
+              : "No reviews published yet."}
+          </h2>
+          <p>
+            Only approved feedback with publication permission is displayed
+            here.
+          </p>
+        </section>
+      )}
       <section className="prose-block">
         <h2>Have feedback to share?</h2>
         <p>
-          The online feedback form is not available yet. You can{" "}
+          The online feedback form is disabled until the retention policy is
+          agreed. You can{" "}
           <a className="text-link" href={siteConfig.contact.emailHref}>
             email the business
           </a>{" "}
-          directly. Feedback sent by email will not automatically be published
-          here.
+          directly. Feedback sent by email will not automatically be published.
         </p>
       </section>
     </div>

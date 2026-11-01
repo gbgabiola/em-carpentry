@@ -1,3 +1,4 @@
+import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
 import { PageIntro } from "@/components/sections/PageIntro";
@@ -7,7 +8,8 @@ export const metadata = createPageMetadata(
   "Contact",
   "Request a quote or discuss your project with EM Carpentry & Home Maintenance in Geelong. Call +61 497 175 163 or email the business.",
 );
-export default function ContactPage() {
+export default async function ContactPage() {
+  const business = await getBusiness();
   return (
     <div className="page-stack">
       <PageIntro
@@ -38,8 +40,8 @@ export default function ContactPage() {
           <p className="eyebrow">Geelong, Victoria</p>
           <h2>Local work. A personal conversation.</h2>
           <p>
-            Serving Geelong and nearby areas. Ask about your location when you
-            get in touch.
+            {business.service_area}. Ask about your location when you get in
+            touch.
           </p>
           <h3>To help us understand your enquiry</h3>
           <p>

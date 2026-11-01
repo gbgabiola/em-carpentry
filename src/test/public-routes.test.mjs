@@ -100,13 +100,43 @@ test("quotation fallback reaches verified direct contact channels", async () => 
   assert.doesNotMatch(html, /<form[ >]/);
 });
 
-test("unimplemented admin and project entries return 404", async () => {
+test("owner routes fail closed when the backend is unconfigured", async () => {
   for (const route of [
     "/admin",
+    "/admin/projects",
     "/admin/enquiries",
-    "/projects/unpublished-example",
+    "/admin/reviews",
+    "/admin/settings",
+    "/admin/export",
   ]) {
-    assert.equal((await fetch(origin + route)).status, 404, route);
+    const response = await fetch(origin + route, { redirect: "manual" });
+    assert.equal(response.status, 307, route);
+    assert.match(response.headers.get("location"), /^\/login/);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+  }
+  const login = await (await fetch(`${origin}/login`)).text();
+  assert.match(login, /Owner sign-in is not configured/);
+  assert.doesNotMatch(login, /<input[^>]*type="password"/);
+  assert.equal(
+    (await fetch(`${origin}/projects/unpublished-example`)).status,
+    404,
+  );
+  assert.equal(
+    (await fetch(`${origin}/media/55555555-5555-4555-8555-555555555555`))
+      .status,
+    404,
+  );
+});
+test("public submission endpoints reject requests without accepting customer data", async () => {
+  for (const route of ["/api/enquiries", "/api/reviews"]) {
+    const response = await fetch(origin + route, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ example: "not collected" }),
+    });
+    assert.equal(response.status, 503);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    assert.match((await response.json()).error, /retention/);
   }
 });
 

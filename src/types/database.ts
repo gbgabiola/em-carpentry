@@ -1,0 +1,70 @@
+export type Project = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  description: string;
+  category: string;
+  location: string;
+  completion_date: string | null;
+  status: "draft" | "published" | "archived";
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
+};
+export type ProjectImage = {
+  id: string;
+  project_id: string;
+  path: string;
+  alt: string;
+  display_order: number;
+  role: "gallery" | "before" | "after";
+  created_at: string;
+};
+export type Review = {
+  id: string;
+  display_name: string;
+  rating: number | null;
+  body: string;
+  source: "website" | "facebook";
+  source_url: string | null;
+  consent: boolean;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+};
+export type Enquiry = {
+  id: string;
+  name: string;
+  contact_method: "email" | "phone";
+  contact_details: string;
+  description: string;
+  suburb: string;
+  status: "new" | "reviewed" | "closed";
+  created_at: string;
+};
+export type BusinessSettings = {
+  id: number;
+  about_text: string;
+  service_area: string;
+};
+type Table<Row, Insert = Partial<Row>> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Partial<Row>;
+  Relationships: [];
+};
+export interface Database {
+  public: {
+    Tables: {
+      projects: Table<Project>;
+      project_images: Table<ProjectImage>;
+      reviews: Table<Review>;
+      enquiries: Table<Enquiry>;
+      business_settings: Table<BusinessSettings>;
+    };
+    Views: { [_ in never]: never };
+    Functions: { is_admin: { Args: Record<string, never>; Returns: boolean } };
+    Enums: { [_ in never]: never };
+    CompositeTypes: { [_ in never]: never };
+  };
+}

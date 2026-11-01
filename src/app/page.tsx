@@ -1,3 +1,5 @@
+import { getProjects } from "@/features/projects/data";
+import { ProjectCards } from "@/components/projects/ProjectCards";
 import { siteConfig } from "@/config/site";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { BusinessStructuredData } from "@/components/sections/BusinessStructuredData";
@@ -11,7 +13,8 @@ export const metadata = createPageMetadata(
   siteConfig.description,
 );
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featured = await getProjects({ featured: true });
   return (
     <div className="page-stack">
       <BusinessStructuredData />
@@ -73,16 +76,20 @@ export default function HomePage() {
           <p className="eyebrow">Portfolio</p>
           <h2 id="portfolio-heading">A closer look at the work.</h2>
         </div>
-        <div className="empty-panel">
-          <span className="placeholder-label">Portfolio coming soon</span>
-          <p>
-            Completed projects and approved photos will be added here. Contact
-            the business to discuss examples relevant to your project.
-          </p>
-          <Link className="text-link" href="/projects">
-            Visit the portfolio <span aria-hidden="true">→</span>
-          </Link>
-        </div>
+        {featured.projects.length ? (
+          <ProjectCards projects={featured.projects} />
+        ) : (
+          <div className="empty-panel">
+            <span className="placeholder-label">Portfolio coming soon</span>
+            <p>
+              Completed projects and approved photos will be added here. Contact
+              the business to discuss examples relevant to your project.
+            </p>
+            <Link className="text-link" href="/projects">
+              Visit the portfolio <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        )}
       </section>
       <ContactCta />
     </div>

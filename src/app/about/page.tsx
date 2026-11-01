@@ -1,3 +1,4 @@
+import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { ContactCta } from "@/components/sections/ContactCta";
@@ -6,7 +7,8 @@ export const metadata = createPageMetadata(
   "About",
   "Meet EM Carpentry & Home Maintenance, operating in Australia since 2018 and serving Geelong and nearby areas.",
 );
-export default function AboutPage() {
+export default async function AboutPage() {
+  const business = await getBusiness();
   return (
     <div className="page-stack">
       <PageIntro
@@ -17,10 +19,7 @@ export default function AboutPage() {
       <section className="editorial-section">
         <h2>Workmanship with care.</h2>
         <div className="prose-block">
-          <p>
-            Neat workmanship, attention to detail and a willingness to go the
-            extra mile guide the business.
-          </p>
+          <p className="preserve-lines">{business.about_text}</p>
           <p>
             We welcome enquiries from homeowners, landlords, businesses,
             contractors and other prospective clients. Contact us to discuss the

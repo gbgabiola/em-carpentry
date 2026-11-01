@@ -46,3 +46,7 @@ For D1, export SQL and restore into SQLite/D1, adapting SQLite-specific behaviou
 - Agree exact form fields, optional attachments and retention/deletion periods.
 - Implement server-side authorisation, database/storage policies, rate limits and failure fallbacks before collecting data.
 - Test independent export/restore and review the final provider disclosures before launch.
+
+## Implementation update
+
+The user authorised the recommended Supabase Sydney and manually created owner email/password approach. Decision 0004 records its local implementation. No hosted project exists yet. The current native Sharp upload path needs a Node-compatible runtime; Cloudflare Worker compatibility is not established and no hosting deployment has been selected. Retention remains undecided and customer intake remains closed.
