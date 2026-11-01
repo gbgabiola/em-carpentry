@@ -1,3 +1,5 @@
+> Current workflow: the client supplies and approves business content; the developer performs all website administration. No client login is needed. References to owner editing below mean the protected tools used by the developer.
+
 # Owner content guide
 
 The owner interface is now implemented at /login and /admin. It requires a provisioned Supabase project and owner membership; follow backend-setup.md and owner-workflow.md. The business name/logo and verified fallback details remain in source configuration; About text, service area, telephone, email and the business Facebook URL can be edited through the owner interface once connected.

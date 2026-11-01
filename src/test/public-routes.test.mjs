@@ -121,7 +121,7 @@ test("owner routes fail closed when the backend is unconfigured", async () => {
     assert.match(response.headers.get("cache-control"), /no-store/);
   }
   const login = await (await fetch(`${origin}/login`)).text();
-  assert.match(login, /Owner sign-in is not configured/);
+  assert.match(login, /Administrator sign-in is not configured/);
   assert.doesNotMatch(login, /<input[^>]*type="password"/);
   assert.equal(
     (await fetch(`${origin}/projects/unpublished-example`)).status,

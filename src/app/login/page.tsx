@@ -3,7 +3,7 @@ import { getSupabaseConfig } from "@/lib/db/config";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { signIn } from "./actions";
 export const metadata: Metadata = {
-  title: "Owner sign-in",
+  title: "Administrator sign-in",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
@@ -17,15 +17,15 @@ export default async function LoginPage({
   return (
     <div className="page-stack">
       <div className="page-intro">
-        <p className="eyebrow">Owner access</p>
+        <p className="eyebrow">Administrator access</p>
         <h1>Sign in.</h1>
         <p>
-          Use your manually provisioned owner account. Public registration is
+          Use your developer-only administrator account. Public registration is
           not available.
         </p>
       </div>
       {notice === "denied" && (
-        <p role="alert">This account does not have owner access.</p>
+        <p role="alert">This account does not have administrator access.</p>
       )}
       {enabled ? (
         <ActionForm action={signIn} label="Sign in">
@@ -52,13 +52,13 @@ export default async function LoginPage({
         </ActionForm>
       ) : (
         <p role="status">
-          Owner sign-in is not configured. Follow the backend setup guide before
-          using this page.
+          Administrator sign-in is not configured. Follow the backend setup
+          guide before using this page.
         </p>
       )}
       <p className="text-sm text-muted">
-        For access recovery, contact the developer who manages the hosting
-        account. No automated password-reset email is promised.
+        Use the developer-controlled Supabase dashboard for account recovery. No
+        automated password-reset email is promised.
       </p>
     </div>
   );
