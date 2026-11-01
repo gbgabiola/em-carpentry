@@ -92,3 +92,7 @@ Final preparation checks: lint, strict typecheck, production build, 54 tests and
 The [Free test site](https://em-carpentry.netlify.app) and [admin login](https://em-carpentry.netlify.app/login) are live. Public responses, compressed login delivery, referenced assets, disabled intake, crawling restrictions and all 31 HTTP access/file-exposure checks passed. The user confirmed admin sign-in and reload persistence. GitHub CI passed all 54 tests. See [current deployment details and remaining checks](docs/hosted-preview.md).
 
 Use npm run deploy:preview for the full adapter build plus a draft upload; it does not update the base URL unless --prod is explicitly supplied for an authorised test update. Do not upload raw .next output with --no-build. npm run check:preview -- URL checks hosted pages/assets/noindex/intake; npm run check:auth -- URL checks private-route and build-file access. No credentials are needed for these HTTP checks. The actual connected account has legacy Free quotas, not the newer shared 300-credit allowance; see the hosted notes.
+
+The next hands-on checkpoint is [owner workflow acceptance](docs/owner-acceptance-checks.md): private draft/upload, publishing, archive/removal and account security using synthetic fixtures. No passwords or customer images are needed in chat.
+
+Run npm run fixtures:owner to create ignored synthetic small/4 MiB/oversized JPEGs for that checkpoint. The generator verifies local processing only and makes no provider changes.

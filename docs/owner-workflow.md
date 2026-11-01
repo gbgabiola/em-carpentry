@@ -11,6 +11,8 @@ The approved test site is https://em-carpentry.netlify.app, with sign-in at /log
 7. Enquiries shows private records and their New/Reviewed/Closed state. Public intake remains closed until retention is agreed, so no new website enquiries are expected yet. No automatic email notification is configured. Use the contact fallbacks for now.
 8. Permanent review/enquiry deletion requires typing DELETE. Handle access/correction/deletion requests manually and document completion. Agree retention before collecting new customer data; no automatic retention purge has been enabled.
 
+For a private draft/upload → publication → archive/removal test and account-security checks, follow [owner acceptance checks](owner-acceptance-checks.md). Use synthetic fixtures before customer content.
+
 ## Export and recovery
 
 Use the dashboard’s Download business and customer data link for a paginated JSON export of all projects, photo metadata, reviews, enquiries and business settings. It includes private information: save it outside the public website and source repository. It does not contain account passwords, cookies or tokens. Photo bytes are separate; use each photo’s Download photo for backup link and retain the mapping to project_images.path in the export. Export before significant changes and agree a recurring backup routine at handover.

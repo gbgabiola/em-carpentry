@@ -26,3 +26,6 @@ supabase/.branches/
 
 # Local hosting build state; may contain environment configuration
 .netlify/
+
+# Private local verification fixtures; never publish as portfolio assets
+.verification/

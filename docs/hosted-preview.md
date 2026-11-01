@@ -51,6 +51,8 @@ Read the provider's actual success URL; do not infer publication from a successf
 
 ## Remaining hands-on checks
 
+Follow [owner acceptance checks](owner-acceptance-checks.md) for the staged private upload, publishing, archive/removal and password workflow. On 2 November 2026, aggregate hosted counts showed zero projects, photo records and project-image Storage objects before fixture testing. Separately supplied synthetic JPEGs are exactly 4 MiB and 4 MiB plus one byte; local processing accepted the valid image as WebP and stripped metadata. Neither file has been uploaded by the assistant.
+
 Use disposable private fixtures to verify actual owner project creation/editing, a photo upload near the 4 MiB limit, metadata removal, private and published media access, archival, photo removal, featured/filter/comparison behaviour, export/restore, password change, sign-out, timed token refresh and revoked/non-owner access. Confirm cookie flags and private responses through the actual browser/CDN. No real client password was disclosed to the assistant and no live password was changed.
 
 Visual interaction checks remain manual because the browser/desktop automation runtimes failed to initialise. Complete responsive/theme/keyboard checks and a realistic resource/traffic assessment before handover. Agree retention and complete secure intake implementation before enabling public submissions. Final services, project photos, logo/publication rights, privacy copy and launch indexing approval are still needed.
