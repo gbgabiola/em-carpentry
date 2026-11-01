@@ -21,6 +21,11 @@ export default async function AdminPage() {
       </p>
       <ul>
         <li>
+          <Link className="text-link" href="/admin/content">
+            Manage approved services and FAQs
+          </Link>
+        </li>
+        <li>
           <Link className="text-link" href="/admin/projects">
             Manage projects and photos
           </Link>

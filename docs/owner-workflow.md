@@ -4,10 +4,10 @@ Complete backend-setup.md and its live checks before handing over a real account
 
 1. Open /login and sign in with your provisioned owner account. There is no public registration. Use Sign out on shared devices.
 2. Under Projects, create a draft. Use a short, unique lower-case slug; changing it later changes the public URL. Add only verified descriptions and a general suburb, not customer addresses.
-3. Open Edit and manage photos. Upload approved JPEG, PNG or WebP photos up to 5 MB. Confirm permission and provide descriptive alt text. You can edit photo descriptions, order and Gallery/Before/After labels after upload. Before/after images are labelled in the gallery; there is no comparison slider yet.
+3. Open Edit and manage photos. Upload approved JPEG, PNG or WebP photos up to 5 MB. Confirm permission and provide descriptive alt text. You can edit photo descriptions, order and Gallery/Before/After labels after upload. For a comparison, use exactly one Before photo and one After photo of the same view/framing. Enable comparison on the project and save. Visitors can drag or use arrow keys; full images remain in the gallery. Changing/removing a role so there is no unique pair hides the comparison until corrected.
 4. Publish only after checking the photos and text. At least one photo is required by the publishing action. Use Draft to unpublish or Archived to hide an older entry; project deletion is intentionally not offered. Featured entries appear on Home. Remove photo permanently deletes the stored image and its metadata; keep backups before removal.
 5. Under Reviews, manually copy feedback you have permission to republish, including a Facebook source link and agreed display name. Keep the original meaning. Facebook recommendations are not converted into stars. Pending and rejected content is private; only approved consented content appears publicly. Removing consent requires unpublishing/deleting the testimonial; contact the developer for any historical consent correction. No automatic Facebook import is used.
-6. Under Business information, edit About text and service area. Core contact details, service inventory and FAQs still need a developer update. Do not introduce unverified licensing, awards, prices or response guarantees.
+6. Under Business information, edit About text and service area. You can also update the Australian telephone, email and business Facebook page. Use the business page rather than a personal profile. The business name/logo remain in verified source configuration. Do not introduce unverified licensing, awards, prices or response guarantees.
 7. Enquiries shows private records and their New/Reviewed/Closed state. Public intake remains closed until retention is agreed, so no new website enquiries are expected yet. No automatic email notification is configured. Use the contact fallbacks for now.
 8. Permanent review/enquiry deletion requires typing DELETE. Handle access/correction/deletion requests manually and document completion. Agree retention before collecting new customer data; no automatic retention purge has been enabled.
 
@@ -24,3 +24,11 @@ Supabase Free can pause after inactivity. The developer checks the provider dash
 ## Upload cleanup
 
 If uploading an object succeeds but attaching its database record fails, the action attempts to remove the object. If cleanup also fails, the action reports it. The developer must compare private Storage object paths with project_images.path, verify an object has no reference, then remove that specific orphan through Storage. Do not bulk-delete guessed paths or directly delete storage.objects SQL rows. A metadata deletion failure after a photo has been removed is reported separately; retry the Remove photo action to remove the leftover record.
+
+## Services and FAQs
+
+Use Services & FAQs in the owner navigation. Create or edit an entry, set its display order, review the text and confirm accuracy before publishing. Draft and archived entries remain private. Archive old entries rather than deleting source copy. The four initial FAQ entries are drafts; none is automatically treated as owner-approved. No service inventory has been prefilled. Never publish unverified licensing, regulated-trade services, pricing or response guarantees. Published service summaries appear on Home and the full text appears on Services.
+
+When the database is unavailable, current service/FAQ content may be hidden. Contact displays previously verified fallback details with an explicit notice; header/CTA call shortcuts route visitors there. Tell the developer about permanent contact changes so the verified source fallback can also be kept current.
+
+Exports now use schema version 2 and include services, FAQs, contact settings and project comparison preferences in addition to the earlier tables. Keep separate photo bytes and restore all migrations before importing data.

@@ -107,6 +107,7 @@ test("owner routes fail closed when the backend is unconfigured", async () => {
     "/admin/enquiries",
     "/admin/reviews",
     "/admin/settings",
+    "/admin/content",
     "/admin/export",
   ]) {
     const response = await fetch(origin + route, { redirect: "manual" });
@@ -214,7 +215,10 @@ test("verified business structured data is parseable and contains no invented cl
   assert.equal(business.name, "EM Carpentry & Home Maintenance");
   assert.equal(business.telephone, "+61 497 175 163");
   assert.equal(business.foundingDate, "2018");
-  assert.equal(business.areaServed.name, "Geelong, Victoria, Australia");
+  assert.equal(
+    business.areaServed.name,
+    "Geelong, VIC, Australia, and nearby areas",
+  );
   for (const key of [
     "address",
     "aggregateRating",

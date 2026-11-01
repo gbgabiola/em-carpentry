@@ -1,3 +1,5 @@
+import { BeforeAfter } from "@/components/projects/BeforeAfter";
+import { getComparisonPair } from "@/lib/images/comparison";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProject } from "@/features/projects/data";
@@ -30,6 +32,9 @@ export default async function ProjectPage({
   const { slug } = await params;
   const project = await findProject(slug);
   if (!project) notFound();
+  const pair = project.comparison_enabled
+    ? getComparisonPair(project.images)
+    : null;
   return (
     <div className="page-stack">
       <header className="page-intro">
@@ -49,6 +54,7 @@ export default async function ProjectPage({
         )}
       </header>
       <div className="prose-block preserve-lines">{project.description}</div>
+      {pair && <BeforeAfter before={pair.before} after={pair.after} />}
       <div className="project-grid">
         {project.images.map((image) => (
           <figure key={image.id}>

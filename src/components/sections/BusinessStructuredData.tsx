@@ -1,18 +1,24 @@
+import { getBusiness } from "@/features/business/data";
 import { siteConfig } from "@/config/site";
 import { getSeoConfig } from "@/lib/seo/config";
 
-export function BusinessStructuredData() {
+export async function BusinessStructuredData() {
+  const business = await getBusiness();
   const { origin } = getSeoConfig();
   const data = {
     "@context": "https://schema.org",
     "@type": "HomeAndConstructionBusiness",
     name: siteConfig.name,
     description: siteConfig.description,
-    telephone: siteConfig.contact.phone,
-    email: siteConfig.contact.email,
+    ...(!business.unavailable
+      ? {
+          telephone: business.contact.phone,
+          email: business.contact.email,
+          sameAs: [business.contact.facebookHref],
+          areaServed: { "@type": "Place", name: business.service_area },
+        }
+      : {}),
     foundingDate: String(siteConfig.operatingSince),
-    areaServed: { "@type": "City", name: "Geelong, Victoria, Australia" },
-    sameAs: [siteConfig.contact.facebookHref],
     ...(origin
       ? {
           url: origin,

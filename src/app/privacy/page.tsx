@@ -1,12 +1,13 @@
+import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
-import { siteConfig } from "@/config/site";
 export const metadata = createPageMetadata(
   "/privacy",
   "Privacy notice",
   "Privacy information for the current EM Carpentry & Home Maintenance website preview and direct contact options.",
 );
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const business = await getBusiness();
   return (
     <div className="page-stack">
       <PageIntro
@@ -46,9 +47,16 @@ export default function PrivacyPage() {
         <p>
           The business may receive the contact details and project information
           you choose to send directly. For questions about that information, or
-          to request access, correction or deletion, email{" "}
-          <a className="text-link" href={siteConfig.contact.emailHref}>
-            {siteConfig.contact.email}
+          to request access, correction or deletion, contact us:{" "}
+          <a
+            className="text-link"
+            href={
+              business.unavailable ? "/contact" : business.contact.emailHref
+            }
+          >
+            {business.unavailable
+              ? "view contact options"
+              : business.contact.email}
           </a>
           .
         </p>

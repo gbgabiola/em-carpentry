@@ -1,6 +1,6 @@
+import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
-import { siteConfig } from "@/config/site";
 import { getReviews } from "@/features/reviews/data";
 export const metadata = createPageMetadata(
   "/reviews",
@@ -8,7 +8,7 @@ export const metadata = createPageMetadata(
   "Approved customer feedback and attributed Facebook testimonials for EM Carpentry & Home Maintenance.",
 );
 export default async function ReviewsPage() {
-  const data = await getReviews();
+  const [data, business] = await Promise.all([getReviews(), getBusiness()]);
   return (
     <div className="page-stack">
       <PageIntro
@@ -17,7 +17,7 @@ export default async function ReviewsPage() {
         description="Customer feedback and selected Facebook testimonials, published with permission."
       />
       <p>
-        <a className="text-link" href={siteConfig.contact.facebookHref}>
+        <a className="text-link" href={business.contact.facebookHref}>
           Visit our business Facebook page for existing recommendations ↗
         </a>
       </p>
@@ -60,10 +60,18 @@ export default async function ReviewsPage() {
         <p>
           The online feedback form is disabled until the retention policy is
           agreed. You can{" "}
-          <a className="text-link" href={siteConfig.contact.emailHref}>
-            email the business
+          <a
+            className="text-link"
+            href={
+              business.unavailable ? "/contact" : business.contact.emailHref
+            }
+          >
+            {business.unavailable
+              ? "view contact options"
+              : "email the business"}
           </a>{" "}
-          directly. Feedback sent by email will not automatically be published.
+          to discuss your feedback. Feedback sent by email will not
+          automatically be published.
         </p>
       </section>
     </div>

@@ -1,12 +1,14 @@
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
 import { ContactCta } from "@/components/sections/ContactCta";
+import { getServices } from "@/features/content/data";
 export const metadata = createPageMetadata(
   "/services",
   "Services",
   "Discuss carpentry and home maintenance needs in Geelong and nearby areas with EM Carpentry & Home Maintenance.",
 );
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const data = await getServices();
   return (
     <div className="page-stack">
       <PageIntro
@@ -14,14 +16,32 @@ export default function ServicesPage() {
         title="What does your space need?"
         description="Get in touch to discuss your carpentry or home maintenance project in Geelong and nearby areas."
       />
-      <section className="empty-panel">
-        <h2>Service information is being confirmed.</h2>
-        <p>
-          A detailed list of offered services will be added once approved by the
-          business owner. Please contact us to check whether the work you need
-          can be undertaken.
-        </p>
-      </section>
+      {data.services.length ? (
+        <div className="service-list">
+          {data.services.map((service) => (
+            <section
+              id={service.slug}
+              key={service.id}
+              className="editorial-section"
+            >
+              <h2>{service.name}</h2>
+              <p className="preserve-lines">{service.description}</p>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <section className="empty-panel">
+          <h2>
+            {data.unavailable
+              ? "Service information is temporarily unavailable."
+              : "Service information is being confirmed."}
+          </h2>
+          <p>
+            Contact the business to check whether the work you need can be
+            undertaken. Only services confirmed by the owner are published here.
+          </p>
+        </section>
+      )}
       <ContactCta />
     </div>
   );

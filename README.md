@@ -33,9 +33,9 @@ check runs lint, route type generation, strict TypeScript and a production build
 - Supabase migrations with project/photo, enquiry, review and business-content tables; private owner membership; database and private-bucket access policies.
 - Owner email/password sign-in, token refresh, sign-out, no public registration route and server authorisation on each private operation.
 - Project create/edit/publish/unpublish/archive, featured entries, approved photo upload/edit/removal, public title/category filters and paginated listings.
-- Labelled before/after photos; no comparison slider yet.
+- Optional before/after comparison for one approved pair, with a native keyboard range control and full gallery alternatives.
 - Manually curated Facebook testimonials with permission/source attribution and approval/rejection. No automatic Facebook import or invented ratings.
-- Private enquiry review/status/deletion, About/service-area editing and owner-only JSON export with separate photo-download links.
+- Private enquiry review/status/deletion; About, service-area and contact editing; service/FAQ publication management; and owner-only JSON export with separate photo-download links.
 - Server validation and bounded WebP re-encoding/metadata removal for owner photos. Public customer attachments are not supported.
 - Public enquiry/review POST routes return 503 and database writes remain denied until retention and intake security are agreed.
 
@@ -43,7 +43,7 @@ check runs lint, route type generation, strict TypeScript and a production build
 
 .env.example documents SITE_URL and SITE_INDEXING_ENABLED plus server-only SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY. No secret/service-role key is required or accepted. See src/config/ for verified core business details; src/features/ for domain data/actions; src/lib/ for auth, database clients, validation, image processing and SEO; src/types/database.ts for current schema types; supabase/migrations/ for policies/schema; src/test/ for verification.
 
-Business content/customer data remain exportable. Never put private data, tokens, backups or unapproved photos in public/ or Git. The owner editor currently manages About text and service area; core contact links, services and FAQs still use source configuration. Public approved reviews are limited to the latest 100; owner list views use the provider’s 1,000-row default. If these limits become relevant, add owner pagination before expanding usage.
+Business content/customer data remain exportable. Never put private data, tokens, backups or unapproved photos in public/ or Git. The owner editor now manages About text, service area, Australian telephone, email, business Facebook page, services and FAQs. The business name/logo stay in verified source configuration. Services have no seeded inventory; the second migration adds four FAQ drafts for owner review. JSON export schema version 2 includes the new content. Public approved reviews are limited to the latest 100; owner list views use the provider’s 1,000-row default. If these limits become relevant, add owner pagination before expanding usage.
 
 ## Remaining gates
 
@@ -54,3 +54,11 @@ See [owner workflow](docs/owner-workflow.md), [provider comparison](docs/decisio
 ## Backend checkpoint verification
 
 Lint, strict type checking, production build, all 34 tests and the full dependency audit passed on 1 November 2026; npm audit reported zero vulnerabilities. Tests include the actual SQL migration in PGlite, publication/moderation transitions, denied public/private access, disabled intake handlers, HTTP routes, image re-encoding/metadata removal and validation. Real Supabase Auth/Storage, browser sessions and deployment/runtime compatibility remain unverified. No hosted migration, account or real customer data was created.
+
+## Owner-content checkpoint
+
+Apply every pending migration in filename order, including 202611010002_owner_content.sql. Existing installations apply the second migration without rerunning the foundation. Owner-confirmed published services appear on Home and Services; FAQs use published rows once connected. During a configured outage, FAQ answers are hidden and Contact identifies previously verified fallback contact details rather than claiming they are current.
+
+The comparison is opt-in per project and needs one Before and one After photo. If roles/photos change and no unique pair remains, the public comparison is omitted while the gallery remains available. Matching viewpoint/framing requires owner review. Browser interaction and live Supabase checks remain outstanding.
+
+Owner-content verification on 1 November 2026: lint, strict typecheck, production build and all 43 tests passed; npm audit reported zero vulnerabilities. Both migrations were replayed against existing PGlite fixture data, including approval/archiving policies and new contact constraints. Browser automation failed before opening a browser, so slider interaction/visual QA and live Supabase verification remain outstanding. The Supabase integration was available but not installed at the last check.

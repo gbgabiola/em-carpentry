@@ -18,6 +18,7 @@ export const projectSchema = z.object({
     .transform((value) => value || null),
   status: z.enum(["draft", "published", "archived"]),
   featured: z.boolean(),
+  comparison_enabled: z.boolean().default(false),
 });
 export const imageSchema = z.object({
   project_id: idSchema,
@@ -48,6 +49,12 @@ export const testimonialSchema = z.object({
 export const businessSchema = z.object({
   about_text: text(3000),
   service_area: text(200),
+  phone: text(30).refine(
+    (value) => /^\+61[0-9]{9}$/.test(value.replace(/[ ()-]/g, "")),
+    "Use an Australian +61 phone number.",
+  ),
+  email: z.string().trim().pipe(z.email().max(320)),
+  facebook_url: facebookUrl.max(2048),
 });
 export const enquirySchema = z
   .object({
@@ -85,3 +92,35 @@ export interface ActionResult {
   error?: string;
   success?: string;
 }
+
+const contentFields = {
+  display_order: z.coerce.number().int().min(0).max(999),
+  status: z.enum(["draft", "published", "archived"]),
+  publication_confirmed: z.boolean(),
+};
+export const serviceSchema = z
+  .object({
+    name: text(120),
+    slug: text(100).regex(
+      /^[a-z0-9]+(-[a-z0-9]+)*$/,
+      "Use lower-case words separated by hyphens.",
+    ),
+    description: text(1500),
+    ...contentFields,
+  })
+  .refine(
+    (value) => value.status !== "published" || value.publication_confirmed,
+    {
+      message: "Confirm accuracy and approval before publishing.",
+      path: ["publication_confirmed"],
+    },
+  );
+export const faqSchema = z
+  .object({ question: text(200), answer: text(3000), ...contentFields })
+  .refine(
+    (value) => value.status !== "published" || value.publication_confirmed,
+    {
+      message: "Confirm accuracy and approval before publishing.",
+      path: ["publication_confirmed"],
+    },
+  );

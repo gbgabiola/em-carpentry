@@ -1,7 +1,8 @@
+import { getBusiness } from "@/features/business/data";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
 
-export function ContactCta() {
+export async function ContactCta() {
+  const business = await getBusiness();
   return (
     <section className="contact-band" aria-labelledby="enquiry-heading">
       <div>
@@ -13,9 +14,15 @@ export function ContactCta() {
         <Link className="button button-primary" href="/contact">
           Request a quote <span aria-hidden="true">↗</span>
         </Link>
-        <a className="text-link" href={siteConfig.contact.phoneHref}>
-          Call {siteConfig.contact.phone}
-        </a>
+        {business.unavailable ? (
+          <Link className="text-link" href="/contact">
+            View contact options
+          </Link>
+        ) : (
+          <a className="text-link" href={business.contact.phoneHref}>
+            Call {business.contact.phone}
+          </a>
+        )}
       </div>
     </section>
   );

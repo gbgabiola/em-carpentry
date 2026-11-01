@@ -1,3 +1,23 @@
+export type ContentStatus = "draft" | "published" | "archived";
+export type Service = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  display_order: number;
+  status: ContentStatus;
+  publication_confirmed: boolean;
+  created_at: string;
+};
+export type Faq = {
+  id: string;
+  question: string;
+  answer: string;
+  display_order: number;
+  status: ContentStatus;
+  publication_confirmed: boolean;
+  created_at: string;
+};
 export type Project = {
   id: string;
   slug: string;
@@ -9,6 +29,7 @@ export type Project = {
   completion_date: string | null;
   status: "draft" | "published" | "archived";
   featured: boolean;
+  comparison_enabled: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -46,6 +67,9 @@ export type BusinessSettings = {
   id: number;
   about_text: string;
   service_area: string;
+  phone: string;
+  email: string;
+  facebook_url: string;
 };
 type Table<Row, Insert = Partial<Row>> = {
   Row: Row;
@@ -56,6 +80,8 @@ type Table<Row, Insert = Partial<Row>> = {
 export interface Database {
   public: {
     Tables: {
+      services: Table<Service>;
+      faqs: Table<Faq>;
       projects: Table<Project>;
       project_images: Table<ProjectImage>;
       reviews: Table<Review>;

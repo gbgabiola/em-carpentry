@@ -1,4 +1,5 @@
 "use server";
+import { getComparisonPair } from "@/lib/images/comparison";
 import { randomUUID } from "node:crypto";
 import { optimiseProjectPhoto } from "@/lib/images/process";
 import { revalidatePath } from "next/cache";
@@ -22,6 +23,7 @@ export async function saveProject(
   const parsed = projectSchema.safeParse({
     ...Object.fromEntries(form),
     featured: form.get("featured") === "on",
+    comparison_enabled: form.get("comparison_enabled") === "on",
   });
   if (!parsed.success)
     return {
@@ -30,18 +32,23 @@ export async function saveProject(
   const rawId = form.get("id");
   const id = rawId ? idSchema.safeParse(rawId) : null;
   if (id && !id.success) return { error: "Invalid project." };
-  if (parsed.data.status === "published") {
+  if (parsed.data.status === "published" || parsed.data.comparison_enabled) {
     if (!id?.success)
       return {
-        error: "Save a draft and upload an approved photo before publishing.",
+        error:
+          "Save a draft and upload approved photos before publishing or enabling a comparison.",
       };
     const images = await client
       .from("project_images")
-      .select("id")
-      .eq("project_id", id.data)
-      .limit(1);
-    if (images.error || !images.data?.length)
+      .select("id,role")
+      .eq("project_id", id.data);
+    if (images.error || !images.data.length)
       return { error: "Upload at least one approved photo before publishing." };
+    if (parsed.data.comparison_enabled && !getComparisonPair(images.data))
+      return {
+        error:
+          "A comparison needs exactly one Before photo and one After photo. Use the same viewpoint and framing.",
+      };
   }
   const result = id?.success
     ? await client

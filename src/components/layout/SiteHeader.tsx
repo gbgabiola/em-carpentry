@@ -1,10 +1,11 @@
+import { getBusiness } from "@/features/business/data";
 import Image from "next/image";
 import Link from "next/link";
 import { navigation } from "@/config/navigation";
-import { siteConfig } from "@/config/site";
 import { ThemeToggle } from "./ThemeToggle";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const business = await getBusiness();
   return (
     <header className="site-header">
       <div className="site-width header-top">
@@ -20,7 +21,7 @@ export function SiteHeader() {
             EM Carpentry
             <span className="brand-subtitle">&amp; Home Maintenance</span>
           </span>
-          <span className="sr-only"> — {siteConfig.serviceArea}</span>
+          <span className="sr-only"> — {business.service_area}</span>
         </Link>
         <ThemeToggle />
       </div>
@@ -32,9 +33,15 @@ export function SiteHeader() {
             </li>
           ))}
         </ul>
-        <a className="header-phone" href={siteConfig.contact.phoneHref}>
-          {siteConfig.contact.phone}
-        </a>
+        {business.unavailable ? (
+          <Link className="header-phone" href="/contact">
+            Contact the business
+          </Link>
+        ) : (
+          <a className="header-phone" href={business.contact.phoneHref}>
+            {business.contact.phone}
+          </a>
+        )}
       </nav>
     </header>
   );

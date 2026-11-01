@@ -505,3 +505,54 @@ input[type="checkbox"] {
 .preserve-lines {
   white-space: pre-line;
 }
+
+.content-editor {
+  border-bottom: 1px solid var(--line);
+  padding-block: 1.25rem;
+}
+.content-editor summary {
+  font-weight: 600;
+}
+.service-list {
+  display: grid;
+  gap: 2.5rem;
+}
+.comparison-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  margin-top: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.comparison-frame img {
+  object-fit: contain;
+}
+.comparison-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+}
+.comparison-label {
+  position: absolute;
+  top: 1rem;
+  padding: 0.35rem 0.75rem;
+  color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.comparison-before {
+  left: 1rem;
+}
+.comparison-after {
+  right: 1rem;
+}
+.comparison-control {
+  display: block;
+  margin-top: 1rem;
+}
+.comparison-control input[type="range"] {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--accent);
+}

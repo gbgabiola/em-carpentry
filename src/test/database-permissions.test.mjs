@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { after, before, test } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 
@@ -51,6 +51,13 @@ before(async () => {
   await db.exec(
     "insert into storage.objects(bucket_id,name) values('project-images','orphan.webp'); insert into reviews(display_name,rating,body,consent,status) values('Approved',5,'Feedback',true,'approved'),('Pending',4,'Private feedback',true,'pending'),('No consent',3,'Private feedback',false,'pending'); insert into enquiries(name,contact_method,contact_details,description) values('Private customer','email','private@example.test','Private customer request');",
   );
+  const directory = new URL("../../supabase/migrations/", import.meta.url);
+  for (const file of (await readdir(directory))
+    .filter(
+      (file) => file.endsWith(".sql") && file !== "202611010001_foundation.sql",
+    )
+    .sort())
+    await db.exec(await readFile(new URL(file, directory), "utf8"));
 });
 after(async () => {
   await db?.close();
@@ -233,4 +240,129 @@ test("Facebook testimonials require attribution and do not need an invented rati
       /check constraint|not-null/,
     );
   });
+});
+
+async function become(role, uid) {
+  assert.ok(["anon", "authenticated"].includes(role));
+  await db.exec(`set local role ${role}`);
+  await db.query("select set_config('request.jwt.claim.sub',$1,true)", [
+    uid || "",
+  ]);
+}
+test("new owner-content migration preserves existing data and keeps initial FAQs as private drafts", async () => {
+  await asRole("authenticated", owner, async () => {
+    assert.equal(
+      (await rows("select title from projects where id=$1", [published]))[0]
+        .title,
+      "Published",
+    );
+    assert.equal((await rows("select * from enquiries")).length, 1);
+    assert.equal((await rows("select * from faqs")).length, 4);
+    assert.ok(
+      (await rows("select * from projects")).every(
+        (project) => project.comparison_enabled === false,
+      ),
+    );
+  });
+  for (const [role, uid] of [
+    ["anon", null],
+    ["authenticated", outsider],
+  ])
+    await asRole(role, uid, async () => {
+      assert.equal((await rows("select * from services")).length, 0);
+      assert.equal((await rows("select * from faqs")).length, 0);
+    });
+});
+test("unconfirmed services and FAQs cannot be published even through direct database writes", async () => {
+  await asRole("authenticated", owner, async () => {
+    await assert.rejects(
+      rows(
+        "insert into services(name,slug,description,status) values('Fixture service','fixture','Description','published')",
+      ),
+      /check constraint/,
+    );
+  });
+  await asRole("authenticated", owner, async () => {
+    await assert.rejects(
+      rows("update faqs set status='published'"),
+      /check constraint/,
+    );
+  });
+});
+test("service publication and archiving update visitor visibility", async () => {
+  await asRole("authenticated", owner, async () => {
+    await rows(
+      "insert into services(name,slug,description,publication_confirmed) values('Fixture service','fixture','Description',true)",
+    );
+    await become("anon", null);
+    assert.equal((await rows("select * from services")).length, 0);
+    await become("authenticated", owner);
+    await rows("update services set status='published' where slug='fixture'");
+    await become("anon", null);
+    assert.equal((await rows("select * from services")).length, 1);
+    await become("authenticated", owner);
+    await rows("update services set status='archived' where slug='fixture'");
+    await become("anon", null);
+    assert.equal((await rows("select * from services")).length, 0);
+  });
+});
+test("FAQ publication and unpublishing respect approval and owner-only access", async () => {
+  await asRole("authenticated", owner, async () => {
+    await rows(
+      "update faqs set status='published',publication_confirmed=true where display_order=0",
+    );
+    await become("authenticated", outsider);
+    assert.equal((await rows("select * from faqs")).length, 1);
+    assert.equal(
+      (await rows("update faqs set answer='Attack' returning id")).length,
+      0,
+    );
+    await become("authenticated", owner);
+    await rows("update faqs set status='draft' where display_order=0");
+    await become("anon", null);
+    assert.equal((await rows("select * from faqs")).length, 0);
+  });
+  for (const [role, uid] of [
+    ["anon", null],
+    ["authenticated", outsider],
+  ])
+    await asRole(role, uid, async () => {
+      await assert.rejects(
+        rows(
+          "insert into services(name,slug,description) values('Attack','attack','Text')",
+        ),
+        /permission denied|row-level security/,
+      );
+    });
+});
+test("business contact updates require owner access and database format checks", async () => {
+  await asRole("authenticated", outsider, async () => {
+    assert.equal(
+      (
+        await rows(
+          "update business_settings set email='attack@example.test' returning id",
+        )
+      ).length,
+      0,
+    );
+  });
+  await asRole("authenticated", owner, async () => {
+    await rows("update business_settings set email='owner@example.test'");
+    await become("anon", null);
+    assert.equal(
+      (await rows("select email from business_settings"))[0].email,
+      "owner@example.test",
+    );
+  });
+  for (const update of [
+    "phone='123'",
+    "facebook_url='https://evil.test'",
+    "email='not an email'",
+  ])
+    await asRole("authenticated", owner, async () => {
+      await assert.rejects(
+        rows(`update business_settings set ${update}`),
+        /check constraint/,
+      );
+    });
 });

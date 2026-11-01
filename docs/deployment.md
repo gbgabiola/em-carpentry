@@ -46,3 +46,7 @@ Reference implementation guidance: [Next.js metadata](https://nextjs.org/docs/ap
 Supabase schema, RLS/private image storage and owner workflows are implemented. Follow [backend setup](backend-setup.md) to provision the approved Sydney project/owner and complete live tests. [Owner workflow](owner-workflow.md) covers export, separate image backups, pause recovery and orphan cleanup. No hosted migration or deployment has been applied.
 
 The Node-native Sharp upload processor is not a verified Worker runtime feature. Do not deploy this build to Cloudflare merely because a Next.js adapter exists: resolve native image processing, memory/CPU limits and actual compatibility first. Do not silently migrate frameworks or enable billing. Public submissions require a new reviewed handler/policy migration after retention is agreed; changing an environment flag alone cannot enable them.
+
+## Owner-content migration
+
+Apply 202611010002_owner_content.sql after the foundation, once only. It preserves existing projects/enquiries and adds draft service/FAQ management, validated business contact settings and an opt-in comparison flag. Rebuild application code after applying schema updates. Verify publication constraints, RLS, contact metadata/JSON-LD and pointer/keyboard comparison behaviour against disposable live fixtures. This does not resolve the native Sharp/Cloudflare compatibility gate or enable customer submissions.

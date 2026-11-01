@@ -87,6 +87,15 @@ export function ProjectFields({ project }: { project?: Project }) {
         />
         Feature on Home
       </label>
+      <label className="checkbox-label">
+        <input
+          name="comparison_enabled"
+          type="checkbox"
+          defaultChecked={project?.comparison_enabled}
+        />
+        Enable a before-and-after comparison. Use exactly one Before and one
+        After photo with matching viewpoint and framing.
+      </label>
     </>
   );
 }

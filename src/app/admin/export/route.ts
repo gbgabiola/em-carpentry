@@ -8,6 +8,8 @@ export async function GET() {
     "reviews",
     "enquiries",
     "business_settings",
+    "services",
+    "faqs",
   ] as const;
   const content: Record<string, unknown[]> = {};
   for (const table of tables) {
@@ -32,7 +34,7 @@ export async function GET() {
   }
   return Response.json(
     {
-      schemaVersion: 1,
+      schemaVersion: 2,
       exportedAt: new Date().toISOString(),
       containsPrivateCustomerData: true,
       photoDownloadNote:

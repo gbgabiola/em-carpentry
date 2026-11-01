@@ -2,12 +2,16 @@ import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
 import { PageIntro } from "@/components/sections/PageIntro";
-import { siteConfig } from "@/config/site";
-export const metadata = createPageMetadata(
-  "/contact",
-  "Contact",
-  "Request a quote or discuss your project with EM Carpentry & Home Maintenance in Geelong. Call +61 497 175 163 or email the business.",
-);
+export async function generateMetadata() {
+  const business = await getBusiness();
+  return createPageMetadata(
+    "/contact",
+    "Contact",
+    business.unavailable
+      ? "Contact EM Carpentry & Home Maintenance to discuss your project in Geelong and nearby areas."
+      : `Request a quote or discuss your project with EM Carpentry & Home Maintenance. Call ${business.contact.phone} or email the business.`,
+  );
+}
 export default async function ContactPage() {
   const business = await getBusiness();
   return (
@@ -17,21 +21,28 @@ export default async function ContactPage() {
         title="Let’s talk about your project."
         description="Tell us what you have in mind. The business owner will respond personally to your enquiry."
       />
+      {business.unavailable && (
+        <p role="status" className="form-message">
+          We couldn’t load updated contact information. The details below are
+          the previously verified site defaults. Check the business Facebook
+          page for current details before sharing personal information.
+        </p>
+      )}
       <div className="contact-grid">
         <section
           className="contact-options"
           aria-labelledby="contact-options-heading"
         >
           <h2 id="contact-options-heading">Get in touch</h2>
-          <a href={siteConfig.contact.phoneHref}>
+          <a href={business.contact.phoneHref}>
             <span>Call</span>
-            {siteConfig.contact.phone}
+            {business.contact.phone}
           </a>
-          <a href={siteConfig.contact.emailHref}>
+          <a href={business.contact.emailHref}>
             <span>Email</span>
-            {siteConfig.contact.email}
+            {business.contact.email}
           </a>
-          <a href={siteConfig.contact.facebookHref}>
+          <a href={business.contact.facebookHref}>
             <span>Facebook</span>Visit the business page{" "}
             <span aria-hidden="true">↗</span>
           </a>

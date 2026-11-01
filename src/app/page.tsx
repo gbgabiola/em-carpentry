@@ -1,3 +1,4 @@
+import { getServices } from "@/features/content/data";
 import { getProjects } from "@/features/projects/data";
 import { ProjectCards } from "@/components/projects/ProjectCards";
 import { siteConfig } from "@/config/site";
@@ -14,7 +15,10 @@ export const metadata = createPageMetadata(
 );
 
 export default async function HomePage() {
-  const featured = await getProjects({ featured: true });
+  const [featured, services] = await Promise.all([
+    getProjects({ featured: true }),
+    getServices(),
+  ]);
   return (
     <div className="page-stack">
       <BusinessStructuredData />
@@ -68,6 +72,22 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+      {services.services.length > 0 && (
+        <section aria-labelledby="services-heading">
+          <p className="eyebrow">How we can help</p>
+          <h2 id="services-heading">Services for your space.</h2>
+          <div className="project-grid">
+            {services.services.slice(0, 3).map((service) => (
+              <article key={service.id} className="empty-panel">
+                <h3>
+                  <Link href={`/services#${service.slug}`}>{service.name}</Link>
+                </h3>
+                <p>{service.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       <section
         className="portfolio-preview"
         aria-labelledby="portfolio-heading"

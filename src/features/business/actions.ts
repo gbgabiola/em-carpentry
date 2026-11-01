@@ -11,7 +11,7 @@ export async function saveBusiness(
   if (!parsed.success)
     return {
       error:
-        "Provide business copy up to 3,000 characters and a service area up to 200 characters.",
+        parsed.error.issues[0]?.message || "Check the business information.",
     };
   const result = await client
     .from("business_settings")
@@ -20,7 +20,6 @@ export async function saveBusiness(
     .select("id")
     .single();
   if (result.error) return { error: "Could not save business information." };
-  for (const path of ["/about", "/contact", "/admin/settings"])
-    revalidatePath(path);
+  revalidatePath("/", "layout");
   return { success: "Public business information updated." };
 }

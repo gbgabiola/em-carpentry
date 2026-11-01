@@ -13,7 +13,7 @@ export async function SiteFooter() {
         </div>
         <div className="flex flex-wrap gap-6 text-sm">
           <Link href="/contact">Contact</Link>
-          <a href={siteConfig.contact.facebookHref}>Facebook</a>
+          <a href={business.contact.facebookHref}>Facebook</a>
           <Link href="/privacy">Privacy</Link>
         </div>
         <p className="footer-note">

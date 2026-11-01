@@ -1,3 +1,8 @@
+import {
+  businessSchema,
+  serviceSchema,
+  faqSchema,
+} from "../lib/validation/schemas.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
@@ -134,4 +139,65 @@ test("backend configuration fails closed and rejects privileged keys", () => {
       SUPABASE_PUBLISHABLE_KEY: "sb_publishable_example",
     }),
   );
+});
+
+test("services and FAQ drafts need publication confirmation before becoming public", () => {
+  const service = {
+    name: "Fixture service",
+    slug: "fixture",
+    description: "Description",
+    display_order: 0,
+    status: "draft",
+    publication_confirmed: false,
+  };
+  const faq = {
+    question: "Fixture question?",
+    answer: "Answer",
+    display_order: 0,
+    status: "draft",
+    publication_confirmed: false,
+  };
+  for (const [schema, value] of [
+    [serviceSchema, service],
+    [faqSchema, faq],
+  ]) {
+    assert.ok(schema.safeParse(value).success);
+    assert.equal(
+      schema.safeParse({ ...value, status: "published" }).success,
+      false,
+    );
+    assert.ok(
+      schema.safeParse({
+        ...value,
+        status: "published",
+        publication_confirmed: true,
+      }).success,
+    );
+    assert.ok(schema.safeParse({ ...value, status: "archived" }).success);
+    assert.equal(
+      schema.safeParse({ ...value, display_order: -1 }).success,
+      false,
+    );
+  }
+});
+test("business settings reject unsafe contact URLs and invalid contact details", () => {
+  const value = {
+    about_text: "Verified business information",
+    service_area: "Geelong and nearby areas",
+    phone: "+61 497 175 163",
+    email: "owner@example.test",
+    facebook_url: "https://www.facebook.com/EMscarpentryworks",
+  };
+  assert.ok(businessSchema.safeParse(value).success);
+  for (const change of [
+    { phone: "123" },
+    { phone: "+61<script>123" },
+    { email: "not an email" },
+    { facebook_url: "javascript:alert(1)" },
+    { facebook_url: "https://facebook.com.evil.test/page" },
+  ])
+    assert.equal(
+      businessSchema.safeParse({ ...value, ...change }).success,
+      false,
+    );
 });
