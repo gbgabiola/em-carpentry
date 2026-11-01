@@ -23,6 +23,7 @@ export default async function AdminLayout({
         <Link href="/admin/enquiries">Enquiries</Link>
         <Link href="/admin/content">Services &amp; FAQs</Link>
         <Link href="/admin/settings">Business information</Link>
+        <Link href="/admin/account">Account security</Link>
         <form action={signOut}>
           <button type="submit" className="text-link">
             Sign out

@@ -31,7 +31,7 @@ check runs lint, route type generation, strict TypeScript and a production build
 - Responsive shell, optimised supplied logo, persistent theme choice, focus/skip navigation and tested text contrast.
 - Canonical/sharing metadata, verified business JSON-LD, public sitemap and explicit indexing opt-in. Preview defaults stay noindex.
 - Supabase migrations with project/photo, enquiry, review and business-content tables; private owner membership; database and private-bucket access policies.
-- Owner email/password sign-in, token refresh, sign-out, no public registration route and server authorisation on each private operation.
+- Owner email/password sign-in, token refresh, sign-out, protected current-password-verified password changes, no public registration route and server authorisation on each private operation.
 - Project create/edit/publish/unpublish/archive, featured entries, approved photo upload/edit/removal, public title/category filters and paginated listings.
 - Optional before/after comparison for one approved pair, with a native keyboard range control and full gallery alternatives.
 - Manually curated Facebook testimonials with permission/source attribution and approval/rejection. No automatic Facebook import or invented ratings.
@@ -68,3 +68,7 @@ Owner-content verification on 1 November 2026: lint, strict typecheck, productio
 See [current backend state](docs/connected-backend.md) for the project, applied migration versions, pending cleanup, live checks and manual Auth steps. The local .env.local is ignored and contains only the publishable configuration. npm run check:backend performs read-only live API checks and exits 2 until public provider sign-ups are disabled. The main HTTP suite explicitly uses unconfigured mode even when .env.local is connected.
 
 The connected build, all 45 local tests and npm audit passed (zero dependency findings). Hosted anonymous access checks passed; owner sign-in, session refresh/logout, actual photo lifecycle and browser verification remain outstanding. Public submissions and indexing remain disabled.
+
+## Client account onboarding
+
+Provider public sign-ups are now verified disabled and read-only live checks pass. The client’s intended email has been supplied privately; initial Auth-user creation and membership are still required. See [client onboarding](docs/client-onboarding.md) for the one-time developer step and client-only website login. Account security at /admin/account lets an authorised owner change their own password after current-password verification. Lint, typecheck, build and all 52 local tests pass; real hosted password/session and browser checks remain pending. No password or personal login address is committed to source.

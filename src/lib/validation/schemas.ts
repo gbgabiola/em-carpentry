@@ -124,3 +124,28 @@ export const faqSchema = z
       path: ["publication_confirmed"],
     },
   );
+
+export const passwordChangeSchema = z
+  .object({
+    current_password: z
+      .string()
+      .min(1, "Enter your current password.")
+      .max(256),
+    new_password: z
+      .string()
+      .min(12, "Use at least 12 characters for the new password.")
+      .max(128)
+      .refine(
+        (value) => /\S/.test(value),
+        "Use a passphrase rather than only spaces.",
+      ),
+    confirm_password: z.string().min(1, "Confirm the new password.").max(128),
+  })
+  .refine((value) => value.new_password === value.confirm_password, {
+    message: "The new passwords do not match.",
+    path: ["confirm_password"],
+  })
+  .refine((value) => value.new_password !== value.current_password, {
+    message: "Choose a different password.",
+    path: ["new_password"],
+  });

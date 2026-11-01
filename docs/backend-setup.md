@@ -14,7 +14,7 @@ This checkpoint implements Supabase-backed owner workflows. The hosted project a
 
 ```sql
 insert into private.admin_users(user_id)
-select id from auth.users where email = 'REPLACE_WITH_OWNER_EMAIL'
+select id from auth.users where email = 'REPLACE_WITH_OWNER_EMAIL' and email_confirmed_at is not null
 on conflict do nothing;
 ```
 
@@ -61,3 +61,9 @@ After retention is agreed, implement a separately reviewed migration and server 
 After applying the second migration, open /admin/content. Review the initial private FAQ drafts, confirm each answer and publish only accurate content. Add only services the business actually offers; regulated-trade claims require verification. Confirm publication before choosing Published. Verify draft/archived entries and unconfirmed content remain invisible to visitors and non-owner accounts. Verify service ordering, Home summaries and FAQ ordering, edits, unpublishing and archive behaviour. New public content reads are capped at 100 services/FAQs; owner lists retain the provider’s 1,000-row default until pagination is needed.
 
 Export schema version 2 includes these tables and contact settings. Apply both migrations in a restore destination before restoring public data. The PGlite suite now replays pending migrations after baseline fixture data to exercise upgrade preservation. Full hosted Auth/Storage and browser behaviour still require live verification.
+
+## Client sign-in and password checks
+
+See [client onboarding](client-onboarding.md) for the manual Add user → Create new user flow. The client does not need organization membership or a Supabase dashboard login. Provider public sign-ups have now been verified disabled; the initial client Auth account is still needed.
+
+After provisioning, verify /admin/account: a wrong current password must not change anything; mismatched/short new passwords must be rejected; a correct current password with a valid new passphrase must update only the same account. Verify the current client can still use the dashboard and can sign out/sign in with the new password. Other-device revocation requests must not be described as immediately invalidating every access token. Tests use a provider-boundary fake and do not replace these live checks. No real account password should be pasted into chat or committed.

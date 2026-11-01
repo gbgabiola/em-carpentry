@@ -113,6 +113,7 @@ test("owner routes fail closed when the backend is unconfigured", async () => {
     "/admin/reviews",
     "/admin/settings",
     "/admin/content",
+    "/admin/account",
     "/admin/export",
   ]) {
     const response = await fetch(origin + route, { redirect: "manual" });

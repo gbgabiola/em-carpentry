@@ -32,3 +32,7 @@ Use Services & FAQs in the owner navigation. Create or edit an entry, set its di
 When the database is unavailable, current service/FAQ content may be hidden. Contact displays previously verified fallback details with an explicit notice; header/CTA call shortcuts route visitors there. Tell the developer about permanent contact changes so the verified source fallback can also be kept current.
 
 Exports now use schema version 2 and include services, FAQs, contact settings and project comparison preferences in addition to the earlier tables. Keep separate photo bytes and restore all migrations before importing data.
+
+## Your account and password
+
+Use Account security in the admin navigation to change your website password. Enter the current password and a different new passphrase of at least 12 characters twice. The provider verifies the current password before the change. No Supabase dashboard or database access is needed by the client. Other devices may retain access until their current sign-in expires; contact the developer for urgent access revocation or forgotten-password recovery. One-time setup is described in [client onboarding](client-onboarding.md).

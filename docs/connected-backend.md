@@ -22,7 +22,7 @@ Supabase assigned the hosted versions. Local migration filenames were aligned to
 
 The third migration keeps privileged membership lookup code in private.is_admin and exposes only an invoker-mode public wrapper. private.admin_users has RLS and no grants to public app roles. Its default-deny behaviour is intentional; the helper performs a narrow lookup for the current authenticated UID only.
 
-20261101111154_explicit_owner_write_policies.sql is tested locally but NOT APPLIED to the hosted project. It replaces overlapping owner ALL policies with explicit insert/update/delete policies, retains the existing read predicates and adds an explicit membership-table deny policy. Supabase’s native confirmation expired twice; no bypass via raw SQL or CLI was attempted. Review and authorise this optional cleanup before applying it. Do not assume hosted policy layout is already identical to the pending local migration.
+20261101111154_explicit_owner_write_policies.sql is tested locally but NOT APPLIED to the hosted project. It replaces overlapping owner ALL policies with explicit insert/update/delete policies, retains the existing read predicates and adds an explicit membership-table deny policy. Supabase’s native confirmation expired on repeated attempts, including the follow-up on 2 November 2026; no bypass via raw SQL or CLI was attempted. Review and authorise this optional cleanup before applying it. Do not assume hosted policy layout is already identical to the pending local migration.
 
 ## Verified live
 
@@ -38,9 +38,9 @@ These initial live checks run against empty public content tables. Full hosted p
 
 ## Remaining Auth setup
 
-The live Auth settings endpoint reports that public sign-ups are still enabled, and no Auth users/owner memberships exist. The connected tools do not expose Auth configuration or account creation. The CLI is not authenticated either, so it cannot currently change that setting. Do not send passwords or access tokens in chat.
+The live Auth settings endpoint now confirms that public sign-ups are disabled. No Auth users/owner memberships existed at the latest account-setup check. The connected tools do not expose Auth configuration or account creation. The CLI is not authenticated either, so it cannot currently change that setting. Do not send passwords or access tokens in chat.
 
-1. Open [Auth settings](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/providers) and turn off allowing new user sign-ups.
+1. Keep new user sign-ups disabled in [Auth settings](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/providers); this setting has now passed live verification.
 2. Create the intended confirmed owner email/password account through [Auth Users](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/users), using Create user rather than relying on an email invitation.
 3. Confirm the intended email to the assistant/developer so only that exact existing account can be granted private.admin_users membership. Passwords stay in the provider’s supported UI.
 4. Re-run npm run check:backend and complete sign-in, refresh, sign-out, revoked/non-owner access and photo lifecycle checks from backend-setup.md. This is not production-ready until those checks pass.
@@ -49,7 +49,7 @@ The live Auth settings endpoint reports that public sign-ups are still enabled, 
 
 npm run check, npm test and npm audit passed: lint, strict type checking, production build, 45 local tests and zero reported dependency vulnerabilities. The build was performed with the connected backend. The HTTP suite explicitly blanks Supabase configuration in its child server so automated tests never write to or depend on the real project.
 
-npm run check:backend is a separate read-only check of the configured live project. It prints no keys or customer data. Exit 0 means read checks and disabled public sign-ups passed; exit 1 indicates failed read/config checks; exit 2 means the read checks passed but public sign-ups still require manual disabling. Its latest exit was 2, not a full Auth-ready pass.
+npm run check:backend is a separate read-only check of the configured live project. It prints no keys or customer data. Exit 0 means read checks and disabled public sign-ups passed; exit 1 indicates failed read/config checks; exit 2 means the read checks passed but public sign-ups still require manual disabling. Its latest exit is now 0: read checks and disabled sign-ups pass. This does not verify that an owner Auth user exists or that the interactive sign-in lifecycle has been tested.
 
 ## Advisor findings
 
@@ -60,3 +60,9 @@ Performance advice includes [overlapping permissive policies](https://supabase.c
 Supabase’s current changelog was checked. The project uses Postgres 17.11.0.011, newer than the listed timezone fix. The upcoming old TLS cipher removal requires no legacy-compatibility downgrade for the Node 24 application. Relevant source: [TLS change](https://supabase.com/changelog/cbc-tls-ciphers-deprecated).
 
 No website deployment, public intake activation, automated email delivery, owner account creation or paid service change was performed.
+
+## Client onboarding and password self-service
+
+The intended client login email was supplied privately and is not stored in this document or source configuration. No matching Auth user existed at the latest check, so no membership was granted. Follow [client onboarding](client-onboarding.md) for the one-time developer dashboard step; the client only receives a website login.
+
+A protected Account security screen and reauthenticated password-change action are now implemented. Lint, typecheck, production build and all 52 local tests pass. Live password/session testing remains pending the initial account. No real password was read, stored in source or changed by the assistant.
