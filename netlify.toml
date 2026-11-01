@@ -1,6 +1,7 @@
-# Local compatibility preparation only; publishing requires separate approval.
+# Approved Free test deployment; keep indexing disabled until launch approval.
 [build]
   command = "npm run build"
+  # Adapter input only. Deploy through the full build/plugin flow, never raw .next.
   publish = ".next"
 
 [build.environment]

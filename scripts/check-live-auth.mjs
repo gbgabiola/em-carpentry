@@ -79,6 +79,27 @@ for (const [name, cookie] of scenarios) {
   }
   console.log(`${name}: ${passed}/${routes.length} protected routes passed`);
 }
+for (const path of [
+  "/server/app/admin/page.js",
+  "/package.json",
+  "/.env.local",
+  "/.netlify/state.json",
+]) {
+  try {
+    const response = await fetch(new URL(path, origin), {
+      redirect: "manual",
+      signal: AbortSignal.timeout(20000),
+    });
+    assert.equal(response.status, 404);
+    await response.body?.cancel();
+    console.log(`PASS build/configuration files are not public: ${path}`);
+  } catch {
+    failures++;
+    console.error(
+      `FAIL build/configuration path must be inaccessible: ${path}`,
+    );
+  }
+}
 console.log(
   "Only synthetic invalid cookies were used; no real account was modified.",
 );

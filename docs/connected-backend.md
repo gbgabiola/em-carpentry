@@ -57,7 +57,7 @@ Performance advice includes [overlapping permissive policies](https://supabase.c
 
 Supabase’s current changelog was checked. The project uses Postgres 17.11.0.011, newer than the listed timezone fix. The upcoming old TLS cipher removal requires no legacy-compatibility downgrade for the Node 24 application. Relevant source: [TLS change](https://supabase.com/changelog/cbc-tls-ciphers-deprecated).
 
-No website deployment, public intake activation, automated email delivery or paid service change was performed. The client account was created manually before this verification; the assistant granted only its website-admin membership.
+This earlier backend checkpoint performed no website deployment, public intake activation, automated email delivery or paid service change. The later approved Free test deployment is recorded in hosted-preview.md. The client account was created manually before this verification; the assistant granted only its website-admin membership.
 
 ## Client onboarding and password self-service
 
@@ -76,3 +76,7 @@ Local Netlify build verification passed on 2 November 2026 with adapter 5.16.5, 
 The adapter-served local preview also passed all 27 access-denial checks, served eight public pages and kept both intake endpoints at 503. Login HTML passed with identity encoding, but its default compressed response had a header/body mismatch in the local emulator; the ordinary Next.js preview returned correct gzip bytes. See deployment.md. Hosted compression/browser verification remains a gate, not a claimed pass.
 
 Final checkpoint gates passed: npm run check (lint, strict typecheck, production build), all 54 tests including upload boundary/transport cases, and npm audit with zero project dependency findings. Generated hosting/build output and .env.local remain ignored and untracked.
+
+## Hosted test checkpoint
+
+The authorised Netlify test URL is https://em-carpentry.netlify.app. The final native build/deploy pipeline and hosted page/assets/intake/indexing checks passed; 27 invalid-session scenarios and four private build/configuration paths also passed. The user confirmed hosted sign-in and dashboard persistence after reload. GitHub's hosted Quality checks passed all 54 tests. See [hosted preview](hosted-preview.md) for deployment IDs, actual legacy Free quotas, packaging correction/deletion and outstanding owner/Storage/session verification. Public submissions and indexing remain disabled.

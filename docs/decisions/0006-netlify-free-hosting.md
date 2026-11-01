@@ -1,6 +1,6 @@
 # 0006: Prepare Netlify Free for the existing Next.js application
 
-Reviewed: 2 November 2026. The user approved local configuration and compatibility testing. Creating a hosted site and publishing still require separate approval. No account, paid service or custom domain is created by this decision.
+Reviewed: 2 November 2026. The user initially approved local preparation, then separately approved a publicly reachable Free test deployment on 2 November 2026. See hosted-preview.md for the actual site and verification. No paid service or custom domain was approved.
 
 ## Recommendation and stack
 
@@ -16,7 +16,7 @@ The adapter is pinned to @netlify/plugin-nextjs 5.16.5 and recorded in package-l
 
 Netlify explicitly permits commercial projects on its [Free plan](https://www.netlify.com/blog/introducing-netlify-free-plan/). Use its [current pricing](https://www.netlify.com/pricing/) and [credit-plan documentation](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/) for quotas; the older announcement's resource allowances do not apply to new credit-plan accounts.
 
-Free currently has 300 credits/month, a hard cap and no recharge option. Published deploys cost 15 credits each, bandwidth 20 credits/GB, compute 10 credits/GB-hour and web requests 2 credits/10,000. These share the same allowance; they are not independent resource quotas. For illustration only, four published deploys, 4 GB bandwidth, 1 GB-hour compute and 100,000 requests consume 170 credits. This is arithmetic, not a traffic forecast or measured site usage. Owner content changes use the database and revalidation rather than requiring a source deployment.
+New credit-based Free accounts currently have 300 credits/month, a hard cap and no recharge option. Published deploys cost 15 credits each, bandwidth 20 credits/GB, compute 10 credits/GB-hour and web requests 2 credits/10,000. These share the same allowance; they are not independent resource quotas. For illustration only, four published deploys, 4 GB bandwidth, 1 GB-hour compute and 100,000 requests consume 170 credits. This is arithmetic, not a traffic forecast or measured site usage. Owner content changes use the database and revalidation rather than requiring a source deployment.
 
 At the cap, sites pause until the next billing cycle; one project can exhaust the account allowance and pause its other projects. Keep usage notifications enabled and account exposure understood. No paid upgrade or auto-recharge is authorised. Free does not provide additional team seats/private-organisation-repository access; verify repository ownership and Git integration eligibility before connecting. The client uses website authentication and needs no Netlify seat.
 
@@ -35,3 +35,7 @@ Keep source/migrations, private JSON exports and separate photo backups portable
 ## Local verification result
 
 The adapter build bundled server and Edge Functions successfully. Its local server served public pages and denied synthetic sessions on all private routes. Compressed login delivery has a local emulator header/body mismatch; identity encoding works and the direct Next.js preview returns valid gzip. This remains a hosted-preview verification gate. Configuration preparation is complete, but deployment readiness is not claimed.
+
+## Connected account update
+
+The existing gbgabiola team uses legacy Free (free-is-free) with overage accumulation and auto top-up disabled. It was not migrated to credit-based billing. Its actual included quotas and the authorised test deployment are recorded in ../hosted-preview.md; the credit arithmetic above remains a comparison for new credit-based accounts, not this account's billing model.

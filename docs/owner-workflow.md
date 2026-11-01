@@ -1,6 +1,6 @@
 # Owner workflow
 
-Complete backend-setup.md and its live checks before handing over a real account.
+The approved test site is https://em-carpentry.netlify.app, with sign-in at /login. Hosted sign-in and reload persistence have been confirmed by the user. Complete the remaining live checks in backend-setup.md and hosted-preview.md before final handover.
 
 1. Open /login and sign in with your provisioned owner account. There is no public registration. Use Sign out on shared devices.
 2. Under Projects, create a draft. Use a short, unique lower-case slug; changing it later changes the public URL. Add only verified descriptions and a general suburb, not customer addresses.

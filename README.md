@@ -1,6 +1,6 @@
 # EM Carpentry & Home Maintenance
 
-Next.js App Router, React, strict TypeScript and Tailwind CSS, with Biome for lint/formatting. Supabase-backed owner workflows are implemented. The Sydney Free backend has been provisioned and connected locally; the client Auth account has website-admin membership; interactive lifecycle checks and a pending policy cleanup remain. Netlify Free configuration is prepared for local evaluation. No website has been deployed.
+Next.js App Router, React, strict TypeScript and Tailwind CSS, with Biome for lint/formatting. Supabase-backed owner workflows are implemented. The Sydney Free backend has been provisioned and connected locally; the client Auth account has website-admin membership; interactive lifecycle checks and a pending policy cleanup remain. The approved Free test site is live at [em-carpentry.netlify.app](https://em-carpentry.netlify.app), with indexing and public intake disabled. See [hosted verification](docs/hosted-preview.md).
 
 ## Local development
 
@@ -17,7 +17,7 @@ Open http://localhost:3000. With both Supabase variables blank, public pages use
 
 ## Checks
 
-GitHub workflow `.github/workflows/quality.yml` runs the quality gates on main pushes, pull requests and manual dispatch. It uses a standard Ubuntu runner only while the repository is public, read-only permissions, SHA-pinned actions and no backend credentials, caches, artifact uploads or deployment steps. Review runner/storage billing before making the repository private. The workflow must be pushed before a hosted run can be verified.
+GitHub workflow `.github/workflows/quality.yml` runs the quality gates on main pushes, pull requests and manual dispatch. It uses a standard Ubuntu runner only while the repository is public, read-only permissions, SHA-pinned actions and no backend credentials, caches, artifact uploads or deployment steps. Review runner/storage billing before making the repository private. The first hosted workflow run passed; see [hosted verification](docs/hosted-preview.md).
 
 ```sh
 npm run check
@@ -51,7 +51,7 @@ Business content/customer data remain exportable. Never put private data, tokens
 
 ## Remaining gates
 
-The Sydney project and publishable configuration now exist; client website-admin membership is enabled and provider sign-ups are disabled. Resolve the pending policy cleanup. Complete the live Auth/Storage and browser checks in [backend setup](docs/backend-setup.md). Agree retention/deletion and finish durable rate limiting, abuse protection and accessible intake forms before enabling submissions. Confirm service inventory, photo rights and publication content. Netlify Free local preparation is approved; hosted runtime, transport, cache and credit-usage checks remain unresolved. See [hosting decision](docs/decisions/0006-netlify-free-hosting.md). Cloudflare remains unverified for the native Sharp upload path. No deployment or paid upgrade is authorised by this checkpoint.
+The Sydney project and publishable configuration now exist; client website-admin membership is enabled and provider sign-ups are disabled. Resolve the pending policy cleanup. Complete the live Auth/Storage and browser checks in [backend setup](docs/backend-setup.md). Agree retention/deletion and finish durable rate limiting, abuse protection and accessible intake forms before enabling submissions. Confirm service inventory, photo rights and publication content. Netlify Free local preparation is approved; hosted runtime, transport, cache and credit-usage checks remain unresolved. See [hosting decision](docs/decisions/0006-netlify-free-hosting.md). Cloudflare remains unverified for the native Sharp upload path. The authorised deployment is for Free testing only; indexing/intake stay disabled and paid upgrades remain unapproved.
 
 See [owner workflow](docs/owner-workflow.md), [provider comparison](docs/decisions/0002-provider-comparison.md), [architecture decision](docs/decisions/0004-supabase-owner-workflows.md), [deployment](docs/deployment.md) and [content guide](docs/content-guide.md).
 
@@ -86,3 +86,9 @@ The provider confirms the client account has signed in and remains an admin. All
 The local Netlify adapter build and its 27 access-denial checks passed. A compressed-login response mismatch remains in the local emulator; ordinary Next.js gzip output is valid. Verify this on an approved hosted preview before handover; see deployment.md.
 
 Final preparation checks: lint, strict typecheck, production build, 54 tests and npm audit passed with zero project dependency findings.
+
+## Hosted test preview
+
+The [Free test site](https://em-carpentry.netlify.app) and [admin login](https://em-carpentry.netlify.app/login) are live. Public responses, compressed login delivery, referenced assets, disabled intake, crawling restrictions and all 31 HTTP access/file-exposure checks passed. The user confirmed admin sign-in and reload persistence. GitHub CI passed all 54 tests. See [current deployment details and remaining checks](docs/hosted-preview.md).
+
+Use npm run deploy:preview for the full adapter build plus a draft upload; it does not update the base URL unless --prod is explicitly supplied for an authorised test update. Do not upload raw .next output with --no-build. npm run check:preview -- URL checks hosted pages/assets/noindex/intake; npm run check:auth -- URL checks private-route and build-file access. No credentials are needed for these HTTP checks. The actual connected account has legacy Free quotas, not the newer shared 300-credit allowance; see the hosted notes.
