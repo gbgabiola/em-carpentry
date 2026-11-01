@@ -100,6 +100,27 @@ for (const path of [
     );
   }
 }
+for (const path of [
+  "/media/not-a-uuid",
+  "/media/55555555-5555-4555-8555-555555555555",
+]) {
+  try {
+    const response = await fetch(new URL(path, origin), {
+      signal: AbortSignal.timeout(20000),
+    });
+    assert.equal(response.status, 404);
+    assert.match(response.headers.get("cache-control") || "", /private/);
+    assert.match(response.headers.get("cache-control") || "", /no-store/);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+    await response.body?.cancel();
+    console.log(`PASS unavailable media is non-storable: ${path}`);
+  } catch {
+    failures++;
+    console.error(
+      `FAIL unavailable media must return a private no-store 404: ${path}`,
+    );
+  }
+}
 console.log(
   "Only synthetic invalid cookies were used; no real account was modified.",
 );

@@ -1,6 +1,6 @@
 # Owner workflow acceptance checks
 
-Prepared 2 November 2026 for the approved Free test site: https://em-carpentry.netlify.app. Hosted sign-in/reload persistence and HTTP access checks have passed. Actual project/photo/password workflows still need hands-on verification. Public intake and indexing stay disabled.
+Prepared 2 November 2026 for the approved Free test site: https://em-carpentry.netlify.app. Hosted sign-in/reload persistence and HTTP access checks have passed. The user subsequently confirmed photo upload, publishing/archiving and password change. Remaining detailed checks are listed below. Public intake and indexing stay disabled.
 
 Browser automation is unavailable. The owner/developer performs authenticated actions in their own browser; no password, session cookie, token or private export needs to be shared with the assistant. Report success/error messages only. The assistant can independently check the synthetic record's public visibility, media response, metadata and cleanup through read-only requests and narrowly scoped backend queries.
 
@@ -52,3 +52,7 @@ A complete restore test still needs an isolated destination, schema migrations, 
 ## Results
 
 Record each stage separately as pending, user-confirmed or independently verified. Zero existing projects/photos before this test is not proof that an owner workflow was tested. Do not mark password/session/upload/publication checks passed based only on the deployment's 54 local tests or synthetic invalid-session HTTP checks.
+
+### Recorded checkpoint
+
+On 2 November 2026 the user confirmed hosted photo upload, publishing/archiving and password change. A separate read-only snapshot found one archived project, one image record and one matching stored object, with zero orphaned/missing files. Anonymous Data API access to the archived image metadata returned no row and its direct website media URL returned 404. No photo bytes, password or session credentials were read. Photo deletion was not inferred from archival; the stored image remains attached to the archived entry. Size-boundary, metadata-removal, export/restore, timed expiry/revocation and visual checks are not marked passed solely from this confirmation.

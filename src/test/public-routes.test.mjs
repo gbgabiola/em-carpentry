@@ -134,6 +134,20 @@ test("owner routes fail closed when the backend is unconfigured", async () => {
     404,
   );
 });
+test("unavailable private media is never stored or MIME-sniffed", async () => {
+  for (const path of [
+    "/media/not-a-uuid",
+    "/media/55555555-5555-4555-8555-555555555555",
+  ]) {
+    const response = await fetch(origin + path);
+    assert.equal(response.status, 404);
+    assert.match(response.headers.get("cache-control"), /private/);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+    assert.equal((await response.arrayBuffer()).byteLength, 0);
+  }
+});
+
 test("public submission endpoints reject requests without accepting customer data", async () => {
   for (const route of ["/api/enquiries", "/api/reviews"]) {
     const response = await fetch(origin + route, {

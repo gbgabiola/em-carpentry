@@ -23,10 +23,10 @@ Sign in privately at the local preview using the existing credentials, then foll
 
 Revoking refresh sessions does not immediately invalidate all existing access tokens. For urgent access removal, the developer should remove the user’s private admin membership and revoke provider sessions. Do not promise instant sign-out everywhere after a routine password change. Forgotten-password recovery still needs developer assistance; no reset-email workflow is advertised.
 
-The new flow has local provider-boundary tests and protected-route checks. A real hosted password change, session refresh and browser interaction remain to be verified interactively; no live password was changed during implementation.
+The new flow has local provider-boundary tests and protected-route checks. The user has now confirmed a real hosted password change. Timed session refresh, revocation and detailed browser security checks remain separate; the assistant did not read or change a real password.
 
 References: [Supabase users](https://supabase.com/docs/guides/auth/users), [password updates](https://supabase.com/docs/reference/javascript/auth-updateuser), [sign-out behaviour](https://supabase.com/docs/reference/javascript/auth-signout).
 
 ## Hosted sign-in verification
 
-The authorised test login is https://em-carpentry.netlify.app/login. On 2 November 2026, the user confirmed that the existing website-admin account opens the dashboard and remains signed in after reload. Password-change, timed token refresh, sign-out/revocation and photo workflows still need hands-on checks. Keep credentials private; no provider organization/hosting seat is needed by the client.
+The authorised test login is https://em-carpentry.netlify.app/login. On 2 November 2026, the user confirmed that the existing website-admin account opens the dashboard and remains signed in after reload. The user also confirmed photo upload, publishing/archiving and password change. Timed token refresh, sign-out/revocation and detailed upload/removal checks remain separate. Keep credentials private; no provider organization/hosting seat is needed by the client.
