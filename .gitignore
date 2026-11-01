@@ -20,3 +20,6 @@ Thumbs.db
 # Supabase local runtime state
 supabase/.temp/
 supabase/.branches/
+
+# Versioned database schema is source, not a database backup
+!supabase/migrations/*.sql
