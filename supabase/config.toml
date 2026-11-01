@@ -1,4 +1,4 @@
-project_id = "em-carpentry-home-maintenance"
+project_id = "em-carpentry"
 [api]
 enabled = true
 port = 54321

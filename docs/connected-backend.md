@@ -2,7 +2,8 @@
 
 Verified on 2 November 2026 (Asia/Manila).
 
-- Project: em-carpentry-home-maintenance
+- Application slug: em-carpentry
+- Hosted project display-name rename is not yet verified; the project reference below remains unchanged.
 - Organization: gbgabiola’s Dev Space (jqqvsvybcbwwhstwxucg), explicitly selected by the user
 - Project reference: lllzqhfjrrtjavpvhmce
 - Region: Sydney, ap-southeast-2

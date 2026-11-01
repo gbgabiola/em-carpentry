@@ -41,6 +41,8 @@ check runs lint, route type generation, strict TypeScript and a production build
 
 ## Configuration and organisation
 
+The application/package name and local Supabase CLI project identifier are `em-carpentry`. This identifier change does not change the hosted Supabase project reference, API URL or database.
+
 .env.example documents SITE_URL and SITE_INDEXING_ENABLED plus server-only SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY. No secret/service-role key is required or accepted. See src/config/ for verified core business details; src/features/ for domain data/actions; src/lib/ for auth, database clients, validation, image processing and SEO; src/types/database.ts for current schema types; supabase/migrations/ for policies/schema; src/test/ for verification.
 
 Business content/customer data remain exportable. Never put private data, tokens, backups or unapproved photos in public/ or Git. The owner editor now manages About text, service area, Australian telephone, email, business Facebook page, services and FAQs. The business name/logo stay in verified source configuration. Services have no seeded inventory; the second migration adds four FAQ drafts for owner review. JSON export schema version 2 includes the new content. Public approved reviews are limited to the latest 100; owner list views use the provider’s 1,000-row default. If these limits become relevant, add owner pagination before expanding usage.
