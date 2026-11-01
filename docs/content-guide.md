@@ -13,3 +13,12 @@ Later handover must explain secure owner sign-in, project/photo editing, publish
 Public pages now include About, Services, Projects, Reviews, Contact, FAQ and a preview Privacy notice. Service/project/review placeholders deliberately contain no unverified examples. Update FAQs in src/app/faq/page.tsx until an authenticated owner editor is implemented. The theme switch saves only the browser’s display preference and collects no enquiry data.
 
 Search metadata and business structured data use the verified source details. When changing business information, update src/config/site.ts and the relevant page descriptions consistently. Do not add fabricated reviews, ratings, prices, opening hours or a street address to structured data. Search indexing stays disabled until approved content and launch checks are complete.
+
+## Confirmed intake fields
+
+The user approved the following fields on 1 November 2026, with submissions disabled until retention is agreed:
+
+- Quotation enquiry: name, email or phone, project description and optional suburb. No photo attachments.
+- Website review: display name, rating, written feedback and publication consent. No customer account or photo attachment.
+
+The user clarified that most existing ratings, reviews and testimonials come from the business Facebook page. No Facebook content has been imported or approved for republication. Recommendation pending confirmation: link to the business page and allow owner-curated testimonials with permission and source attribution, rather than depending on automatic review synchronisation. This does not remove the planned website feedback workflow. Backend provider and owner sign-in are still awaiting confirmation.
