@@ -1,7 +1,5 @@
 # EM Carpentry & Home Maintenance
 
-The developer is the sole administrator. The business client requests changes through the developer and needs no website login, Supabase account or database access. Existing admin tools remain available to the developer. See [access decision](docs/decisions/0006-developer-managed-access.md).
-
 Next.js App Router, React, strict TypeScript and Tailwind CSS, with Biome for lint/formatting. Supabase-backed owner workflows are implemented. The Sydney Free backend has been provisioned and connected locally; owner Auth setup and a pending policy cleanup remain. No website has been deployed.
 
 ## Local development
@@ -51,7 +49,7 @@ Business content/customer data remain exportable. Never put private data, tokens
 
 The Sydney project and publishable configuration now exist; finish owner provisioning, disable provider sign-ups and resolve the pending policy cleanup. Complete the live Auth/Storage and browser checks in [backend setup](docs/backend-setup.md). Agree retention/deletion and finish durable rate limiting, abuse protection and accessible intake forms before enabling submissions. Confirm service inventory, photo rights and publication content. Hosting/runtime eligibility and a free-plan benchmark remain unresolved; the native Sharp upload pipeline is not verified on Cloudflare Workers. No deployment or paid upgrade is authorised by this checkpoint.
 
-See [developer administration workflow](docs/owner-workflow.md), [provider comparison](docs/decisions/0002-provider-comparison.md), [architecture decision](docs/decisions/0004-supabase-owner-workflows.md), [deployment](docs/deployment.md) and [content guide](docs/content-guide.md).
+See [owner workflow](docs/owner-workflow.md), [provider comparison](docs/decisions/0002-provider-comparison.md), [architecture decision](docs/decisions/0004-supabase-owner-workflows.md), [deployment](docs/deployment.md) and [content guide](docs/content-guide.md).
 
 ## Backend checkpoint verification
 

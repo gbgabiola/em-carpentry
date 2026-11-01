@@ -1,5 +1,3 @@
-> Access model: developer-only administration. Do not provision or invite the business client. Any website Auth account and membership belong to the developer’s explicitly chosen identity; the Supabase dashboard account is separate. See decision 0006.
-
 > Current project state: [connected backend](connected-backend.md). The project is already provisioned; do not create a duplicate or reapply installed migrations.
 
 # Supabase setup and verification

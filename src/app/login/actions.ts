@@ -10,8 +10,7 @@ export async function signIn(
   if (!parsed.success)
     return { error: "Enter your email address and password." };
   const client = await createSessionClient();
-  if (!client)
-    return { error: "Administrator sign-in has not been configured." };
+  if (!client) return { error: "Owner sign-in has not been configured." };
   try {
     const result = await client.auth.signInWithPassword(parsed.data);
     if (result.error)
@@ -21,7 +20,7 @@ export async function signIn(
     const membership = await client.rpc("is_admin");
     if (membership.error || !membership.data) {
       await client.auth.signOut({ scope: "local" });
-      return { error: "This account does not have administrator access." };
+      return { error: "This account does not have owner access." };
     }
   } catch {
     return {

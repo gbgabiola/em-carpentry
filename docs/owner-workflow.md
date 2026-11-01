@@ -1,8 +1,8 @@
-# Developer administration workflow
+# Owner workflow
 
-The developer is the sole administrator. The business client sends change requests and approved content to the developer; no client account or database access is needed. This filename is retained for existing documentation links. Complete backend-setup.md and its live checks before relying on a real developer admin account.
+Complete backend-setup.md and its live checks before handing over a real account.
 
-1. Open /login and sign in with your provisioned developer admin account. There is no public registration. Use Sign out on shared devices.
+1. Open /login and sign in with your provisioned owner account. There is no public registration. Use Sign out on shared devices.
 2. Under Projects, create a draft. Use a short, unique lower-case slug; changing it later changes the public URL. Add only verified descriptions and a general suburb, not customer addresses.
 3. Open Edit and manage photos. Upload approved JPEG, PNG or WebP photos up to 5 MB. Confirm permission and provide descriptive alt text. You can edit photo descriptions, order and Gallery/Before/After labels after upload. For a comparison, use exactly one Before photo and one After photo of the same view/framing. Enable comparison on the project and save. Visitors can drag or use arrow keys; full images remain in the gallery. Changing/removing a role so there is no unique pair hides the comparison until corrected.
 4. Publish only after checking the photos and text. At least one photo is required by the publishing action. Use Draft to unpublish or Archived to hide an older entry; project deletion is intentionally not offered. Featured entries appear on Home. Remove photo permanently deletes the stored image and its metadata; keep backups before removal.
@@ -32,7 +32,3 @@ Use Services & FAQs in the owner navigation. Create or edit an entry, set its di
 When the database is unavailable, current service/FAQ content may be hidden. Contact displays previously verified fallback details with an explicit notice; header/CTA call shortcuts route visitors there. Tell the developer about permanent contact changes so the verified source fallback can also be kept current.
 
 Exports now use schema version 2 and include services, FAQs, contact settings and project comparison preferences in addition to the earlier tables. Keep separate photo bytes and restore all migrations before importing data.
-
-## Request-to-publication workflow
-
-The client sends the requested change, corrected business details or approved project photos/testimonial text to the developer. Confirm accuracy, publication rights and any identifying details before editing. Preview the change, publish only approved content, then report completion to the client. The developer performs administration, moderation, privacy requests, backups and pause recovery; no client-facing admin training or credential handover is required.

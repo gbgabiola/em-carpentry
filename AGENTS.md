@@ -1,18 +1,5 @@
 # AGENTS.md — EM Carpentry & Home Maintenance
 
-## Confirmed access-model update — 2 November 2026
-
-The developer has confirmed that this is a **developer-managed website**. This update supersedes earlier requirements for the business owner to sign in or independently manage the website.
-
-- The developer alone controls Supabase, hosting, source code and the website administration interface.
-- The business owner/client requests changes from the developer and does not need a Supabase account, database access or a website admin account.
-- Retain secure admin tools for the developer to maintain projects, photos, approved services/FAQs, business information, enquiries and moderated testimonials.
-- Any administrator provisioned for the website must be the developer's explicitly identified account. Do not use the public business email or create/invite a client account by assumption.
-- References below to owner/admin workflows or owner membership describe privileged website administration; the current intended operator is the developer.
-- The business owner still supplies/approves business facts, photo rights and testimonial permission. Business content and customer data remain exportable.
-- Public quotation/review submissions remain disabled until retention is agreed. All other cost, privacy, authentication and deployment constraints remain in force.
-
-
 ## Project overview
 
 Build a modern, responsive, accessible, SEO-friendly business website for **EM Carpentry & Home Maintenance**, a carpentry and home maintenance business operating in Australia since 2018 and primarily serving Geelong, Victoria, and surrounding areas. The website must attract customers, showcase completed projects, build trust, collect quotation enquiries and customer feedback, and allow the business owner to manage projects and business information with minimal developer assistance.

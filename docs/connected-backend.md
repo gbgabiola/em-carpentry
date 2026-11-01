@@ -34,15 +34,15 @@ The third migration keeps privileged membership lookup code in private.is_admin 
 - Missing private photo downloads are denied.
 - The read-only script created no users, records or files. Existing content is the verified business settings row and four private FAQ drafts; there are no real projects, reviews, enquiries or owner memberships.
 
-These initial live checks run against empty public content tables. Full hosted publish/archive and Auth/Storage lifecycle tests with disposable fixtures still require the developer’s website admin account. Local PostgreSQL tests exercise those policy transitions independently.
+These initial live checks run against empty public content tables. Full hosted publish/archive and Auth/Storage lifecycle tests with disposable fixtures still require the owner account. Local PostgreSQL tests exercise those policy transitions independently.
 
 ## Remaining Auth setup
 
 The live Auth settings endpoint reports that public sign-ups are still enabled, and no Auth users/owner memberships exist. The connected tools do not expose Auth configuration or account creation. The CLI is not authenticated either, so it cannot currently change that setting. Do not send passwords or access tokens in chat.
 
 1. Open [Auth settings](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/providers) and turn off allowing new user sign-ups.
-2. Create the developer’s chosen confirmed administrator email/password account through [Auth Users](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/users), using Create user rather than relying on an email invitation.
-3. Confirm the intended developer email to the assistant so only that exact existing account can be granted private.admin_users membership. Passwords stay in the provider’s supported UI.
+2. Create the intended confirmed owner email/password account through [Auth Users](https://supabase.com/dashboard/project/lllzqhfjrrtjavpvhmce/auth/users), using Create user rather than relying on an email invitation.
+3. Confirm the intended email to the assistant/developer so only that exact existing account can be granted private.admin_users membership. Passwords stay in the provider’s supported UI.
 4. Re-run npm run check:backend and complete sign-in, refresh, sign-out, revoked/non-owner access and photo lifecycle checks from backend-setup.md. This is not production-ready until those checks pass.
 
 ## Verification commands
@@ -60,7 +60,3 @@ Performance advice includes [overlapping permissive policies](https://supabase.c
 Supabase’s current changelog was checked. The project uses Postgres 17.11.0.011, newer than the listed timezone fix. The upcoming old TLS cipher removal requires no legacy-compatibility downgrade for the Node 24 application. Relevant source: [TLS change](https://supabase.com/changelog/cbc-tls-ciphers-deprecated).
 
 No website deployment, public intake activation, automated email delivery, owner account creation or paid service change was performed.
-
-## Access-model clarification — 2 November 2026
-
-The developer alone controls Supabase and the website admin tools. The client requests changes through the developer and does not need any account or backend access. No client account should be provisioned. Supabase dashboard login does not automatically create a website Auth user. If /login is used, its manually provisioned user must be the developer’s explicitly chosen identity. This clarification created no users or memberships and did not change the previously recorded Auth/sign-up or pending-migration state. See decision 0006.
