@@ -3,7 +3,7 @@
 Verified on 2 November 2026 (Asia/Manila).
 
 - Application slug: em-carpentry
-- Hosted project display-name rename is not yet verified; the project reference below remains unchanged.
+- Hosted project display name: em-carpentry (verified through the provider API on 2 November 2026). The project reference remains unchanged.
 - Organization: gbgabiola’s Dev Space (jqqvsvybcbwwhstwxucg), explicitly selected by the user
 - Project reference: lllzqhfjrrtjavpvhmce
 - Region: Sydney, ap-southeast-2

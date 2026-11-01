@@ -17,6 +17,8 @@ Open http://localhost:3000. With both Supabase variables blank, public pages use
 
 ## Checks
 
+GitHub workflow `.github/workflows/quality.yml` runs the quality gates on main pushes, pull requests and manual dispatch. It uses a standard Ubuntu runner only while the repository is public, read-only permissions, SHA-pinned actions and no backend credentials, caches, artifact uploads or deployment steps. Review runner/storage billing before making the repository private. The workflow must be pushed before a hosted run can be verified.
+
 ```sh
 npm run check
 npm test
