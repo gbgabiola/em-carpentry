@@ -1,6 +1,10 @@
 "use server";
 import { getComparisonPair } from "@/lib/images/comparison";
 import { randomUUID } from "node:crypto";
+import {
+  MAX_PROJECT_PHOTO_BYTES,
+  PROJECT_PHOTO_SIZE_LABEL,
+} from "@/lib/images/limits";
 import { optimiseProjectPhoto } from "@/lib/images/process";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -79,10 +83,12 @@ export async function uploadImage(
   if (
     !(file instanceof File) ||
     file.size === 0 ||
-    file.size > 5 * 1024 * 1024 ||
+    file.size > MAX_PROJECT_PHOTO_BYTES ||
     !["image/jpeg", "image/png", "image/webp"].includes(file.type)
   )
-    return { error: "Choose a JPEG, PNG or WebP photo up to 5 MB." };
+    return {
+      error: `Choose a JPEG, PNG or WebP photo up to ${PROJECT_PHOTO_SIZE_LABEL}.`,
+    };
   if (form.get("rights") !== "on")
     return { error: "Confirm that you have permission to publish this photo." };
   const project = await client

@@ -1,0 +1,13 @@
+# Local compatibility preparation only; publishing requires separate approval.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+  NPM_VERSION = "11.19.1"
+  SITE_INDEXING_ENABLED = "false"
+
+# Pinned in package-lock.json for reproducible compatibility checks.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

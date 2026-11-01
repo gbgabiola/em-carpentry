@@ -63,3 +63,15 @@ No website deployment, public intake activation, automated email delivery or pai
 The intended client login email was supplied privately and is not stored in this document or source configuration. Provisioning and membership are complete. Follow [client onboarding](client-onboarding.md) for the private sign-in check and handover; the client only receives a website login.
 
 A protected Account security screen and reauthenticated password-change action are now implemented. Lint, typecheck, production build and all 52 local tests pass. Live password/session testing remains pending private interactive verification. No real password was read, stored in source or changed by the assistant.
+
+## Connected-preview HTTP verification and hosting preparation
+
+On 2 November 2026, a targeted provider query confirmed that the intended client has a recorded sign-in and still has website-admin membership. No session, password or private login address was read into source. npm run check:auth passed all 27 read-only checks across nine admin routes, including export, using anonymous requests, malformed cookies and forged sessions with invalid signatures. Every request redirected to sign-in with no-store. Real refresh, sign-out, password-change and photo-upload interaction checks remain pending; browser automation failed at initialisation.
+
+The user approved preparing Netlify Free locally. Configuration, the pinned adapter and the safer 4 MiB application upload allowance are documented in deployment.md and decision 0006. The hosted bucket keeps its existing 5 MiB ceiling; no schema, storage object or customer record was changed by hosting preparation. Public intake/indexing remain disabled and nothing is deployed.
+
+Local Netlify build verification passed on 2 November 2026 with adapter 5.16.5, CLI 27.16.1 and Next.js 16.4.3; server and Edge Functions packaged successfully. This is not a deployment or proof of actual hosted cookie/cache/upload behaviour.
+
+The adapter-served local preview also passed all 27 access-denial checks, served eight public pages and kept both intake endpoints at 503. Login HTML passed with identity encoding, but its default compressed response had a header/body mismatch in the local emulator; the ordinary Next.js preview returned correct gzip bytes. See deployment.md. Hosted compression/browser verification remains a gate, not a claimed pass.
+
+Final checkpoint gates passed: npm run check (lint, strict typecheck, production build), all 54 tests including upload boundary/transport cases, and npm audit with zero project dependency findings. Generated hosting/build output and .env.local remain ignored and untracked.

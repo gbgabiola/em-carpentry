@@ -1,3 +1,4 @@
+import { PROJECT_PHOTO_SIZE_LABEL } from "@/lib/images/limits";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -110,7 +111,7 @@ export default async function EditProjectPage({
         <ActionForm action={uploadImage} label="Upload photo">
           <input type="hidden" name="project_id" value={id} />
           <label>
-            Photo (JPEG, PNG or WebP, up to 5 MB)
+            Photo (JPEG, PNG or WebP, up to {PROJECT_PHOTO_SIZE_LABEL})
             <input
               type="file"
               name="photo"

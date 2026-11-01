@@ -1,56 +1,65 @@
 # Deployment and recovery
 
-## Current status
+## Current state
 
-Local public-page checkpoint only. No hosting/backend provider or paid service has been selected, no domain has been registered and nothing has been deployed. npm run build verifies the Next.js production build; it does not deploy it.
+The Supabase Free backend is connected in Sydney, its first three migrations are applied and the manually created client account has website-admin membership. Public sign-ups are disabled. Nothing has been deployed to a website host. The user approved preparing and testing Netlify Free locally, not creating/publishing a site or enabling a paid service. See [connected backend](connected-backend.md) and [Netlify decision](decisions/0006-netlify-free-hosting.md).
 
-## Provider decision gate
+## Local Netlify compatibility check
 
-Before implementing a backend or selecting hosting, record a dated comparison with primary-source links covering:
+The tracked netlify.toml sets npm run build, .next output, Node 24, npm 11.19.1 and indexing off. The pinned @netlify/plugin-nextjs adapter handles Next.js Functions, proxy integration, caching and static assets. Keep Sharp in server actions; no native image module belongs in the proxy. No SPA catch-all redirect, public bucket or blanket cache override is required.
 
-- Commercial-use permission and framework/runtime compatibility.
-- Current free quotas for compute, database, authentication, storage, uploads, bandwidth/egress and builds.
-- Email delivery availability and limits; how the owner will learn about enquiries if notifications are unavailable.
-- Inactivity pauses, retention/deletion policies, backups and overage behaviour.
-- Data location and Australian privacy implications.
-- Data/photo export, restoration and migration procedures.
+```sh
+npm ci
+npm run check
+npm test
+npm run check:hosting
+```
 
-Do not add paid infrastructure or register a domain without approval. Production deployment requires explicit authorisation. Provider quotas and migration steps cannot be documented as selected until a provider is selected.
+check:hosting invokes pinned Netlify CLI 27.16.1 with build --offline --context deploy-preview. The first invocation downloads CLI packages; offline refers to build features requiring the Netlify control plane, not initial npm installation. It does not deploy, link a site or require a login. Generated .netlify/ and .next/ output is ignored and may contain local environment configuration; never publish those as source archives or commit them. The adapter dependency is pinned for repeatability; review upstream security/compatibility updates regularly.
 
-## Launch gate
+On 2 November 2026, the local build passed with Next.js 16.4.3, adapter 5.16.5, CLI 27.16.1 and Netlify Build 37.7.3; both server and Edge Functions bundled successfully.
 
-Confirm services, content/photo consent, service area wording, form fields, retention/deletion policy, review moderation, admin access and public subdomain. Implement and test server authorisation and database/storage permissions before enabling private data or uploads. No admin screen should be considered protected by robots directives.
+The local Netlify serve smoke check on port 8888 served all eight marketing pages, returned the connected login form when requesting Accept-Encoding: identity, kept both intake POST routes at 503 and passed all 27 synthetic-session access checks. The owned smoke server was stopped afterwards; the existing developer preview was left running.
 
-Set the approved public origin, implement canonical/OG metadata and a sitemap for published routes, replace scaffold indexing restrictions and complete privacy disclosures. Verify responsive layouts, accessibility, permissions, form workflows, lint, typecheck, tests and production build. Review actual provider terms and quotas again before launch.
+The default compressed /login response has a local emulator mismatch: it advertises Content-Encoding: gzip but its raw body lacks gzip bytes, so a normal fetch fails decompression. The ordinary Next.js preview returns actual gzip bytes for the same request. This narrows the observed failure to the local adapter/emulator path, but does not prove hosted behaviour. Do not suppress compression in the application to hide it. Verify compressed login responses and browser navigation on an explicitly approved hosted preview before handover.
 
-## Recovery at this checkpoint
+To repeat the local serve check, use BROWSER=none npx --yes netlify-cli@27.16.1 serve --offline --context deploy-preview --port 8888. The CLI uses port 3999 internally for its static server, so do not also choose 3999 for the frontend. It rebuilds first and performs no deployment. Run npm run check:auth -- http://localhost:8888 while it is running.
 
-Keep source and package-lock.json in Git. Reinstall with npm ci on Node 24 and run npm run check. Copy .env.example to .env.local for local configuration. No customer data exists in this scaffold. Once persistent storage is introduced, document independent exports, photo backups and a tested restore procedure before launch.
+A successful adapter build verifies local packaging only. It does not prove real CDN cache behaviour, Secure cookies, region placement, resource usage or upload transport. Complete the hosted checks on an explicitly approved deployment before launch.
 
-## Research and public-page checkpoint
+## Configuration for an approved deployment
 
-See [dated provider comparison](decisions/0002-provider-comparison.md). Vercel Hobby is excluded for this commercial website. Cloudflare Workers plus Supabase Sydney is a conditional candidate, not a configured deployment. Resolve runtime/CPU compatibility, pause recovery and sign-in before adopting it. No Cloudflare adapter has been installed.
+1. Verify the developer account is on Free with a hard credit cap and no paid add-ons. Recheck the current limits and repository/Git integration eligibility. The client does not need a hosting seat. Confirm the public subdomain before creating the site.
+2. Use the repository's netlify.toml build settings and Node 24 runtime. For an explicit Functions runtime pin, set AWS_LAMBDA_JS_RUNTIME=nodejs24.x in the provider UI (not netlify.toml), following the [runtime guide](https://docs.netlify.com/build/functions/configuration/#nodejs-version-for-runtime). Add SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in the provider environment UI for both Builds and Functions. Values in a local .env.local are not uploaded automatically. Never add secret/service-role keys or passwords.
+3. Set SITE_INDEXING_ENABLED=false in both build and runtime settings for every preview. Leave SITE_URL blank until an HTTPS origin is approved, or use exactly that approved origin. No credentials, path, query, fragment or custom port is accepted. Review runtime Functions region and privacy disclosures; Sydney database placement is not an Australia-only processing guarantee.
+4. Choose a predictable recovery path and separate backups. No reliable transactional email has been configured. Continue direct phone/email/business-Facebook contact fallbacks; public intake remains disabled.
+5. Only after explicit deployment approval, publish the reviewed commit using the provider's supported workflow. Do not create a paid plan, register a domain or enable recharge. Record the provider URL and actual adapter/runtime versions, then verify the deployed app before sharing it with the client.
 
-Run npm run check and npm test before deployment work. Keep noindex/robots restrictions until content, privacy and SEO are launch-ready. The supplied logo is now included; publication rights and project-photo consent remain launch gates.
+netlify.toml deliberately defaults indexing off. When launch is approved, update that tracked default and the provider's build/runtime values together, set the approved SITE_URL and rebuild. Indexing must not be enabled merely to test hosting. No public submission enable flag exists; a separately reviewed migration and secure handler implementation are still required after retention agreement.
 
-## SEO configuration
+## Free-plan operating limits
 
-Set SITE_URL to the approved HTTPS origin (no path, query, fragment, credentials or custom port). Leave SITE_INDEXING_ENABLED=false for previews and unfinished content. It defaults to false. Canonical and sharing tags require SITE_URL; they never fall back to localhost. Only after launch readiness is confirmed, set SITE_INDEXING_ENABLED=true and rebuild. Invalid settings fail the build. With indexing off, robots disallows crawling and sitemap.xml has no URLs. With indexing on, only the eight implemented public routes are listed; no fake project pages or admin/API URLs are included. Future project URLs must come only from published records. No fabricated last-modified dates are supplied.
+The [Netlify decision](decisions/0006-netlify-free-hosting.md) records dated commercial-use evidence, credits, upload limits, inactivity/recovery risks and migration options. Netlify Free currently has 300 shared monthly credits and pauses sites at its hard cap. Requests, bandwidth, compute and published deploys all consume that allowance. One site's usage can pause the account's other sites. Keep usage notifications enabled and inspect actual traffic/compute before deciding the plan fits. Do not upgrade automatically.
 
-JSON-LD uses verified business name, contact details, operating-since year, service city and business Facebook page. It omits unverified street address, business hours, pricing and ratings. Schema validity does not guarantee eligibility for Google rich results. No public origin or production deployment has been chosen at this checkpoint.
+Supabase Free has separate quotas and inactivity pausing. The developer restores a paused backend through its dashboard; no artificial keep-alive is installed. Keep direct-contact fallbacks available, including if the website host itself pauses. No free-service uptime guarantee is advertised.
 
-Reference implementation guidance: [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [sitemap](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap), [JSON-LD](https://nextjs.org/docs/app/guides/json-ld).
+## Verification and launch gates
 
-## Backend checkpoint
+- Run lint, strict typecheck, tests, production build, the local adapter build and npm run check:backend. Against the running connected preview, npm run check:auth -- http://localhost:3000 checks anonymous, malformed and forged sessions across nine admin routes with synthetic cookies only. It performs no account writes and prints no credentials.
+- Complete real sign-in, session refresh, sign-out, current-password verification/change and revoked/non-owner access checks. Confirm HttpOnly, SameSite=Lax and Secure cookies over HTTPS and private/no-store responses through the real CDN. Provider evidence of a sign-in is not proof of the whole browser lifecycle.
+- Test draft/photo upload, publication, filters, featured projects, comparison keyboard/pointer controls, archive and photo removal. Uploads are capped at 4 MiB and output WebP. Test real multipart transport near that limit and legacy photos near the bucket's older 5 MiB ceiling. Verify direct private media and cached paths become inaccessible after unpublishing.
+- Verify approved-only testimonials, confirmed services/FAQs, business-contact edits and export privacy. Test private JSON export and separate photo backup/restore. Large exports or legacy downloads can reach Function response limits; measure those before relying on the host for recovery.
+- Confirm service inventory, business content, logo/photo rights and publication consent, service-area wording, review moderation, privacy disclosures, retention/deletion and public subdomain. Keep intake closed until its secure workflow is implemented and agreed.
+- Verify mobile/tablet/desktop layouts, both themes, keyboard navigation, contrast and accessible form states. Measure performance rather than claiming scores. Browser automation is currently unavailable in this environment; HTTP and build checks do not replace visual/interaction verification.
 
-Supabase schema, RLS/private image storage and owner workflows are implemented. Follow [backend setup](backend-setup.md) to provision the approved Sydney project/owner and complete live tests. [Owner workflow](owner-workflow.md) covers export, separate image backups, pause recovery and orphan cleanup. No hosted migration or deployment has been applied.
+The optional explicit-write-policy migration remains pending native confirmation; do not replay installed migrations or bypass provider approval. Existing hosted RLS checks passed; see connected-backend.md for the exact installed state.
 
-The Node-native Sharp upload processor is not a verified Worker runtime feature. Do not deploy this build to Cloudflare merely because a Next.js adapter exists: resolve native image processing, memory/CPU limits and actual compatibility first. Do not silently migrate frameworks or enable billing. Public submissions require a new reviewed handler/policy migration after retention is agreed; changing an environment flag alone cannot enable them.
+## SEO
 
-## Owner-content migration
+SITE_URL and SITE_INDEXING_ENABLED govern canonical/sharing metadata, robots and sitemap. With indexing off, robots disallows crawling and the sitemap is empty. With indexing enabled and an approved origin, the sitemap includes public marketing routes and published project URLs with their stored update times, never admin/API endpoints or invented dates. JSON-LD uses verified business details and omits unverified address, hours, pricing and ratings.
 
-Apply 20261101110955_owner_content.sql after the foundation, once only. It preserves existing projects/enquiries and adds draft service/FAQ management, validated business contact settings and an opt-in comparison flag. Rebuild application code after applying schema updates. Verify publication constraints, RLS, contact metadata/JSON-LD and pointer/keyboard comparison behaviour against disposable live fixtures. This does not resolve the native Sharp/Cloudflare compatibility gate or enable customer submissions.
+## Recovery and migration
 
-## Connected backend status
+Keep source and package-lock.json in Git. On another compatible Node 24 host, reinstall with npm ci, configure the same server-only publishable backend connection and run the quality gates. Standard Next.js remains in use; Netlify is an adapter, not a framework rewrite. Cloudflare remains unverified for the native Sharp upload path.
 
-The Supabase Free project now exists in Sydney and .env.local is connected with a publishable key. See [connected backend](connected-backend.md) for the authoritative installed versions and remaining Auth/policy steps. This does not constitute website deployment. Do not recreate the project or replay installed foundation migrations. Keep indexing/intake disabled and preserve the unresolved Node/Sharp hosting compatibility gate.
+Keep private data exports and photo bytes outside Git/public assets. Follow [owner workflow](owner-workflow.md) for independent exports, restoration order, private membership reprovisioning and orphan cleanup. Database backups do not contain photo bytes or automatically migrate Auth sessions. Test restoration in an isolated environment before relying on backups. Preserve the provider's actual schema history and never reset a valuable hosted project.

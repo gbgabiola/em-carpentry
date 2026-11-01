@@ -23,3 +23,6 @@ supabase/.branches/
 
 # Versioned database schema is source, not a database backup
 !supabase/migrations/*.sql
+
+# Local hosting build state; may contain environment configuration
+.netlify/

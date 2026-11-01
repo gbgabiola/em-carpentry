@@ -17,7 +17,9 @@
     "check": "npm run lint && npm run typecheck && npm run build",
     "format": "biome format . --write",
     "test": "node --test src/test/*.test.mjs",
-    "check:backend": "node scripts/check-live-backend.mjs"
+    "check:backend": "node scripts/check-live-backend.mjs",
+    "check:auth": "node scripts/check-live-auth.mjs",
+    "check:hosting": "npx --yes netlify-cli@27.16.1 build --offline --context deploy-preview"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -32,6 +34,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.6.4",
     "@electric-sql/pglite": "0.5.14",
+    "@netlify/plugin-nextjs": "5.16.5",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "^24",
     "@types/react": "^19",

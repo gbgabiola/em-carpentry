@@ -44,11 +44,11 @@ Use disposable fixture content; do not use customer information for tests.
 
 ## Private photos and runtime compatibility
 
-Uploads accept single JPEG/PNG/WebP files up to 5 MiB, at most 24 million decoded pixels. Sharp validates actual input, auto-orients, strips original EXIF/GPS metadata and converts to WebP within 1600 × 1600. The storage bucket allows only WebP up to 5 MiB. SVG/animated uploads are rejected. Next.js Server Actions permit a 6 MB multipart body; the smaller file limit is enforced separately on the server.
+Uploads accept single JPEG/PNG/WebP files up to 4 MiB, at most 24 million decoded pixels. Sharp validates actual input, auto-orients, strips original EXIF/GPS metadata and converts to WebP within 1600 × 1600. The storage bucket allows only WebP up to 5 MiB. SVG/animated uploads are rejected. Next.js Server Actions permit a 4256 KiB multipart body to leave encoding headroom under the proposed host request ceiling; the smaller file limit is enforced separately on the server.
 
 The bucket stays private. Anonymous read policies expose only files linked to published projects; the /media/id handler additionally checks metadata through RLS. Photo responses are no-store and Next Image optimisation is disabled for these private resources to avoid retaining unpublished images in the optimisation cache. Logo optimisation remains enabled. Removing uploaded metadata is not a substitute for checking identifying content visible in the photo.
 
-This upload implementation requires a Node-compatible runtime with native Sharp support. It is not a verified Cloudflare Worker build. Cloudflare’s native-library/runtime and Free CPU limits remain a deployment blocker until an adapter-compatible image processing solution and realistic benchmark are established. No framework runtime or hosting provider has been silently changed.
+This upload implementation requires a Node-compatible runtime with native Sharp support. Netlify Free local compatibility preparation is approved; see deployment.md. It is not a verified Cloudflare Worker build. Cloudflare’s native-library/runtime and Free CPU limits remain a deployment blocker until an adapter-compatible image processing solution and realistic benchmark are established. No framework runtime or hosting provider has been silently changed.
 
 ## Submissions remain closed
 
@@ -61,6 +61,10 @@ After retention is agreed, implement a separately reviewed migration and server 
 After applying the second migration, open /admin/content. Review the initial private FAQ drafts, confirm each answer and publish only accurate content. Add only services the business actually offers; regulated-trade claims require verification. Confirm publication before choosing Published. Verify draft/archived entries and unconfirmed content remain invisible to visitors and non-owner accounts. Verify service ordering, Home summaries and FAQ ordering, edits, unpublishing and archive behaviour. New public content reads are capped at 100 services/FAQs; owner lists retain the provider’s 1,000-row default until pagination is needed.
 
 Export schema version 2 includes these tables and contact settings. Apply both migrations in a restore destination before restoring public data. The PGlite suite now replays pending migrations after baseline fixture data to exercise upgrade preservation. Full hosted Auth/Storage and browser behaviour still require live verification.
+
+## HTTP access checks
+
+With this same checkout configured and its connected preview running, run npm run check:auth -- http://localhost:3000. It sends only read-only requests with no cookie, a malformed cookie and a syntactically valid synthetic session with an invalid signature. All nine private paths must redirect to /login with no-store. No real session token or password is accepted by the script. A passing result does not verify real token refresh, logout/revocation or Storage interactions.
 
 ## Client sign-in and password checks
 

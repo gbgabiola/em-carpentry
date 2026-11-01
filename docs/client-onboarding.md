@@ -4,7 +4,7 @@ The business owner uses the website’s /login and /admin pages to make updates 
 
 ## Current status
 
-On 2 November 2026, the exact intended client account was verified to exist with confirmed email and a password, and website-admin membership was granted. Public sign-ups are disabled. Do not create a duplicate account. Hosted database permission checks passed with all temporary fixtures rolled back; interactive sign-in, password changes and photo uploads still need verification. The local /login page returns 200 and anonymous /admin access redirects to it.
+On 2 November 2026, the exact intended client account was verified to exist with confirmed email and a password, and website-admin membership was granted. Public sign-ups are disabled. Do not create a duplicate account. Hosted database permission checks passed with all temporary fixtures rolled back; interactive sign-in, password changes and photo uploads still need verification. The local /login page returns 200 and anonymous /admin access redirects to it. A subsequent provider check confirms that the client account has signed in and retains membership. This does not independently verify password changes, session refresh or photo uploads.
 
 Sign in privately at the local preview using the existing credentials, then follow the checks below. A localhost URL works only on the developer machine; it is not a hosted client handover URL. No password needs to be shared with the assistant.
 

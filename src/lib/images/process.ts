@@ -1,8 +1,9 @@
 import sharp from "sharp";
+import { MAX_PROJECT_PHOTO_BYTES } from "./limits.ts";
 
 // Native server-only processing; do not import this module from Client Components.
 export async function optimiseProjectPhoto(input: Buffer) {
-  if (input.length === 0 || input.length > 5 * 1024 * 1024)
+  if (input.length === 0 || input.length > MAX_PROJECT_PHOTO_BYTES)
     throw new Error("Photo size is invalid.");
   const metadata = await sharp(input, {
     limitInputPixels: 24000000,
@@ -23,7 +24,7 @@ export async function optimiseProjectPhoto(input: Buffer) {
     })
     .webp({ quality: 82 })
     .toBuffer();
-  if (output.length > 5 * 1024 * 1024)
+  if (output.length > MAX_PROJECT_PHOTO_BYTES)
     throw new Error("Optimised photo is too large.");
   return output;
 }
