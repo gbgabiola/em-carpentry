@@ -16,7 +16,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
     "format": "biome format . --write",
-    "test": "node --test src/test/*.test.mjs"
+    "test": "node --test src/test/*.test.mjs",
+    "check:backend": "node scripts/check-live-backend.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

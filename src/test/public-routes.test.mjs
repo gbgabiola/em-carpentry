@@ -19,7 +19,12 @@ before(async () => {
       "0",
     ],
     {
-      env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
+      env: {
+        ...process.env,
+        SUPABASE_URL: "",
+        SUPABASE_PUBLISHABLE_KEY: "",
+        NEXT_TELEMETRY_DISABLED: "1",
+      },
       stdio: ["ignore", "pipe", "pipe"],
     },
   );

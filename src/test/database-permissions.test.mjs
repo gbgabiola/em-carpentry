@@ -22,7 +22,7 @@ before(async () => {
   await db.exec(
     await readFile(
       new URL(
-        "../../supabase/migrations/202611010001_foundation.sql",
+        "../../supabase/migrations/20261101110949_foundation.sql",
         import.meta.url,
       ),
       "utf8",
@@ -54,7 +54,8 @@ before(async () => {
   const directory = new URL("../../supabase/migrations/", import.meta.url);
   for (const file of (await readdir(directory))
     .filter(
-      (file) => file.endsWith(".sql") && file !== "202611010001_foundation.sql",
+      (file) =>
+        file.endsWith(".sql") && file !== "20261101110949_foundation.sql",
     )
     .sort())
     await db.exec(await readFile(new URL(file, directory), "utf8"));
@@ -365,4 +366,44 @@ test("business contact updates require owner access and database format checks",
         /check constraint/,
       );
     });
+});
+
+test("owner lookup keeps privileged code private and membership protected by RLS", async () => {
+  const functions = await rows(
+    "select n.nspname,p.prosecdef from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.proname='is_admin' and n.nspname in ('public','private')",
+  );
+  assert.equal(
+    functions.find((fn) => fn.nspname === "public").prosecdef,
+    false,
+  );
+  assert.equal(
+    functions.find((fn) => fn.nspname === "private").prosecdef,
+    true,
+  );
+  assert.equal(
+    (
+      await rows(
+        "select relrowsecurity from pg_class where oid='private.admin_users'::regclass",
+      )
+    )[0].relrowsecurity,
+    true,
+  );
+  await asRole("anon", null, async () => {
+    assert.equal(
+      (await rows("select public.is_admin() as allowed"))[0].allowed,
+      false,
+    );
+    await assert.rejects(
+      rows("select * from private.admin_users"),
+      /permission denied/,
+    );
+  });
+});
+
+test("authenticated readers use one select policy per public content table", async () => {
+  const policies = await rows(
+    "select tablename,count(*)::int as count from pg_policies where schemaname='public' and tablename in ('projects','project_images','reviews','services','faqs') and 'authenticated'=any(roles) and cmd in ('SELECT','ALL') group by tablename",
+  );
+  assert.equal(policies.length, 5);
+  assert.ok(policies.every((policy) => policy.count === 1));
 });

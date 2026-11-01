@@ -49,4 +49,8 @@ The Node-native Sharp upload processor is not a verified Worker runtime feature.
 
 ## Owner-content migration
 
-Apply 202611010002_owner_content.sql after the foundation, once only. It preserves existing projects/enquiries and adds draft service/FAQ management, validated business contact settings and an opt-in comparison flag. Rebuild application code after applying schema updates. Verify publication constraints, RLS, contact metadata/JSON-LD and pointer/keyboard comparison behaviour against disposable live fixtures. This does not resolve the native Sharp/Cloudflare compatibility gate or enable customer submissions.
+Apply 20261101110955_owner_content.sql after the foundation, once only. It preserves existing projects/enquiries and adds draft service/FAQ management, validated business contact settings and an opt-in comparison flag. Rebuild application code after applying schema updates. Verify publication constraints, RLS, contact metadata/JSON-LD and pointer/keyboard comparison behaviour against disposable live fixtures. This does not resolve the native Sharp/Cloudflare compatibility gate or enable customer submissions.
+
+## Connected backend status
+
+The Supabase Free project now exists in Sydney and .env.local is connected with a publishable key. See [connected backend](connected-backend.md) for the authoritative installed versions and remaining Auth/policy steps. This does not constitute website deployment. Do not recreate the project or replay installed foundation migrations. Keep indexing/intake disabled and preserve the unresolved Node/Sharp hosting compatibility gate.

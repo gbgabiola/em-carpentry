@@ -1,6 +1,6 @@
 # EM Carpentry & Home Maintenance
 
-Next.js App Router, React, strict TypeScript and Tailwind CSS, with Biome for lint/formatting. Supabase-backed owner workflows are implemented; no hosted backend or production deployment has been created.
+Next.js App Router, React, strict TypeScript and Tailwind CSS, with Biome for lint/formatting. Supabase-backed owner workflows are implemented. The Sydney Free backend has been provisioned and connected locally; owner Auth setup and a pending policy cleanup remain. No website has been deployed.
 
 ## Local development
 
@@ -47,7 +47,7 @@ Business content/customer data remain exportable. Never put private data, tokens
 
 ## Remaining gates
 
-Provision the approved Sydney project and owner, apply migrations, configure public keys and disable provider sign-ups. Complete the live Auth/Storage and browser checks in [backend setup](docs/backend-setup.md). Agree retention/deletion and finish durable rate limiting, abuse protection and accessible intake forms before enabling submissions. Confirm service inventory, photo rights and publication content. Hosting/runtime eligibility and a free-plan benchmark remain unresolved; the native Sharp upload pipeline is not verified on Cloudflare Workers. No deployment or paid upgrade is authorised by this checkpoint.
+The Sydney project and publishable configuration now exist; finish owner provisioning, disable provider sign-ups and resolve the pending policy cleanup. Complete the live Auth/Storage and browser checks in [backend setup](docs/backend-setup.md). Agree retention/deletion and finish durable rate limiting, abuse protection and accessible intake forms before enabling submissions. Confirm service inventory, photo rights and publication content. Hosting/runtime eligibility and a free-plan benchmark remain unresolved; the native Sharp upload pipeline is not verified on Cloudflare Workers. No deployment or paid upgrade is authorised by this checkpoint.
 
 See [owner workflow](docs/owner-workflow.md), [provider comparison](docs/decisions/0002-provider-comparison.md), [architecture decision](docs/decisions/0004-supabase-owner-workflows.md), [deployment](docs/deployment.md) and [content guide](docs/content-guide.md).
 
@@ -57,8 +57,14 @@ Lint, strict type checking, production build, all 34 tests and the full dependen
 
 ## Owner-content checkpoint
 
-Apply every pending migration in filename order, including 202611010002_owner_content.sql. Existing installations apply the second migration without rerunning the foundation. Owner-confirmed published services appear on Home and Services; FAQs use published rows once connected. During a configured outage, FAQ answers are hidden and Contact identifies previously verified fallback contact details rather than claiming they are current.
+Apply every pending migration in filename order, including 20261101110955_owner_content.sql. Existing installations apply the second migration without rerunning the foundation. Owner-confirmed published services appear on Home and Services; FAQs use published rows once connected. During a configured outage, FAQ answers are hidden and Contact identifies previously verified fallback contact details rather than claiming they are current.
 
 The comparison is opt-in per project and needs one Before and one After photo. If roles/photos change and no unique pair remains, the public comparison is omitted while the gallery remains available. Matching viewpoint/framing requires owner review. Browser interaction and live Supabase checks remain outstanding.
 
 Owner-content verification on 1 November 2026: lint, strict typecheck, production build and all 43 tests passed; npm audit reported zero vulnerabilities. Both migrations were replayed against existing PGlite fixture data, including approval/archiving policies and new contact constraints. Browser automation failed before opening a browser, so slider interaction/visual QA and live Supabase verification remain outstanding. The Supabase integration was available but not installed at the last check.
+
+## Connected backend
+
+See [current backend state](docs/connected-backend.md) for the project, applied migration versions, pending cleanup, live checks and manual Auth steps. The local .env.local is ignored and contains only the publishable configuration. npm run check:backend performs read-only live API checks and exits 2 until public provider sign-ups are disabled. The main HTTP suite explicitly uses unconfigured mode even when .env.local is connected.
+
+The connected build, all 45 local tests and npm audit passed (zero dependency findings). Hosted anonymous access checks passed; owner sign-in, session refresh/logout, actual photo lifecycle and browser verification remain outstanding. Public submissions and indexing remain disabled.

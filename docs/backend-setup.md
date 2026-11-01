@@ -1,12 +1,14 @@
+> Current project state: [connected backend](connected-backend.md). The project is already provisioned; do not create a duplicate or reapply installed migrations.
+
 # Supabase setup and verification
 
-This checkpoint implements Supabase-backed owner workflows. It does not create a hosted project, deploy a database migration, provision a real owner, or enable public submissions. Use an eligible Free project in Sydney (ap-southeast-2); the developer owns the source/hosting accounts initially. Record the project reference, account custodian and recovery arrangements securely outside Git.
+This checkpoint implements Supabase-backed owner workflows. The hosted project and first three migrations are now installed; real owner provisioning and public intake remain incomplete. Use an eligible Free project in Sydney (ap-southeast-2); the developer owns the source/hosting accounts initially. Record the project reference, account custodian and recovery arrangements securely outside Git.
 
 ## Provisioning
 
 1. Create or select the approved Supabase Free project in Sydney. Review decision 0002 and current terms/quotas again. Do not enable paid add-ons or upgrade billing without approval.
 2. Disable new user sign-ups in the hosted Auth settings. The local supabase/config.toml also disables sign-ups; it does not configure a hosted project's Auth settings automatically.
-3. Apply all pending SQL migrations in filename order using the CLI migration workflow or SQL editor. On a new project, apply 202611010001_foundation.sql followed by 202611010002_owner_content.sql. On an existing foundation installation, apply only the pending owner-content migration. Do not rerun the non-idempotent foundation. Read each migration first and back up existing content. No project/customer content or service inventory is seeded; the second migration adds four verified FAQ starters as private drafts for owner review.
+3. Apply all pending SQL migrations in filename order using the CLI migration workflow or SQL editor. On a new project, apply 20261101110949_foundation.sql followed by 20261101110955_owner_content.sql. On an existing foundation installation, apply only the pending owner-content migration. Do not rerun the non-idempotent foundation. Read each migration first and back up existing content. No project/customer content or service inventory is seeded; the second migration adds four verified FAQ starters as private drafts for owner review.
 4. Manually create the owner in Auth Users with email/password and confirmed email through the provider’s supported administrative UI. No password or auth token belongs in Git, .env.example, logs or customer-facing content. Do not rely on the default SMTP for production delivery or recovery.
 5. In the SQL editor, grant that exact account owner membership:
 
