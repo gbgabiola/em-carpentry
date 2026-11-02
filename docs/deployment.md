@@ -38,6 +38,8 @@ npm run check:preview -- https://em-carpentry.netlify.app --intake-enabled
 npm run check:auth -- https://em-carpentry.netlify.app
 ```
 
+The browser suite uses isolated synthetic portfolio and form fixtures. It tests populated gallery journeys without publishing sample content or accessing hosted customer data. These checks do not verify live provider permissions or replace an owner-session check.
+
 Also test owner sessions, cookies over HTTPS, private photos, publication/archive transitions, uploads, responsive layouts and keyboard interactions. A local build is not proof of hosted behaviour. .netlify and .next are generated and ignored; do not commit or distribute them as source archives.
 
 ## Free-plan limits

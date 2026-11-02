@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
+import { servePortfolioFixture } from "./browser-portfolio-fixtures.mjs";
 const port = 3107;
 // Read-only loopback fixtures. No request reaches a hosted provider.
 const backend = createServer((request, response) => {
@@ -16,6 +17,7 @@ const backend = createServer((request, response) => {
     response.end(JSON.stringify({ message: "Synthetic unavailable backend" }));
     return;
   }
+  if (servePortfolioFixture(request, response, url)) return;
   response.writeHead(200, {
     "Content-Type": "application/json",
     "Content-Range": "*/0",
