@@ -7,9 +7,9 @@ Verified: 2 November 2026 (Asia/Manila). The user explicitly approved a publicly
 - Website: https://em-carpentry.netlify.app
 - Admin login: https://em-carpentry.netlify.app/login
 - Netlify project: em-carpentry, ID 6d20c1d7-b2c1-426b-94d8-49e61c2e9c2f
-- Current verified deploy: 6ae785fbe3cc67f647726d3c
-- [Deploy log](https://app.netlify.com/projects/em-carpentry/deploys/6ae785fbe3cc67f647726d3c)
-- Application baseline: Git commit 83986ca; deployment-command and verification refinements are recorded in the following Git checkpoint.
+- Current verified deploy: 6ae82b4d93820ca655a794c2
+- [Deploy log](https://app.netlify.com/projects/em-carpentry/deploys/6ae82b4d93820ca655a794c2)
+- Deployed application source: Git commit 967cc912a5fc4edfffa8b3ea1ef46329c1b56580, including the media-response fix and offline backup tooling.
 - Runtime: Next.js 16.4.3, Netlify adapter 5.16.5, CLI 27.16.1, build tooling 37.7.3 and Node 24.
 - Website updates were uploaded manually. GitHub continuous deployment/webhooks were not configured by this task. No domain was purchased and no paid add-on or plan upgrade was enabled.
 
@@ -61,8 +61,10 @@ Visual interaction checks remain manual because the browser/desktop automation r
 
 The archived-image privacy check correctly denied anonymous access, but its 404 response initially used no-cache instead of no-store. All media-handler 404 branches now share the explicit private/no-store/max-age=0 and nosniff headers used for photo responses. The HTTP suite covers invalid IDs and an unavailable backend, and check:auth adds two configured-host media checks. The local gates passed all 55 tests. No project, photo, password or access policy was modified by this fix.
 
-The follow-up fix is committed and pushed as 3654ee8, and [GitHub CI passed all 55 tests](https://github.com/gbgabiola/em-carpentry/actions/runs/41341866406). Its first deployment attempt was rejected because the saved Netlify CLI session expired. The previously verified deployment remains live; at the last read check, archived photo requests still returned 404/no-cache. Reauthorise through the provider flow, deploy the reviewed fix and verify the new no-store headers before marking this follow-up deployed. No credentials or authorisation tickets are stored in the repository.
+The follow-up fix is committed and pushed as 3654ee8, and [GitHub CI passed all 55 tests](https://github.com/gbgabiola/em-carpentry/actions/runs/41341866406). Its first deployment attempt was rejected because the saved Netlify CLI session expired. The user subsequently renewed the connection through Netlify, and the fix was published in deployment 6ae82b4d93820ca655a794c2. The archived photo URL now returns an empty 404 with private/no-store/max-age=0 and nosniff. All 33 hosted access checks passed, including invalid/missing media, and the full public page/asset/intake/indexing checks passed. No credentials or authorisation tickets are stored in the repository.
 
 ## Offline recovery preparation
 
-The repository now includes check:backup for locally inspecting a downloaded schema-v2 export. It reports only a timestamp, record counts and the required separate-photo count, and does not modify files, follow object paths, contact providers or prove a successful restore. Synthetic tests cover invalid structure, unexpected credential fields, duplicates, broken references, unsafe paths, publication constraints and safe CLI output. No real customer export was read. The follow-up website deployment still awaits the pending Netlify CLI authorisation; this offline tool requires no deployment.
+The repository now includes check:backup for locally inspecting a downloaded schema-v2 export. It reports only a timestamp, record counts and the required separate-photo count, and does not modify files, follow object paths, contact providers or prove a successful restore. Synthetic tests cover invalid structure, unexpected credential fields, duplicates, broken references, unsafe paths, publication constraints and safe CLI output. No real customer export was read. The follow-up website deployment is now verified. The offline tool itself requires no provider connection or deployment.
+
+The deployed source passed [GitHub CI with all 61 tests](https://github.com/gbgabiola/em-carpentry/actions/runs/41395214158). No real backup has been inspected or restored yet; the next step is a locally saved dashboard export and separate photo backup.

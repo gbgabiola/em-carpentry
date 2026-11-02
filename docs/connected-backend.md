@@ -80,3 +80,5 @@ Final checkpoint gates passed: npm run check (lint, strict typecheck, production
 ## Hosted test checkpoint
 
 The authorised Netlify test URL is https://em-carpentry.netlify.app. The final native build/deploy pipeline and hosted page/assets/intake/indexing checks passed; 27 invalid-session scenarios and four private build/configuration paths also passed. The user confirmed hosted sign-in and dashboard persistence after reload. GitHub's hosted Quality checks passed all 54 tests. See [hosted preview](hosted-preview.md) for deployment IDs, actual legacy Free quotas, packaging correction/deletion and outstanding owner/Storage/session verification. Public submissions and indexing remain disabled.
+
+The media-response follow-up is live in Netlify deployment 6ae82b4d93820ca655a794c2. Archived-photo and invalid/missing-media responses now explicitly prevent storage; all 33 hosted access checks passed. No database policy, user account or content record was modified by that deployment. See hosted-preview.md for verification and backup follow-up.

@@ -58,3 +58,5 @@ Record each stage separately as pending, user-confirmed or independently verifie
 ### Recorded checkpoint
 
 On 2 November 2026 the user confirmed hosted photo upload, publishing/archiving and password change. A separate read-only snapshot found one archived project, one image record and one matching stored object, with zero orphaned/missing files. Anonymous Data API access to the archived image metadata returned no row and its direct website media URL returned 404. No photo bytes, password or session credentials were read. Photo deletion was not inferred from archival; the stored image remains attached to the archived entry. Size-boundary, metadata-removal, export/restore, timed expiry/revocation and visual checks are not marked passed solely from this confirmation.
+
+After renewed Netlify authorisation, the media-header follow-up was deployed and independently checked: the archived image URL returns an empty 404 with private/no-store/max-age=0 and nosniff. All 33 hosted access checks and public preview checks passed. The actual backup inspection/restore remains pending a locally downloaded export and separate photo bytes.
