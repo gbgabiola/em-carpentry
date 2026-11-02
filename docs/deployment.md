@@ -29,6 +29,8 @@ npm run deploy:preview
 npm run deploy:preview -- --prod
 ```
 
+On restricted Linux hosts, workspace-extracted libraries may be used instead of installing system packages. WebKit's cached launcher uses its own sys/lib directory, so its missing libraries must also be resolved there without replacing bundled files. Only after verifying real shared-library loading, PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 can bypass the system-registry-only preflight for that local run; it does not fix missing libraries. CI uses --with-deps and keeps normal host validation enabled. Browser binaries, local library links and results remain ignored.
+
 Keep the complete adapter build/plugin stages enabled. They generate the public file manifest, image routing, Functions and Edge configuration. The .next value in netlify.toml is adapter input: uploading the raw directory with --no-build can expose build files and omit generated routes.
 
 Read the returned deployment URL and verify it:
@@ -38,7 +40,7 @@ npm run check:preview -- https://em-carpentry.netlify.app --intake-enabled
 npm run check:auth -- https://em-carpentry.netlify.app
 ```
 
-The browser suite uses isolated synthetic portfolio and form fixtures. It tests populated gallery journeys without publishing sample content or accessing hosted customer data. These checks do not verify live provider permissions or replace an owner-session check.
+The browser suite runs in Chromium desktop/phone, Firefox desktop and WebKit phone projects using isolated synthetic portfolio and form fixtures. WebKit emulation supplements real Safari/iPhone testing. It tests populated gallery journeys without publishing sample content or accessing hosted customer data. These checks do not verify live provider permissions or replace an owner-session check.
 
 The auth probe includes filtered enquiry/review URLs. For an owner-session check, confirm overview counts and their filtered inbox links, then open both inboxes, apply a status filter, follow older-page navigation when records exist, and confirm received dates, ratings and source attribution. Inbox filtering/pagination requires no schema or environment changes.
 

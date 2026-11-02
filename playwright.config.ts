@@ -24,6 +24,19 @@ export default defineConfig({
         hasTouch: true,
       },
     },
+    {
+      name: "firefox-desktop",
+      use: { browserName: "firefox", viewport: { width: 1440, height: 1000 } },
+    },
+    {
+      name: "webkit-phone",
+      use: {
+        browserName: "webkit",
+        viewport: { width: 375, height: 812 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
   ],
   webServer: {
     command: "node scripts/serve-browser-tests.mjs",

@@ -43,7 +43,7 @@ jobs:
         run: npm run check
       - name: Run tests
         run: npm test
-      - name: Install Chromium for isolated browser tests
+      - name: Install Chromium, Firefox and WebKit for isolated browser tests
         run: npm run browser:install -- --with-deps
-      - name: Run desktop, phone and accessibility checks
+      - name: Run cross-browser desktop, phone and accessibility checks
         run: npm run test:browser

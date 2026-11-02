@@ -25,7 +25,7 @@
     "check:hosting": "npx --yes netlify-cli@27.16.1 build --offline --context deploy-preview",
     "deploy:preview": "npx --yes netlify-cli@27.16.1 deploy --context deploy-preview",
     "prepare:intake": "node scripts/prepare-intake-config.mjs",
-    "browser:install": "node scripts/browser-tests.mjs install chromium --only-shell",
+    "browser:install": "node scripts/browser-tests.mjs install chromium firefox webkit --only-shell",
     "test:browser": "node scripts/browser-tests.mjs test"
   },
   "dependencies": {
