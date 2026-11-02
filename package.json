@@ -21,6 +21,7 @@
     "check:auth": "node scripts/check-live-auth.mjs",
     "check:backup": "node scripts/check-backup.mjs",
     "rehearse:recovery": "node scripts/rehearse-recovery.mjs",
+    "rehearse:services": "node scripts/rehearse-services.mjs",
     "fixtures:owner": "node scripts/create-owner-fixtures.mjs",
     "check:preview": "node scripts/check-hosted-preview.mjs",
     "check:hosting": "npx --yes netlify-cli@27.16.1 build --offline --context deploy-preview",

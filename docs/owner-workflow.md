@@ -65,7 +65,7 @@ Keep backups in protected storage outside Git/public assets. Save and verify a r
 
 The developer can run npm run rehearse:recovery with no arguments. It uses generated records and colour-block WebP photos in fresh in-memory databases. It checks all migrations, each exported table, original photo object paths, byte checksums, expired/withdrawn-record exclusions, microsecond timestamps, unchanged retention deadlines, SQL rollback and replacement-owner membership/permissions. Missing or corrupt synthetic photos are rejected.
 
-This is not a restore tool for your saved exports. It does not read your files, contact providers, change the website or rotate backups. Its Auth identities, Storage metadata and Cron are SQL stand-ins; real sign-in/sessions, photo uploads/downloads through Storage and the actual hourly worker still need a separate recovery destination.
+This is not a restore tool for your saved exports. It does not read your files, contact providers, change the website or rotate backups. Its Auth identities, Storage metadata and Cron are SQL stand-ins. The developer can additionally run npm run rehearse:services to check real local Auth sessions, Storage uploads/downloads, replacement-owner permissions and the Cron worker with synthetic data. Docker is required; the isolated stacks are removed afterwards. Neither command reads your saved exports or proves hosted recovery. See [requirements and limits](deployment.md#recovery-verification).
 
 ## Recovery and cleanup
 

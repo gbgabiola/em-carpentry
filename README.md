@@ -65,7 +65,15 @@ Run the developer's synthetic-only recovery rehearsal separately:
 npm run rehearse:recovery
 ```
 
-It creates fresh in-memory databases, applies the real migrations and checks JSON/retention round-tripping, photo byte/path mapping, SQL rollback and replacement-owner permissions. It accepts no real export paths, connection strings or credentials. Auth/Storage/Cron services are emulated; provider sign-in, Storage API and scheduler recovery remain separate checks. No customer backup files are read.
+It creates fresh in-memory databases and checks migrations, JSON/retention round-tripping, photo byte/path mapping, SQL rollback and replacement-owner permissions using Auth/Storage/Cron stand-ins.
+
+For real local Auth, Storage and Cron services, start Docker with WSL integration and run:
+
+```sh
+npm run rehearse:services
+```
+
+This separate developer check downloads pinned Supabase CLI service images, uses temporary source and destination stacks sequentially, and verifies sign-in, refresh/revocation, private/public photo delivery and scheduled cleanup. It binds published ports to 127.0.0.1 and removes its containers and volumes afterwards. Both commands accept no real exports, connection strings or credentials and read no customer backups. Neither proves hosted disaster recovery. See [recovery verification](docs/deployment.md#recovery-verification) for requirements and limits.
 
 The inspector validates schema, references and schema-v3 retention clocks, prints counts and a 30-day rotation deadline, and does not restore records, delete files or verify photo bytes. Legacy schema-v2 exports remain inspectable with a retention-clock warning. `npm run fixtures:owner` generates ignored synthetic images for upload testing. Private intake configuration and activation are documented in [backend setup](docs/backend-setup.md#website-intake).
 
