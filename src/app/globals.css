@@ -111,12 +111,44 @@ h3 {
   font-weight: 400;
 }
 .theme-toggle {
-  border: 1px solid var(--line);
-  border-radius: 2rem;
-  padding: 0.6rem 1rem;
-  font-size: 0.8rem;
-  white-space: nowrap;
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  flex-shrink: 0;
+  width: 84px;
+  min-width: 84px;
+  height: 44px;
   min-height: 44px;
+  padding: 4px;
+  border: 1px solid var(--muted);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 4px;
+  left: 4px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--foreground);
+  transition: transform 160ms ease;
+}
+.theme-toggle[aria-pressed="true"]::before {
+  transform: translateX(40px);
+}
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+.theme-toggle[aria-pressed="false"] .theme-sun,
+.theme-toggle[aria-pressed="true"] .theme-moon {
+  color: var(--background);
 }
 .main-navigation {
   display: flex;
@@ -385,10 +417,6 @@ h3 {
   }
   .brand-subtitle {
     font-size: 0.65rem;
-  }
-  .theme-toggle {
-    padding: 0.5rem 0.7rem;
-    font-size: 0.7rem;
   }
   .home-hero,
   .editorial-section,
