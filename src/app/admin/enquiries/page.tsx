@@ -17,9 +17,9 @@ export default async function AdminEnquiriesPage() {
     <div className="page-stack">
       <h1>Private enquiries</h1>
       <p>
-        Website submissions are disabled until retention controls and secure
-        intake are ready. No email notifications are configured. Check this
-        inbox personally when intake is eventually enabled.
+        New website enquiries appear here when intake is enabled. No email
+        notifications are configured. Check this inbox regularly and update each
+        enquiry as you follow up.
       </p>
       <p>
         Closed enquiries are deleted after {retention.closedEnquiryDays} days.

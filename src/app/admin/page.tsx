@@ -7,9 +7,9 @@ export default async function AdminPage() {
     <div className="page-stack">
       <h1>Owner dashboard</h1>
       <p>
-        Manage published portfolio content and manually selected Facebook
-        testimonials. Public quotation and feedback submissions remain disabled
-        until retention controls and secure intake are ready.
+        Manage portfolio content and selected Facebook testimonials. Review
+        private enquiries and moderate website feedback here. Check both inboxes
+        regularly; automated email notifications are not configured.
       </p>
       <p>
         <a className="text-link" href="/admin/export">

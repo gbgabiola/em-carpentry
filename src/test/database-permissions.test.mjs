@@ -987,3 +987,54 @@ test("the per-network eight-per-24-hour quota is independent of the hourly windo
     assert.equal(await gateway(input), "accepted");
   });
 });
+
+test("the intake role does not need access to the managed Auth schema", async () => {
+  assert.equal(
+    (
+      await rows(
+        "select has_schema_privilege('website_intake','auth','USAGE') as allowed",
+      )
+    )[0].allowed,
+    false,
+  );
+  await withIntake(async () => {
+    await setAnonymousGatewayRole();
+    assert.equal(
+      await gateway({
+        secret: intakeSecret,
+        rateKey: "c".repeat(64),
+        kind: "enquiry",
+        data: enquiryInput,
+        requestId: randomUUID(),
+      }),
+      "accepted",
+    );
+  });
+});
+test("trusted JWT subjects are rejected through either claim representation", async () => {
+  await withIntake(async () => {
+    for (const jsonClaims of [false, true]) {
+      await db.exec("savepoint subject");
+      await setAnonymousGatewayRole();
+      if (jsonClaims)
+        await db.query("select set_config('request.jwt.claims',$1,true)", [
+          JSON.stringify({ sub: outsider }),
+        ]);
+      else
+        await db.query("select set_config('request.jwt.claim.sub',$1,true)", [
+          outsider,
+        ]);
+      await assert.rejects(
+        gateway({
+          secret: intakeSecret,
+          rateKey: "c".repeat(64),
+          kind: "enquiry",
+          data: enquiryInput,
+          requestId: randomUUID(),
+        }),
+        /unavailable/,
+      );
+      await db.exec("rollback to savepoint subject");
+    }
+  });
+});

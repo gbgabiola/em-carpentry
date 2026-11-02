@@ -20,8 +20,8 @@ The hosted project has these migrations applied:
 4. 20261102093450_explicit_owner_write_policies.sql
 5. 20261102093529_submission_retention.sql
 6. 20261102093740_schedule_submission_retention.sql
-
-20261102095500_secure_website_intake.sql is prepared and tested locally but is not applied to the hosted project. Do not enable intake or provision its credential row before that migration is approved and applied.
+7. 20261102134934_secure_website_intake.sql
+8. 20261102135812_intake_request_identity.sql
 
 Do not rerun applied migrations or the non-idempotent foundation. Inspect hosted history before applying future changes through the normal migration workflow. A new empty destination uses all tracked migrations in filename order.
 
@@ -60,7 +60,7 @@ The server validates origin, JSON content type, a 32 KiB streaming body limit, s
 
 The Netlify request header [X-Nf-Client-Connection-Ip](https://answers.netlify.com/t/upcoming-change-stripping-exposed-netlify-headers-from-function-and-proxy-requests/52665) supplies the network address. Do not substitute untrusted forwarding headers or enable the local platform in production. Missing/malformed trusted identity fails closed. Verify the native adapter preserves this header and cannot be made to trust a caller-supplied substitute during controlled activation.
 
-A private security-definer gateway is owned by website_intake, a NOLOGIN/NOBYPASSRLS role with scoped INSERT permissions and no customer SELECT/UPDATE/DELETE access. Its public wrapper is security-invoker. The cookie-free server client must supply a separate high-entropy credential; the database stores only its SHA-256 hash. Authenticated browser sessions and direct anonymous table writes are not submission credentials. The gateway fixes enquiries to New and reviews to Pending with website attribution and recorded consent, Extra fields, including publication status, are rejected.
+A private security-definer gateway is owned by website_intake, a NOLOGIN/NOBYPASSRLS role with scoped INSERT permissions and no customer SELECT/UPDATE/DELETE access. Its public wrapper is security-invoker. The cookie-free server client must supply a separate high-entropy credential; the database stores only its SHA-256 hash. Authenticated browser sessions and direct anonymous table writes are not submission credentials. The public wrapper checks auth.uid(); the private gateway independently checks the same trusted JWT subject without managed Auth-schema access for the restricted role. The gateway fixes enquiries to New and reviews to Pending with website attribution and recorded consent. Extra fields, including publication status, are rejected.
 
 Atomic database checks and inserts enforce three accepted submissions per network per rolling hour, eight per rolling 24 hours and 40 globally per UTC day, shared across enquiries/reviews. Duplicate retries do not consume additional quota. Limits can affect shared networks; direct contact remains available. Basic controls reduce abuse but do not replace monitoring. Keep quotas and pause behaviour suitable for the Free plan.
 
