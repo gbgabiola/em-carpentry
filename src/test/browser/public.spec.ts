@@ -150,3 +150,46 @@ test("provider outages keep the portfolio fallback and contact navigation usable
     .click();
   await expect(page).toHaveURL(/\/contact$/);
 });
+
+test("saved theme is restored when an early theme attribute is lost", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("em-theme", "dark");
+    const observer = new MutationObserver(() => {
+      if (document.documentElement?.hasAttribute("data-theme")) {
+        document.documentElement.removeAttribute("data-theme");
+        observer.disconnect();
+      }
+    });
+    observer.observe(document, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  });
+  await page.goto("/contact");
+  await expect(page.getByLabel("Your name", { exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Dark mode/ })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+test("theme controls still work when browser storage is unavailable", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      get() {
+        throw new DOMException("Synthetic blocked storage", "SecurityError");
+      },
+    });
+  });
+  await page.goto("/contact");
+  await expect(page.getByLabel("Your name", { exact: true })).toBeEnabled();
+  const toggle = page.getByRole("button", { name: /Dark mode/ });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});

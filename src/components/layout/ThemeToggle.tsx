@@ -5,6 +5,14 @@ import { useEffect, useState } from "react";
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
   useEffect(() => {
+    // Restore after hydration too: a streamed document can replace early attributes.
+    try {
+      document.documentElement.dataset.theme =
+        localStorage.getItem("em-theme") === "dark" ? "dark" : "light";
+    } catch {
+      if (!document.documentElement.dataset.theme)
+        document.documentElement.dataset.theme = "light";
+    }
     const sync = () =>
       setDark(document.documentElement.dataset.theme === "dark");
     sync();

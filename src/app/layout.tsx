@@ -1,5 +1,6 @@
 import { getSeoConfig } from "@/lib/seo/config";
 import type { Metadata } from "next";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -24,10 +25,10 @@ const themeScript = `try{document.documentElement.dataset.theme=localStorage.get
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang={siteConfig.locale} suppressHydrationWarning>
-      <head>
-        <script id="theme-init">{themeScript}</script>
-      </head>
       <body>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
