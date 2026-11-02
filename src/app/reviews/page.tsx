@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { PublicSubmissionForm } from "@/components/forms/PublicSubmissionForm";
 import { isIntakeAvailable } from "@/features/intake/server";
 import { getBusiness } from "@/features/business/data";
@@ -10,6 +11,8 @@ export const metadata = createPageMetadata(
   "Approved customer feedback and attributed Facebook testimonials for EM Carpentry & Home Maintenance.",
 );
 export default async function ReviewsPage() {
+  // Intake availability must follow runtime configuration, including after a backend-free build.
+  await connection();
   const [data, business] = await Promise.all([getReviews(), getBusiness()]);
   return (
     <div className="page-stack">

@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { PublicSubmissionForm } from "@/components/forms/PublicSubmissionForm";
 import { isIntakeAvailable } from "@/features/intake/server";
 import { getBusiness } from "@/features/business/data";
@@ -15,6 +16,8 @@ export async function generateMetadata() {
   );
 }
 export default async function ContactPage() {
+  // Intake availability must follow runtime configuration, including after a backend-free build.
+  await connection();
   const business = await getBusiness();
   return (
     <div className="page-stack">

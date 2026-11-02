@@ -10,7 +10,7 @@ netlify.toml selects Node 24, npm 11 and the pinned Next.js adapter. The native 
 
 Configure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY for Builds and Functions. Pin Functions to Node 24 with AWS_LAMBDA_JS_RUNTIME=nodejs24.x in Netlify's environment settings. Keep SITE_INDEXING_ENABLED=false for previews. SITE_URL must be blank or an approved HTTPS origin without a path/query/fragment. Local .env.local is not automatically uploaded.
 
-The approved test website uses INTAKE_ENABLED=true, INTAKE_ORIGIN, INTAKE_PLATFORM=netlify and a private INTAKE_SECRET in Builds and Functions, with its matching private database credential row enabled. Default both switches off on a new destination until collection is authorised. See [intake setup](backend-setup.md#website-intake). Enabling collection is separate from enabling search indexing.
+The approved test website uses INTAKE_ENABLED=true, INTAKE_ORIGIN, INTAKE_PLATFORM=netlify and a private INTAKE_SECRET in Builds and Functions, with its matching private database credential row enabled. Default both switches off on a new destination until collection is authorised. See [intake setup](backend-setup.md#website-intake). Enabling collection is separate from enabling search indexing. Contact and Reviews evaluate form availability at request time, including when the build had no backend configuration; valid runtime configuration and the database intake switch are still required.
 
 Do not place credentials in shell arguments, source, build logs or public assets. Use Netlify's supported browser login and local credential store; renew expired sessions through its normal authorisation flow.
 
