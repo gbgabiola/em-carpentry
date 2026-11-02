@@ -5,7 +5,7 @@ Business website built with Next.js App Router, React, strict TypeScript and Tai
 - [Test website](https://em-carpentry.netlify.app)
 - [Owner sign-in](https://em-carpentry.netlify.app/login)
 
-The test site has search indexing and public enquiry/review submissions disabled. Database-controlled retention deadlines and an hourly cleanup migration are implemented. Secure intake and abuse controls are implemented behind disabled application and database switches. Review the forms and privacy notice before authorising collection; approved launch content is still required for launch. There is no public registration, automated email delivery or customer portal.
+The test site has active enquiry and review forms with validation, signed form checks, durable submission limits, duplicate protection and hourly retention cleanup. Enquiries stay private; website reviews require owner moderation and publication consent. Search indexing remains disabled until business launch is approved. There is no public registration, automated email delivery or customer portal.
 
 ## Development
 
@@ -33,8 +33,9 @@ npm run check:hosting
 For a running connected preview:
 
 ```sh
-npm run check:preview -- https://em-carpentry.netlify.app
+npm run check:preview -- https://em-carpentry.netlify.app --intake-enabled
 npm run check:auth -- https://em-carpentry.netlify.app
+npm run check:backend -- --intake-ready
 ```
 
 Deploy through `npm run deploy:preview`, which keeps the complete Netlify adapter build enabled and creates a draft by default. Base-URL updates require `-- --prod` and deployment authorisation. See [deployment](docs/deployment.md).

@@ -10,7 +10,7 @@ netlify.toml selects Node 24, npm 11 and the pinned Next.js adapter. The native 
 
 Configure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY for Builds and Functions. Pin Functions to Node 24 with AWS_LAMBDA_JS_RUNTIME=nodejs24.x in Netlify's environment settings. Keep SITE_INDEXING_ENABLED=false for previews. SITE_URL must be blank or an approved HTTPS origin without a path/query/fragment. Local .env.local is not automatically uploaded.
 
-The prepared intake additionally uses INTAKE_ENABLED=false, INTAKE_ORIGIN, INTAKE_PLATFORM=netlify and a private INTAKE_SECRET in Builds and Functions. The database credential row must remain disabled until collection is authorised. See [intake setup](backend-setup.md#website-intake). Enabling collection is separate from enabling search indexing.
+The approved test website uses INTAKE_ENABLED=true, INTAKE_ORIGIN, INTAKE_PLATFORM=netlify and a private INTAKE_SECRET in Builds and Functions, with its matching private database credential row enabled. Default both switches off on a new destination until collection is authorised. See [intake setup](backend-setup.md#website-intake). Enabling collection is separate from enabling search indexing.
 
 Do not place credentials in shell arguments, source, build logs or public assets. Use Netlify's supported browser login and local credential store; renew expired sessions through its normal authorisation flow.
 
@@ -32,7 +32,7 @@ Keep the complete adapter build/plugin stages enabled. They generate the public 
 Read the returned deployment URL and verify it:
 
 ```sh
-npm run check:preview -- https://em-carpentry.netlify.app
+npm run check:preview -- https://em-carpentry.netlify.app --intake-enabled
 npm run check:auth -- https://em-carpentry.netlify.app
 ```
 
@@ -49,6 +49,6 @@ See [Netlify pricing](https://www.netlify.com/pricing/) and [Supabase pricing](h
 
 ## Launch and recovery
 
-Keep indexing and public submissions disabled until content/photo rights, service claims, privacy/retention, intake security and launch approval are complete. To enable indexing later, update both build and runtime values with the approved SITE_URL and rebuild. The sitemap includes only intended public routes and published projects.
+Public intake is separately approved on the test site. Keep search indexing disabled until content/photo rights, service claims and business launch approval are complete. Keep intake disabled on any new destination until privacy, retention, intake security and collection approval are checked. To enable indexing later, update both build and runtime values with the approved SITE_URL and rebuild. The sitemap includes only intended public routes and published projects.
 
 For recovery, retain source/migrations and independent private exports plus photo bytes. Standard Next.js remains portable to another compatible Node host. [Owner workflow](owner-workflow.md) explains export inspection, photo-path mapping and restoration order. Test a separate destination, including Auth and Storage, before relying on it for disaster recovery.

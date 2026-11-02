@@ -54,7 +54,7 @@ Supabase's [leaked password protection](https://supabase.com/docs/guides/auth/pa
 
 ## Website intake
 
-The contact and feedback forms are implemented but remain switched off on the approved test deployment. No new provider or CAPTCHA subscription is required. Enabling collection requires its own release review, independent of search indexing.
+The contact and feedback forms are active on the approved test deployment. Both the hosting flag and the exact private credential row are enabled. No new provider or CAPTCHA subscription is required. Keep intake disabled on new destinations until their collection and security checks are approved; search indexing is controlled separately.
 
 The server validates origin, JSON content type, a 32 KiB streaming body limit, shared field schemas, a honeypot and a network-bound signed form token. Tokens require three seconds of form age and expire after 30 minutes. Browser retries keep their original request identity, so an uncertain response does not create a second record. The form displays accessible field errors, pending and success states; no customer login or attachments are offered.
 
@@ -109,4 +109,4 @@ npm run check:backend
 
 The backend checker performs read-only live access/configuration checks. PostgreSQL tests use PGlite with Auth/Storage schema stand-ins; they do not replace actual provider login, refresh, revocation, upload or restore tests. Optional local Supabase CLI services require a supported Docker runtime.
 
-Public enquiry/review endpoints return 503 and anonymous database writes are denied. The approved retention periods are documented in the [owner workflow](owner-workflow.md). Retention migrations add database-controlled clocks, expiry-update guards and a private hourly cleanup job. The prepared server gateway and forms require both a disabled-by-default application switch and an explicitly enabled private credential row. Follow Website intake above; an application switch alone cannot grant database writes. See [recovery](owner-workflow.md) and [deployment](deployment.md).
+Public enquiry/review endpoints accept validated, signed submissions through the guarded server gateway. Direct anonymous table writes are denied. A paused or unconfigured application returns 503. The approved retention periods are documented in the [owner workflow](owner-workflow.md). Retention migrations add database-controlled clocks, expiry-update guards and a private hourly cleanup job. The server gateway and forms require both a disabled-by-default application switch and an explicitly enabled private credential row. Follow Website intake above; an application switch alone cannot grant database writes. See [recovery](owner-workflow.md) and [deployment](deployment.md).
