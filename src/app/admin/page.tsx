@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { retention } from "@/config/retention";
 import { requireAdmin } from "@/lib/auth/admin";
 export default async function AdminPage() {
   await requireAdmin();
@@ -8,7 +9,7 @@ export default async function AdminPage() {
       <p>
         Manage published portfolio content and manually selected Facebook
         testimonials. Public quotation and feedback submissions remain disabled
-        until retention is agreed.
+        until retention controls and secure intake are ready.
       </p>
       <p>
         <a className="text-link" href="/admin/export">
@@ -17,7 +18,8 @@ export default async function AdminPage() {
       </p>
       <p className="text-sm text-muted">
         Exports include private enquiry information. Store them securely outside
-        the website. Photo files need a separate backup.
+        the website. Photo files need a separate backup. Rotate export copies
+        and their separate photo backups after {retention.backupDays} days.
       </p>
       <ul>
         <li>

@@ -58,8 +58,8 @@ export default async function ReviewsPage() {
       <section className="prose-block">
         <h2>Have feedback to share?</h2>
         <p>
-          The online feedback form is disabled until the retention policy is
-          agreed. You can{" "}
+          The online feedback form is disabled until retention controls and
+          secure intake are ready. You can{" "}
           <a
             className="text-link"
             href={

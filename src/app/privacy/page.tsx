@@ -1,3 +1,4 @@
+import { retention } from "@/config/retention";
 import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
@@ -60,12 +61,26 @@ export default async function PrivacyPage() {
           </a>
           .
         </p>
+        <h2>Retention of website copies</h2>
+        <p>
+          The agreed policy keeps closed website enquiries for{" "}
+          {retention.closedEnquiryDays} days after closure and pending or
+          rejected reviews for {retention.unpublishedReviewDays} days. Published
+          reviews are kept while displayed with valid publication consent.
+          Permission can be withdrawn by contacting the business.
+        </p>
+        <p>
+          Website backup copies are to be rotated after {retention.backupDays}{" "}
+          days. These periods apply to website copies. Contracts, invoices and
+          other required business records follow separate retention rules.
+        </p>
         <h2>Before online submissions are introduced</h2>
         <p>
-          The notice must be updated to explain the selected hosting and data
-          providers, relevant overseas processing, retention periods, and how
-          enquiries and publication consent are managed. No retention period has
-          been agreed for future website submissions yet.
+          Public enquiry and review submissions remain disabled while deletion
+          controls and secure intake are prepared. Automatic deletion is not
+          active yet. Before forms are enabled, this notice will explain the
+          information collected, consent and moderation, hosting providers and
+          relevant overseas processing.
         </p>
       </div>
     </div>

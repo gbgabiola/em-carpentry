@@ -15,9 +15,9 @@ export default async function AdminEnquiriesPage() {
     <div className="page-stack">
       <h1>Private enquiries</h1>
       <p>
-        Website submissions are disabled until retention is agreed. No email
-        notifications are configured. Check this inbox personally when intake is
-        eventually enabled.
+        Website submissions are disabled until retention controls and secure
+        intake are ready. No email notifications are configured. Check this
+        inbox personally when intake is eventually enabled.
       </p>
       {!enquiries.data.length && <p>No enquiries.</p>}
       {enquiries.data.map((enquiry) => (

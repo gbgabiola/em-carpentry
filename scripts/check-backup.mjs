@@ -5,6 +5,8 @@ import {
   MAX_BACKUP_BYTES,
 } from "../src/features/backups/inspect.ts";
 
+import { getBackupRotation } from "../src/features/backups/rotation.ts";
+
 const file = process.argv[2];
 if (!file) {
   console.error(
@@ -33,7 +35,19 @@ if (!file) {
     } catch {
       throw new BackupValidationError("Export is not valid UTF-8 JSON.");
     }
-    console.log(JSON.stringify(inspectBackup(input), null, 2));
+    const summary = inspectBackup(input);
+    const rotation = getBackupRotation(summary.exportedAt);
+    console.log(
+      JSON.stringify({ ...summary, backupRotation: rotation }, null, 2),
+    );
+    if (rotation.status === "rotation-due")
+      console.warn(
+        "Backup rotation is due. Save and verify a fresh backup, then securely delete this expired copy and its separate photos. The checker does not delete files.",
+      );
+    else if (rotation.status === "future-dated")
+      console.warn(
+        "Export timestamp is in the future. Check the clocks before relying on the rotation date.",
+      );
     console.log(
       "Structure and references passed. Photo bytes, Auth identities and a successful restore are separate checks.",
     );

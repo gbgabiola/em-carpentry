@@ -30,7 +30,24 @@ The developer can inspect a saved export locally:
 npm run check:backup -- /private/path/em-carpentry-export.json
 ```
 
-The command validates structure, unique IDs/slugs/paths, photo references and publication constraints. It prints counts only and does not alter files, follow photo paths or contact providers. Its inspection limit is 64 MiB. A pass does not prove freshness, completeness, photo integrity or a successful restore; use database backup tooling for larger datasets. Keep independent copies and include backups in the retention/deletion policy.
+The command validates structure, unique IDs/slugs/paths, photo references and publication constraints. It prints counts and the export’s 30-day rotation deadline, with warnings for expired or future-dated exports. It does not alter/delete files, follow photo paths or contact providers. Its inspection limit is 64 MiB. A pass does not prove freshness, completeness, photo integrity or a successful restore; use database backup tooling for larger datasets. Keep independent copies and include backups in the retention/deletion policy.
+
+## Retention and deletion
+
+The approved periods apply to website copies, not contracts, invoices or other separately required business records:
+
+| Website data | Retention |
+| --- | --- |
+| Closed enquiries | 90 days after closure |
+| Pending or rejected reviews | 30 days |
+| Published reviews | While displayed with valid publication consent |
+| JSON exports and separate photo backup copies | Rotate after 30 days |
+
+Automatic deletion and closure/moderation timestamps are not implemented yet. Keep public submissions disabled until reliable timestamps, deletion enforcement and secure intake are tested. Before enabling intake, define the 30-day review clock for each moderation transition and ensure repeat edits cannot extend it accidentally. Do not infer closure dates from record creation dates.
+
+For existing curated testimonials, unpublish immediately if consent is withdrawn and use permanent deletion when appropriate. Handle access, correction and deletion requests through the published business contact. Do not republish withdrawn consent from a backup.
+
+Keep backups in protected storage outside Git/public assets. Save and verify a replacement before the old copy reaches 30 days; securely remove expired JSON copies and their associated photo copies from every location you control, including synced folders and recycle bins where applicable. Renaming, copying or checking an export does not restart its age. The checker warns only; it cannot rotate backups or inspect separate photo files. Review retention and consent before any restoration, and remove records already due for deletion before reconnecting the destination.
 
 ## Recovery and cleanup
 

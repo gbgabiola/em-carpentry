@@ -5,7 +5,7 @@ Business website built with Next.js App Router, React, strict TypeScript and Tai
 - [Test website](https://em-carpentry.netlify.app)
 - [Owner sign-in](https://em-carpentry.netlify.app/login)
 
-The test site has search indexing and public enquiry/review submissions disabled. Retention, intake security and approved launch content must be settled before enabling them. There is no public registration, automated email delivery or customer portal.
+The test site has search indexing and public enquiry/review submissions disabled. Retention periods are approved; deletion controls, intake security and approved launch content are still required before enabling them. There is no public registration, automated email delivery or customer portal.
 
 ## Development
 
@@ -49,7 +49,7 @@ Download the dashboard JSON export and photo files separately. Inspect an export
 npm run check:backup -- /private/path/em-carpentry-export.json
 ```
 
-The inspector validates schema and references, prints counts only and does not restore records or verify photo bytes. `npm run fixtures:owner` generates ignored synthetic images for upload testing.
+The inspector validates schema and references, prints counts and a 30-day rotation deadline, and does not restore records, delete files or verify photo bytes. `npm run fixtures:owner` generates ignored synthetic images for upload testing.
 
 ## Documentation
 
