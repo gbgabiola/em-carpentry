@@ -29,3 +29,7 @@ supabase/.branches/
 
 # Private local verification fixtures; never publish as portfolio assets
 .verification/
+
+# Optional browser-test reports and artifacts
+playwright-report/
+test-results/

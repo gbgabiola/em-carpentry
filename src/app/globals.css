@@ -87,6 +87,7 @@ h3 {
 }
 .header-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -94,6 +95,7 @@ h3 {
 }
 .brand-link {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 0.85rem;
   font-weight: 600;
@@ -428,6 +430,7 @@ h3 {
 }
 .owner-form fieldset {
   display: grid;
+  min-width: 0;
   gap: 1.2rem;
 }
 .owner-form label,

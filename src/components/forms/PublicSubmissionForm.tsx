@@ -119,8 +119,14 @@ export function PublicSubmissionForm({
     };
   }, [available, kind]);
   useEffect(() => {
-    if (focusNotice.current && notice) noticeRef.current?.focus();
-  }, [notice]);
+    if (!focusNotice.current || !notice) return;
+    const firstInvalid = Object.keys(errors)[0];
+    const field = firstInvalid
+      ? document.getElementById(`${prefix}-${firstInvalid}`)
+      : null;
+    if (field && !field.matches(":disabled")) field.focus();
+    else noticeRef.current?.focus();
+  }, [notice, errors, prefix]);
   const id = (name: string) => `${prefix}-${name}`;
   const attrs = (name: string) => ({
     id: id(name),
@@ -154,9 +160,6 @@ export function PublicSubmissionForm({
     if (!parsed.success) {
       setErrors(parsed.fieldErrors);
       setNotice("Please check the highlighted fields.");
-      document
-        .getElementById(id(Object.keys(parsed.fieldErrors)[0] || ""))
-        ?.focus();
       return;
     }
     inFlight.current = true;

@@ -20,6 +20,8 @@ Do not place credentials in shell arguments, source, build logs or public assets
 npm ci
 npm run check
 npm test
+npm run browser:install
+npm run test:browser
 npm run check:hosting
 # Full build/plugin flow and a draft upload to the linked project:
 npm run deploy:preview

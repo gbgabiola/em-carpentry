@@ -24,6 +24,7 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
       SITE_INDEXING_ENABLED: "false"
       SITE_URL: ""
+      INTAKE_ENABLED: "false"
       SUPABASE_URL: ""
       SUPABASE_PUBLISHABLE_KEY: ""
     steps:
@@ -42,3 +43,7 @@ jobs:
         run: npm run check
       - name: Run tests
         run: npm test
+      - name: Install Chromium for isolated browser tests
+        run: npm run browser:install -- --with-deps
+      - name: Run desktop, phone and accessibility checks
+        run: npm run test:browser

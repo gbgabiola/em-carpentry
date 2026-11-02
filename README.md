@@ -30,6 +30,15 @@ npm run check:hosting
 
 `check` runs lint, strict type checking and a production build. Run it before the tests, which start a separate unconfigured production server and exercise validation, image processing and SQL permissions. GitHub Actions runs quality checks on public-repository pushes and pull requests with read-only permissions and no provider credentials.
 
+Browser checks use pinned development-only [Playwright and axe](https://playwright.dev/docs/accessibility-testing) packages. Install Chromium once, then run against the existing production build:
+
+```sh
+npm run browser:install
+npm run test:browser
+```
+
+On Linux hosts missing Chromium system libraries, use npm run browser:install -- --with-deps with the appropriate system-package permissions. The runner also supports optional extracted libraries in .verification/browser-libraries/root/usr/lib/x86_64-linux-gnu on restricted x64 Linux hosts. Browser binaries, screenshots and traces stay in ignored .verification directories. The suite starts an isolated server on 127.0.0.1:3107, substitutes a read-only local backend and intercepts form submissions; it never reads hosted customer data or submits to the live site. It covers Chromium desktop/phone viewports, both themes, keyboard journeys, enlarged text, automated WCAG checks and form states. It does not replace Safari/Firefox, assistive-technology or real owner-session testing. GitHub Actions runs the same suite on the existing public-repository runner without provider credentials or uploaded artifacts.
+
 For a running connected preview:
 
 ```sh
