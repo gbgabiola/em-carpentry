@@ -61,6 +61,12 @@ For existing curated testimonials, unpublish immediately if consent is withdrawn
 
 Keep backups in protected storage outside Git/public assets. Save and verify a replacement before the old copy reaches 30 days; securely remove expired JSON copies and their associated photo copies from every location you control, including synced folders and recycle bins where applicable. Renaming, copying or checking an export does not restart its age. The checker warns only; it cannot rotate backups or inspect separate photo files. Review retention and consent before any restoration, and remove records already due for deletion before reconnecting the destination.
 
+## Synthetic recovery rehearsal
+
+The developer can run npm run rehearse:recovery with no arguments. It uses generated records and colour-block WebP photos in fresh in-memory databases. It checks all migrations, each exported table, original photo object paths, byte checksums, expired/withdrawn-record exclusions, microsecond timestamps, unchanged retention deadlines, SQL rollback and replacement-owner membership/permissions. Missing or corrupt synthetic photos are rejected.
+
+This is not a restore tool for your saved exports. It does not read your files, contact providers, change the website or rotate backups. Its Auth identities, Storage metadata and Cron are SQL stand-ins; real sign-in/sessions, photo uploads/downloads through Storage and the actual hourly worker still need a separate recovery destination.
+
 ## Recovery and cleanup
 
 For a separate recovery destination, apply schema migrations, restore public content respecting foreign keys, upload each photo at its original object path, provision the destination owner through Auth and grant the correct private membership. Verify private/public visibility and sessions before using the destination. Auth identities/sessions and photo bytes are separate from the JSON export; do not blindly restore old owner UUIDs. Schema-v3 exports include retention clocks. Before restoring private records, exclude anything expired or with withdrawn publication permission. A trusted operator must preserve original clocks and validate constraints in a controlled restore transaction; normal application inserts set new clocks and must not be used for recovery. Legacy schema-v2 exports lack these dates: obtain reliable closure/moderation evidence or omit the affected private records rather than inventing dates.

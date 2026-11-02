@@ -59,6 +59,14 @@ Download the dashboard JSON export and photo files separately. Inspect an export
 npm run check:backup -- /private/path/em-carpentry-export.json
 ```
 
+Run the developer's synthetic-only recovery rehearsal separately:
+
+```sh
+npm run rehearse:recovery
+```
+
+It creates fresh in-memory databases, applies the real migrations and checks JSON/retention round-tripping, photo byte/path mapping, SQL rollback and replacement-owner permissions. It accepts no real export paths, connection strings or credentials. Auth/Storage/Cron services are emulated; provider sign-in, Storage API and scheduler recovery remain separate checks. No customer backup files are read.
+
 The inspector validates schema, references and schema-v3 retention clocks, prints counts and a 30-day rotation deadline, and does not restore records, delete files or verify photo bytes. Legacy schema-v2 exports remain inspectable with a retention-clock warning. `npm run fixtures:owner` generates ignored synthetic images for upload testing. Private intake configuration and activation are documented in [backend setup](docs/backend-setup.md#website-intake).
 
 ## Documentation

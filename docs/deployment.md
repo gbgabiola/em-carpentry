@@ -60,3 +60,18 @@ See [Netlify pricing](https://www.netlify.com/pricing/) and [Supabase pricing](h
 Public intake is separately approved on the test site. Keep search indexing disabled until content/photo rights, service claims and business launch approval are complete. Keep intake disabled on any new destination until privacy, retention, intake security and collection approval are checked. To enable indexing later, update both build and runtime values with the approved SITE_URL and rebuild. The sitemap includes only intended public routes and published projects.
 
 For recovery, retain source/migrations and independent private exports plus photo bytes. Standard Next.js remains portable to another compatible Node host. [Owner workflow](owner-workflow.md) explains export inspection, photo-path mapping and restoration order. Test a separate destination, including Auth and Storage, before relying on it for disaster recovery.
+
+### Recovery verification
+
+Run npm run rehearse:recovery for the synthetic-only, in-memory rehearsal. It prints aggregate checks and limitations, accepts no arguments or real data, and needs no provider credentials. The same rehearsal runs in npm test and GitHub CI. It applies the repository migrations with local Auth/Storage/Cron stand-ins; the stand-in SQL must not be copied into managed provider schemas.
+
+A provider-level rehearsal is still required before claiming full disaster recovery. Running the real Supabase services locally also requires a working Docker daemon and WSL integration; the in-memory command does not start those services.
+
+1. Use a separately approved isolated destination and verify its cost/limits before provisioning. Keep intake disabled.
+2. Apply migrations through the supported provider workflow. Provision a fresh owner privately through Auth, disable public registration and grant only the correct private website membership. Do not restore old session tokens or blindly reuse owner UUIDs.
+3. Validate the export and photo set. Resolve legacy retention evidence, exclude expired/withdrawn records, and preserve original clocks through a controlled restore. Normal website inserts restart those clocks.
+4. Upload photo bytes through the Storage API at the paths in project_images.path, preserving the mapping from downloaded image IDs. Database metadata is not the photo backup.
+5. Check actual owner sign-in, reload/sign-out, owner changes, public published content and private draft/archive/enquiry/pending-review visibility over HTTPS.
+6. Verify the real hourly retention worker, cleanup after recovery and the backup rotation process. Configure a fresh server-only intake credential only when collection at that destination is approved.
+
+The local rehearsal does not test provider extensions/workers, encryption roots, account recovery emails, Auth sessions, HTTP Storage delivery or platform recovery guarantees. Follow the [Supabase recovery guidance](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore) for a provider migration; preserve independent photo backups and review any additional features used by the project.
