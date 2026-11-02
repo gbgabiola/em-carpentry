@@ -73,3 +73,7 @@ The quality workflow runs npm ci, npm run check and npm test on main pushes, pul
 The checkpoint was pushed and [Quality checks passed on GitHub](https://github.com/gbgabiola/em-carpentry/actions/runs/41336381208), including all 54 tests. Passing local commands does not prove a hosted workflow result, and a passing check does not itself enforce branch protection or prevent Netlify auto-deploys. Before connecting Netlify, decide how its deployment workflow will honour successful checks and keep unfinished content unindexed.
 
 Netlify CLI was authorised through the supported browser flow, this checkout was linked to em-carpentry and the explicitly approved Free test preview was published. No Git continuous-deployment connection was created. Use npm run deploy:preview to retain the adapter build/plugin stages; a raw --no-build upload can omit generated routing and publish build files. See hosted-preview.md for verified results and the remaining manual checks. Account authentication must stay in the provider's supported UI; do not send access tokens or passwords in chat.
+
+## Offline export inspection
+
+Before a recovery rehearsal, run npm run check:backup -- /private/path/em-carpentry-export.json. This developer command needs no provider credentials or environment variables and makes no network request. It validates the schema-v2 content format and internal references without restoring anything or printing customer values. See owner-workflow.md for limits and the remaining independent photo/Auth/restore checks.

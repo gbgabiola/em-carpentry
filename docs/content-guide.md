@@ -8,7 +8,7 @@ Only genuine, approved reviews with publication consent may be shown. No reviews
 
 Business hours, pricing, licensing, qualifications, awards and response guarantees have not been verified and must not be invented. Use Australian English and the business Facebook page. Confirm and test any Messenger deep link before adding it.
 
-Later handover must explain secure owner sign-in, project/photo editing, publishing and archiving, review moderation, private enquiries, data deletion and independent exports. These workflows are implemented locally but still need live Auth/Storage verification before handover.
+Later handover must explain secure owner sign-in, project/photo editing, publishing and archiving, review moderation, private enquiries, data deletion and independent exports. The Free test site is hosted, and the user confirmed sign-in, photo upload, publishing/archiving and password change. See hosted-preview.md for independently verified checks and remaining handover gates.
 
 Public pages now include About, Services, Projects, Reviews, Contact, FAQ and a preview Privacy notice. Service/project/review placeholders deliberately contain no unverified examples. Manage services and FAQs under /admin/content once connected and after both migrations have been applied. Review and approve each draft before publishing. The theme switch saves only the browser’s display preference and collects no enquiry data.
 
@@ -28,3 +28,7 @@ The user clarified that most existing ratings, reviews and testimonials come fro
 See [owner workflow](owner-workflow.md) for draft/publish/archive, photo uploads and metadata editing, manual Facebook curation, moderation, private enquiries, permanent deletion and export. No actual project/customer content has been seeded. Complete live verification before relying on the owner interface.
 
 The second migration adds private FAQ drafts from the verified starter copy; no offered-service inventory is seeded. Owner approval is required for publishing both services and FAQs. Before/after comparison is optional and requires one suitable pair plus the project setting; visual alignment must be checked by the owner.
+
+## Backup inspection before significant content changes
+
+Download the dashboard export and keep it outside public assets, Git and chat, with separate copies of approved photo bytes. The developer can run npm run check:backup -- /private/path/em-carpentry-export.json to inspect schema and internal references offline without printing customer content. This does not prove the backup is complete or restorable; rehearse recovery separately and include backup copies in the agreed retention/deletion process. No provider credentials or environment variables are needed by the inspection command.

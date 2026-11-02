@@ -47,6 +47,8 @@ Expected: sign out, protected pages redirect to /login, the new password signs i
 
 Download business/customer data from /admin/export and keep the JSON outside public assets, Git and chat. Confirm schemaVersion 2 and the seven expected content tables: projects, project_images, reviews, enquiries, business_settings, services and faqs. Download photo bytes separately before deleting meaningful content. Auth credentials/sessions are not part of that export. Verify the export route is inaccessible after sign-out.
 
+Inspect the saved JSON locally with npm run check:backup -- /private/path/em-carpentry-export.json. It prints counts only and does not alter the backup, follow photo paths or contact providers. A pass validates structure/references, not completeness or recoverability.
+
 A complete restore test still needs an isolated destination, schema migrations, foreign-key-aware content restore, photo-object path preservation and separately provisioned owner identity. Do not treat a downloaded JSON file as a proven recoverable backup. See owner-workflow.md for recovery and backend-setup.md for remaining live checks.
 
 ## Results

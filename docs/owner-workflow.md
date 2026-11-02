@@ -17,6 +17,16 @@ For a private draft/upload → publication → archive/removal test and account-
 
 Use the dashboard’s Download business and customer data link for a paginated JSON export of all projects, photo metadata, reviews, enquiries and business settings. It includes private information: save it outside the public website and source repository. It does not contain account passwords, cookies or tokens. Photo bytes are separate; use each photo’s Download photo for backup link and retain the mapping to project_images.path in the export. Export before significant changes and agree a recurring backup routine at handover.
 
+After downloading the JSON, the developer can check its structure offline:
+
+```sh
+npm run check:backup -- /private/path/em-carpentry-export.json
+```
+
+This command reads only the selected file. It validates the current schema version, all seven content tables, unique IDs/slugs/photo paths, image-to-project references and publication/consent constraints. It prints a timestamp and counts, never customer text or contact details, and does not rewrite the file, contact a provider or follow image paths. Files above 64 MiB are rejected by this inspection tool; use supported database backup tooling for larger datasets. Unexpected fields are rejected rather than silently removed, so preserve any original export and ask the developer to review schema differences.
+
+A passing inspection does not prove completeness or freshness: omitted records cannot be discovered from a file alone. It also does not verify separate photo bytes, Auth recovery or a successful restore. Keep an independent protected copy outside Git/public assets, retain the photo path mapping and include backup copies in the agreed retention/deletion policy. Do not paste private exports into chat. Automated tests use synthetic snapshots; no real customer export has been inspected by the assistant.
+
 For a full database restore, the developer should retain migrations in Git and export public content data with the Supabase CLI to a secure, off-repository path. Example after linking the intended project: npx supabase db dump --linked --data-only --schema public --file /secure/off-repo/content.sql. Do not place backups in public/ or commit them. SQL backups do not include photo bytes. Download the private bucket separately through authenticated Storage tooling, preserving object paths. Restoring user identities/sessions is separate: provision the owner account and membership in the destination project through the supported Auth workflow. Do not blindly restore old owner UUID memberships into a different Auth instance.
 
 Test restoration into a disposable project before relying on a backup. Apply schema migrations, restore content respecting foreign keys, restore photo objects at their original paths, provision the destination owner, then verify drafts/reviews/enquiries remain private before publishing anything. JSON exports are portable source data; a one-click JSON importer has not been implemented.

@@ -96,3 +96,5 @@ Use npm run deploy:preview for the full adapter build plus a draft upload; it do
 The next hands-on checkpoint is [owner workflow acceptance](docs/owner-acceptance-checks.md): private draft/upload, publishing, archive/removal and account security using synthetic fixtures. No passwords or customer images are needed in chat.
 
 Run npm run fixtures:owner to create ignored synthetic small/4 MiB/oversized JPEGs for that checkpoint. The generator verifies local processing only and makes no provider changes.
+
+Use npm run check:backup -- /private/path/em-carpentry-export.json for offline inspection of a downloaded dashboard export. It checks schema and references and prints counts only; photo bytes, completeness and an actual restore remain separate checks. Keep the JSON outside Git/public assets and chat. See [export and recovery](docs/owner-workflow.md).
