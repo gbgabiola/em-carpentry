@@ -88,6 +88,22 @@ await check("missing private photos are not downloadable", async () => {
     .download("missing-security-probe.webp");
   assert.ok(result.error);
 });
+if (process.argv.includes("--intake-ready")) {
+  await check(
+    "submission gateway rejects calls without its private server credential",
+    async () => {
+      const result = await client.rpc("submit_website_submission", {
+        p_kind: "enquiry",
+        p_secret: "",
+        p_request_id: "99999999-9999-4999-8999-999999999999",
+        p_rate_key: "0".repeat(64),
+        p_data: {},
+      });
+      assert.ok(result.error);
+      assert.equal(result.error.code, "42501");
+    },
+  );
+}
 let signupDisabled = false;
 try {
   const response = await fetch(`${config.url}/auth/v1/settings`, {

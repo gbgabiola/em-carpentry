@@ -23,7 +23,8 @@
     "fixtures:owner": "node scripts/create-owner-fixtures.mjs",
     "check:preview": "node scripts/check-hosted-preview.mjs",
     "check:hosting": "npx --yes netlify-cli@27.16.1 build --offline --context deploy-preview",
-    "deploy:preview": "npx --yes netlify-cli@27.16.1 deploy --context deploy-preview"
+    "deploy:preview": "npx --yes netlify-cli@27.16.1 deploy --context deploy-preview",
+    "prepare:intake": "node scripts/prepare-intake-config.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

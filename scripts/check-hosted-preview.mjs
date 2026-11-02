@@ -6,6 +6,7 @@ if (!target)
     "Usage: npm run check:preview -- https://your-test-site.example",
   );
 const origin = new URL(target);
+const intakeEnabled = process.argv.includes("--intake-enabled");
 if (
   !["http:", "https:"].includes(origin.protocol) ||
   origin.username ||
@@ -58,11 +59,24 @@ for (const path of assets) {
 }
 console.log(`PASS ${assets.size} referenced script/style/image assets`);
 for (const path of ["/api/enquiries", "/api/reviews"]) {
-  const response = await request(path, { method: "POST" });
-  assert.equal(response.status, 503, path);
+  // Deliberately incomplete: this check must never submit customer data.
+  const response = await request(path, {
+    method: "POST",
+    headers: { Origin: origin.origin, "Content-Type": "application/json" },
+    body: "{}",
+  });
+  assert.equal(response.status, intakeEnabled ? 400 : 503, path);
+  assert.match(response.headers.get("cache-control") || "", /no-store/);
   await response.body?.cancel();
-  console.log(`PASS public intake remains disabled: ${path}`);
+  console.log(
+    `PASS ${intakeEnabled ? "invalid intake rejected" : "public intake remains disabled"}: ${path}`,
+  );
 }
+const tokenResponse = await request("/api/intake/token?kind=enquiry");
+assert.equal(tokenResponse.status, intakeEnabled ? 200 : 503);
+assert.match(tokenResponse.headers.get("cache-control") || "", /no-store/);
+await tokenResponse.body?.cancel();
+console.log("PASS form security check matches the expected intake state");
 const robots = await request("/robots.txt");
 assert.equal(robots.status, 200);
 assert.match(await robots.text(), /Disallow: \//);

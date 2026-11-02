@@ -1,3 +1,6 @@
+import { randomUUID } from "node:crypto";
+import { handleSubmission } from "../features/intake/handler.ts";
+import { getNetworkKey, issueFormToken } from "../features/intake/security.ts";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { after, before, test } from "node:test";
@@ -666,4 +669,321 @@ test("hourly scheduler calls the same cleanup and prunes only its own old histor
   } finally {
     await db.exec("rollback");
   }
+});
+
+const intakeSecret = "d".repeat(64);
+const intakeConfig = {
+  secret: intakeSecret,
+  origin: "https://example.test",
+  platform: "netlify",
+};
+const enquiryInput = {
+  name: "Synthetic intake",
+  contact_method: "email",
+  contact_details: "intake@example.test",
+  description: "Synthetic intake request",
+  suburb: "",
+};
+const reviewInput = {
+  display_name: "Synthetic intake",
+  rating: 5,
+  body: "Synthetic feedback",
+  consent: true,
+};
+async function withIntake(work) {
+  await db.exec("begin");
+  try {
+    await db.query(
+      "insert into private.intake_credentials(id,key_hash,enabled) values(1,sha256(convert_to($1,'UTF8')),true)",
+      [intakeSecret],
+    );
+    return await work();
+  } finally {
+    await db.exec("rollback");
+  }
+}
+async function setAnonymousGatewayRole() {
+  await db.exec("set local role anon");
+  await db.query("select set_config('request.jwt.claim.sub','',true)");
+}
+async function gateway(input) {
+  return (
+    await rows(
+      "select public.submit_website_submission($1,$2,$3,$4,$5::jsonb) as result",
+      [
+        input.kind,
+        input.secret,
+        input.requestId,
+        input.rateKey,
+        JSON.stringify(input.data),
+      ],
+    )
+  )[0].result;
+}
+test("real handler-to-database intake saves once, keeps enquiries private and requires moderation", async () => {
+  await withIntake(async () => {
+    await setAnonymousGatewayRole();
+    const now = Date.now();
+    const ip = "203.0.113.40";
+    const key = getNetworkKey(
+      new Headers({ "x-nf-client-connection-ip": ip }),
+      intakeConfig,
+    );
+    const deps = { config: intakeConfig, now: () => now, submit: gateway };
+    const submit = (kind, token, data) =>
+      handleSubmission(
+        new Request(
+          intakeConfig.origin +
+            "/api/" +
+            (kind === "enquiry" ? "enquiries" : "reviews"),
+          {
+            method: "POST",
+            headers: {
+              origin: intakeConfig.origin,
+              "content-type": "application/json",
+              "x-nf-client-connection-ip": ip,
+            },
+            body: JSON.stringify({ token, data }),
+          },
+        ),
+        kind,
+        deps,
+      );
+    const enquiryToken = issueFormToken(
+      "enquiry",
+      key,
+      intakeSecret,
+      now - 3000,
+    );
+    const reviewToken = issueFormToken("review", key, intakeSecret, now - 3000);
+    const results = await Promise.all([
+      submit("enquiry", enquiryToken, enquiryInput),
+      submit("enquiry", enquiryToken, enquiryInput),
+    ]);
+    assert.deepEqual(results.map((result) => result.status).sort(), [200, 201]);
+    assert.equal(
+      (await submit("review", reviewToken, reviewInput)).status,
+      201,
+    );
+    assert.equal(
+      (
+        await submit("enquiry", enquiryToken, {
+          ...enquiryInput,
+          description: "Altered synthetic description",
+        })
+      ).status,
+      409,
+    );
+    assert.equal(
+      (
+        await rows(
+          "select id from public.reviews where display_name='Synthetic intake'",
+        )
+      ).length,
+      0,
+    );
+    await db.exec("reset role");
+    assert.equal(
+      (
+        await rows(
+          "select id from public.enquiries where name='Synthetic intake'",
+        )
+      ).length,
+      1,
+    );
+    assert.equal(
+      (
+        await rows(
+          "select count(*)::integer as count from private.intake_requests",
+        )
+      )[0].count,
+      2,
+    );
+    const review = (
+      await rows(
+        "select id,status,source,retention_expires_at=retention_started_at+interval '720 hours' as clock from public.reviews where display_name='Synthetic intake'",
+      )
+    )[0];
+    assert.equal(review.status, "pending");
+    assert.equal(review.source, "website");
+    assert.equal(review.clock, true);
+    await db.query("update public.reviews set status='approved' where id=$1", [
+      review.id,
+    ]);
+    await setAnonymousGatewayRole();
+    assert.equal(
+      (await rows("select id from public.reviews where id=$1", [review.id]))
+        .length,
+      1,
+    );
+  });
+});
+test("durable quotas count enquiries and reviews together and cannot be bypassed by new nonces", async () => {
+  await withIntake(async () => {
+    await setAnonymousGatewayRole();
+    const input = {
+      secret: intakeSecret,
+      rateKey: "f".repeat(64),
+      kind: "enquiry",
+      data: enquiryInput,
+    };
+    for (let i = 0; i < 3; i++)
+      assert.equal(
+        await gateway({ ...input, requestId: randomUUID() }),
+        "accepted",
+      );
+    assert.equal(
+      await gateway({
+        ...input,
+        kind: "review",
+        data: reviewInput,
+        requestId: randomUUID(),
+      }),
+      "rate_limited",
+    );
+    await db.exec("reset role");
+    assert.equal(
+      (
+        await rows(
+          "select count(*)::integer as count from private.intake_requests",
+        )
+      )[0].count,
+      3,
+    );
+  });
+});
+test("global daily quota bounds total accepted writes across different network identities", async () => {
+  await withIntake(async () => {
+    await db.exec(
+      "insert into private.intake_requests(request_id,kind,rate_key,payload_hash) select gen_random_uuid(),'enquiry',encode(sha256(convert_to(value::text,'UTF8')),'hex'),sha256('fixture'::bytea) from generate_series(1,40) value",
+    );
+    await setAnonymousGatewayRole();
+    assert.equal(
+      await gateway({
+        secret: intakeSecret,
+        rateKey: "e".repeat(64),
+        kind: "enquiry",
+        data: enquiryInput,
+        requestId: randomUUID(),
+      }),
+      "rate_limited",
+    );
+  });
+});
+test("the gateway rejects bad credentials, disabled collection and forged publication fields", async () => {
+  await withIntake(async () => {
+    for (const [secret, data] of [
+      ["wrong", enquiryInput],
+      [intakeSecret, { ...enquiryInput, status: "closed" }],
+    ]) {
+      await db.exec("savepoint blocked");
+      await setAnonymousGatewayRole();
+      await assert.rejects(
+        gateway({
+          secret,
+          rateKey: "e".repeat(64),
+          kind: "enquiry",
+          data,
+          requestId: randomUUID(),
+        }),
+        /unavailable|Invalid/,
+      );
+      await db.exec("rollback to savepoint blocked");
+    }
+    await db.exec("reset role");
+    await db.exec(
+      "update private.intake_credentials set enabled=false where id=1; savepoint disabled",
+    );
+    await setAnonymousGatewayRole();
+    await assert.rejects(
+      gateway({
+        secret: intakeSecret,
+        rateKey: "e".repeat(64),
+        kind: "enquiry",
+        data: enquiryInput,
+        requestId: randomUUID(),
+      }),
+      /unavailable/,
+    );
+    await db.exec("rollback to savepoint disabled");
+  });
+});
+test("the dedicated gateway role cannot read customer data, change content or bypass RLS", async () => {
+  const role = (
+    await rows(
+      "select rolcanlogin,rolbypassrls from pg_roles where rolname='website_intake'",
+    )
+  )[0];
+  assert.deepEqual(role, { rolcanlogin: false, rolbypassrls: false });
+  for (const table of [
+    "public.enquiries",
+    "public.reviews",
+    "private.admin_users",
+  ]) {
+    assert.equal(
+      (
+        await rows(
+          "select has_table_privilege('website_intake',$1,'SELECT') as allowed",
+          [table],
+        )
+      )[0].allowed,
+      false,
+    );
+    assert.equal(
+      (
+        await rows(
+          "select has_table_privilege('website_intake',$1,'UPDATE') as allowed",
+          [table],
+        )
+      )[0].allowed,
+      false,
+    );
+  }
+  assert.equal(
+    (
+      await rows(
+        "select has_function_privilege('authenticated','public.submit_website_submission(text,text,uuid,text,jsonb)','EXECUTE') as allowed",
+      )
+    )[0].allowed,
+    false,
+  );
+});
+test("hourly cleanup removes old security identifiers without extending customer retention", async () => {
+  await withIntake(async () => {
+    await db.exec(
+      "insert into private.intake_requests(request_id,kind,rate_key,payload_hash,created_at) values(gen_random_uuid(),'enquiry',repeat('e',64),sha256('fixture'::bytea),now()-interval '25 hours'),(gen_random_uuid(),'enquiry',repeat('e',64),sha256('fixture'::bytea),now())",
+    );
+    await rows("select private.purge_expired_submissions()");
+    assert.equal(
+      (
+        await rows(
+          "select count(*)::integer as count from private.intake_requests",
+        )
+      )[0].count,
+      1,
+    );
+  });
+});
+
+test("the per-network eight-per-24-hour quota is independent of the hourly window", async () => {
+  await withIntake(async () => {
+    await db.exec(
+      "insert into private.intake_requests(request_id,kind,rate_key,payload_hash,created_at) select gen_random_uuid(),'enquiry',repeat('e',64),sha256('fixture'::bytea),now()-interval '2 hours' from generate_series(1,8)",
+    );
+    await setAnonymousGatewayRole();
+    const input = {
+      secret: intakeSecret,
+      rateKey: "e".repeat(64),
+      kind: "enquiry",
+      data: enquiryInput,
+      requestId: randomUUID(),
+    };
+    assert.equal(await gateway(input), "rate_limited");
+    await db.exec("reset role");
+    await db.exec(
+      "update private.intake_requests set created_at=now()-interval '25 hours'",
+    );
+    await setAnonymousGatewayRole();
+    assert.equal(await gateway(input), "accepted");
+  });
 });

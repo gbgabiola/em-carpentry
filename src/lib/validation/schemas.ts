@@ -80,7 +80,10 @@ export const enquirySchema = z
   });
 export const reviewSchema = z.object({
   display_name: text(100),
-  rating: z.coerce.number().int().min(1).max(5),
+  rating: z.union([
+    z.number().int().min(1).max(5),
+    z.enum(["1", "2", "3", "4", "5"]).transform(Number),
+  ]),
   body: text(3000),
   consent: z.literal(true, { error: "Publication consent is required." }),
 });

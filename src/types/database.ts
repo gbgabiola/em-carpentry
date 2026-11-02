@@ -93,7 +93,19 @@ export interface Database {
       business_settings: Table<BusinessSettings>;
     };
     Views: { [_ in never]: never };
-    Functions: { is_admin: { Args: Record<string, never>; Returns: boolean } };
+    Functions: {
+      is_admin: { Args: Record<string, never>; Returns: boolean };
+      submit_website_submission: {
+        Args: {
+          p_kind: string;
+          p_secret: string;
+          p_request_id: string;
+          p_rate_key: string;
+          p_data: Record<string, unknown>;
+        };
+        Returns: "accepted" | "duplicate" | "rate_limited" | "invalid";
+      };
+    };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
   };

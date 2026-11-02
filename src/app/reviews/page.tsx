@@ -1,3 +1,5 @@
+import { PublicSubmissionForm } from "@/components/forms/PublicSubmissionForm";
+import { isIntakeAvailable } from "@/features/intake/server";
 import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { PageIntro } from "@/components/sections/PageIntro";
@@ -58,8 +60,7 @@ export default async function ReviewsPage() {
       <section className="prose-block">
         <h2>Have feedback to share?</h2>
         <p>
-          The online feedback form is disabled until retention controls and
-          secure intake are ready. You can{" "}
+          Use the feedback form below when available, or{" "}
           <a
             className="text-link"
             href={
@@ -73,6 +74,7 @@ export default async function ReviewsPage() {
           to discuss your feedback. Feedback sent by email will not
           automatically be published.
         </p>
+        <PublicSubmissionForm kind="review" available={isIntakeAvailable()} />
       </section>
     </div>
   );

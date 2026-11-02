@@ -24,6 +24,7 @@ before(async () => {
         SUPABASE_URL: "",
         SUPABASE_PUBLISHABLE_KEY: "",
         NEXT_TELEMETRY_DISABLED: "1",
+        INTAKE_ENABLED: "false",
       },
       stdio: ["ignore", "pipe", "pipe"],
     },
@@ -102,7 +103,8 @@ test("quotation fallback reaches verified direct contact channels", async () => 
   assert.match(html, /href="tel:\+61497175163"/);
   assert.match(html, /href="mailto:emcarpentry.maintenance@gmail.com"/);
   assert.match(html, /href="https:\/\/www.facebook.com\/EMscarpentryworks"/);
-  assert.doesNotMatch(html, /<form[ >]/);
+  assert.match(html, /<fieldset disabled=""/);
+  assert.doesNotMatch(html, /type="file"/);
 });
 
 test("owner routes fail closed when the backend is unconfigured", async () => {

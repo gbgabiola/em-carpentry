@@ -1,3 +1,5 @@
+import { PublicSubmissionForm } from "@/components/forms/PublicSubmissionForm";
+import { isIntakeAvailable } from "@/features/intake/server";
 import { getBusiness } from "@/features/business/data";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
@@ -61,14 +63,19 @@ export default async function ContactPage() {
             or a full street address in your initial message.
           </p>
           <p className="text-sm text-muted">
-            The online quotation form is not available yet. Use the contact
-            options on this page to send your enquiry directly.
+            You can also use the enquiry form below when available. No automated
+            email notifications are configured; please call or email if you need
+            to follow up.
           </p>
           <Link href="/privacy" className="text-link">
             Read the privacy notice
           </Link>
         </section>
       </div>
+      <section aria-labelledby="enquiry-form-heading">
+        <h2 id="enquiry-form-heading">Request a quote</h2>
+        <PublicSubmissionForm kind="enquiry" available={isIntakeAvailable()} />
+      </section>
     </div>
   );
 }

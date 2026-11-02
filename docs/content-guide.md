@@ -14,12 +14,12 @@ Update About text, service area, telephone, email and the business Facebook URL 
 
 ## Customer submissions
 
-Approved planned fields are:
+Approved form fields are:
 
 - Enquiry: name, email or phone, project description and optional suburb.
 - Review: display name, rating, written feedback and publication consent.
 
-Customer accounts and photo attachments are not required. Submissions remain disabled until the approved [retention policy](owner-workflow.md#retention-and-deletion), review moderation and secure intake controls are implemented. No automatic enquiry-email delivery is configured. Direct phone, email and business Facebook links remain available.
+Customer accounts and photo attachments are not required. The implemented forms remain switched off pending collection approval. Retention, validation, moderation, duplicate protection and durable submission limits are in place; follow [activation](backend-setup.md#website-intake) and the [retention policy](owner-workflow.md#retention-and-deletion) before collecting new data. No automatic enquiry-email delivery is configured. Direct phone, email and business Facebook links remain available.
 
 ## Maintenance
 
