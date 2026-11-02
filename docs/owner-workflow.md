@@ -18,6 +18,8 @@ Under Reviews, curate only genuine feedback you have permission to republish, wi
 
 Enquiries contains private New/Reviewed/Closed records. Public intake is enabled on the approved test website. Check Enquiries and Reviews regularly because email notifications are not configured. Use Reviewed while following up, and Closed once finished; closure starts the 90-day retention period. New website reviews are Pending and stay private until approved. Approve only genuine relevant feedback with publication consent; reject spam, duplicate, abusive, unrelated or identifying content. Do not invent ratings or change the meaning of feedback. Use Withdraw publication consent immediately when requested. Permanent enquiry/review deletion requires typing DELETE.
 
+Both inboxes show up to 20 records per page, newest first. Use Filter by status to focus on New enquiries or Pending reviews, and use Next/Previous page for older records. Applying a filter returns to page 1. If an update or deletion leaves a filtered page empty, use First page or change the filter. Received dates use Melbourne time. Reviews show the submitted rating, or explicitly state when no rating was supplied; Facebook entries include a safe source link for checking attribution.
+
 The forms collect only the approved fields, require no customer accounts and accept no photo attachments. Submission limits or temporary outages leave direct phone, email and Facebook contact available. The developer can pause intake immediately if there is an abuse or availability problem.
 
 ## Backups

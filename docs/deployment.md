@@ -40,6 +40,8 @@ npm run check:auth -- https://em-carpentry.netlify.app
 
 The browser suite uses isolated synthetic portfolio and form fixtures. It tests populated gallery journeys without publishing sample content or accessing hosted customer data. These checks do not verify live provider permissions or replace an owner-session check.
 
+The auth probe includes filtered enquiry/review URLs. For an owner-session check, open both inboxes, apply a status filter, follow older-page navigation when records exist, and confirm received dates, ratings and source attribution. Inbox filtering/pagination requires no schema or environment changes.
+
 Also test owner sessions, cookies over HTTPS, private photos, publication/archive transitions, uploads, responsive layouts and keyboard interactions. A local build is not proof of hosted behaviour. .netlify and .next are generated and ignored; do not commit or distribute them as source archives.
 
 ## Free-plan limits

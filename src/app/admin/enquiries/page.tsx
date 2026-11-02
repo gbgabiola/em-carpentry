@@ -1,3 +1,13 @@
+import {
+  InboxFilters,
+  InboxPagination,
+} from "@/components/forms/InboxNavigation";
+import { SubmissionDate } from "@/components/ui/SubmissionDate";
+import {
+  parseInboxFilters,
+  sliceInboxPage,
+  type InboxSearchParams,
+} from "@/lib/utils/inbox";
 import { RetentionDeadline } from "@/components/ui/RetentionDeadline";
 import { retention } from "@/config/retention";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -6,13 +16,26 @@ import {
   updateEnquiry,
   deletePrivateRecord,
 } from "@/features/enquiries/actions";
-export default async function AdminEnquiriesPage() {
+export default async function AdminEnquiriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<InboxSearchParams>;
+}) {
   const client = await requireAdmin();
-  const enquiries = await client
+  const filters = parseInboxFilters(await searchParams, [
+    "new",
+    "reviewed",
+    "closed",
+  ] as const);
+  let query = client
     .from("enquiries")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
+  if (filters.status) query = query.eq("status", filters.status);
+  const enquiries = await query.range(filters.from, filters.to);
   if (enquiries.error) throw new Error("Enquiries unavailable");
+  const { records, hasNext } = sliceInboxPage(enquiries.data);
   return (
     <div className="page-stack">
       <h1>Private enquiries</h1>
@@ -26,10 +49,25 @@ export default async function AdminEnquiriesPage() {
         Cleanup runs hourly while the database is active. Reopening before the
         deadline clears it; closing again starts a new period.
       </p>
-      {!enquiries.data.length && <p>No enquiries.</p>}
-      {enquiries.data.map((enquiry) => (
+      <InboxFilters
+        path="/admin/enquiries"
+        status={filters.status}
+        statuses={[
+          { value: "new", label: "New" },
+          { value: "reviewed", label: "Reviewed" },
+          { value: "closed", label: "Closed" },
+        ]}
+      />
+      {!records.length && (
+        <p>
+          No enquiries on this page. Change the status filter or return to the
+          first page.
+        </p>
+      )}
+      {records.map((enquiry) => (
         <article className="empty-panel" key={enquiry.id}>
           <h2>{enquiry.name}</h2>
+          <SubmissionDate createdAt={enquiry.created_at} />
           <p>
             {enquiry.contact_method}: {enquiry.contact_details}
           </p>
@@ -60,6 +98,12 @@ export default async function AdminEnquiriesPage() {
           </details>
         </article>
       ))}
+      <InboxPagination
+        path="/admin/enquiries"
+        status={filters.status}
+        page={filters.page}
+        hasNext={hasNext}
+      />
     </div>
   );
 }

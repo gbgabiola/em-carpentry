@@ -1,10 +1,12 @@
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { servePortfolioFixture } from "./browser-portfolio-fixtures.mjs";
+import { serveOwnerFixture } from "./browser-owner-fixtures.mjs";
 const port = 3107;
 // Read-only loopback fixtures. No request reaches a hosted provider.
 const backend = createServer((request, response) => {
   const url = new URL(request.url || "/", "http://127.0.0.1");
+  if (serveOwnerFixture(request, response, url)) return;
   if (request.method !== "GET" || url.pathname.startsWith("/auth/")) {
     response.writeHead(401, { "Content-Type": "application/json" });
     response.end(

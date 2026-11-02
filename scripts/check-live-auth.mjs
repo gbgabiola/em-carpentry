@@ -42,6 +42,8 @@ const routes = [
   `/admin/projects/${randomUUID()}`,
   "/admin/enquiries",
   "/admin/reviews",
+  "/admin/enquiries?status=new&page=2",
+  "/admin/reviews?status=pending&page=2",
   "/admin/settings",
   "/admin/content",
   "/admin/account",

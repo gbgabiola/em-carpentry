@@ -1,16 +1,40 @@
+import { facebookUrl } from "@/lib/validation/schemas";
+import {
+  InboxFilters,
+  InboxPagination,
+} from "@/components/forms/InboxNavigation";
+import { SubmissionDate } from "@/components/ui/SubmissionDate";
+import {
+  parseInboxFilters,
+  sliceInboxPage,
+  type InboxSearchParams,
+} from "@/lib/utils/inbox";
 import { RetentionDeadline } from "@/components/ui/RetentionDeadline";
 import { retention } from "@/config/retention";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { saveTestimonial, moderateReview } from "@/features/reviews/actions";
 import { deletePrivateRecord } from "@/features/enquiries/actions";
-export default async function AdminReviewsPage() {
+export default async function AdminReviewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<InboxSearchParams>;
+}) {
   const client = await requireAdmin();
-  const reviews = await client
+  const filters = parseInboxFilters(await searchParams, [
+    "pending",
+    "approved",
+    "rejected",
+  ] as const);
+  let query = client
     .from("reviews")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
+  if (filters.status) query = query.eq("status", filters.status);
+  const reviews = await query.range(filters.from, filters.to);
   if (reviews.error) throw new Error("Reviews unavailable");
+  const { records, hasNext } = sliceInboxPage(reviews.data);
   return (
     <div className="page-stack">
       <h1>Reviews &amp; testimonials</h1>
@@ -60,13 +84,47 @@ export default async function AdminReviewsPage() {
           reviews are retained while displayed with valid consent. Withdraw
           consent below to hide a review immediately and prevent reapproval.
         </p>
+        <InboxFilters
+          path="/admin/reviews"
+          status={filters.status}
+          statuses={[
+            { value: "pending", label: "Pending" },
+            { value: "approved", label: "Approved" },
+            { value: "rejected", label: "Rejected" },
+          ]}
+        />
+        {!records.length && (
+          <p>
+            No reviews on this page. Change the status filter or return to the
+            first page.
+          </p>
+        )}
         <div className="record-list">
-          {reviews.data.map((review) => (
+          {records.map((review) => (
             <article key={review.id} className="empty-panel">
               <h3>
                 {review.display_name} · {review.status}
               </h3>
+              <SubmissionDate createdAt={review.created_at} />
+              <p>
+                {review.rating === null
+                  ? "No star rating supplied"
+                  : `Rating: ${review.rating} out of 5`}
+              </p>
               <p className="preserve-lines">{review.body}</p>
+              {review.source === "facebook" &&
+                facebookUrl.safeParse(review.source_url).success && (
+                  <p>
+                    <a
+                      className="text-link"
+                      href={review.source_url ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View original Facebook feedback (opens in a new tab)
+                    </a>
+                  </p>
+                )}
               <p>
                 {review.source} · Publication consent:{" "}
                 {review.consent ? "recorded" : "not recorded"}
@@ -103,6 +161,12 @@ export default async function AdminReviewsPage() {
             </article>
           ))}
         </div>
+        <InboxPagination
+          path="/admin/reviews"
+          status={filters.status}
+          page={filters.page}
+          hasNext={hasNext}
+        />
       </section>
     </div>
   );
