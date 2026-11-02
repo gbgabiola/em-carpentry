@@ -1,3 +1,5 @@
+import { RetentionDeadline } from "@/components/ui/RetentionDeadline";
+import { retention } from "@/config/retention";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { saveTestimonial, moderateReview } from "@/features/reviews/actions";
@@ -52,6 +54,12 @@ export default async function AdminReviewsPage() {
       </section>
       <section>
         <h2>All reviews</h2>
+        <p>
+          Pending/rejected reviews share a {retention.unpublishedReviewDays}-day
+          deadline. Changing between these states does not restart it. Approved
+          reviews are retained while displayed with valid consent. Withdraw
+          consent below to hide a review immediately and prevent reapproval.
+        </p>
         <div className="record-list">
           {reviews.data.map((review) => (
             <article key={review.id} className="empty-panel">
@@ -63,6 +71,7 @@ export default async function AdminReviewsPage() {
                 {review.source} · Publication consent:{" "}
                 {review.consent ? "recorded" : "not recorded"}
               </p>
+              <RetentionDeadline expiresAt={review.retention_expires_at} />
               <ActionForm action={moderateReview} label="Update moderation">
                 <input type="hidden" name="id" value={review.id} />
                 <label>
@@ -71,6 +80,9 @@ export default async function AdminReviewsPage() {
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
+                    <option value="withdraw-consent">
+                      Withdraw publication consent
+                    </option>
                   </select>
                 </label>
               </ActionForm>

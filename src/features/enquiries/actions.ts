@@ -17,7 +17,11 @@ export async function updateEnquiry(
     .eq("id", id.data)
     .select("id")
     .single();
-  if (result.error) return { error: "Could not update the enquiry." };
+  if (result.error)
+    return {
+      error:
+        "Could not update the enquiry. Expired enquiries can only be deleted.",
+    };
   revalidatePath("/admin/enquiries");
   return { success: "Enquiry status updated." };
 }

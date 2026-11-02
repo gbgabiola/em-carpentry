@@ -37,6 +37,10 @@ if (!file) {
     }
     const summary = inspectBackup(input);
     const rotation = getBackupRotation(summary.exportedAt);
+    if (!summary.retentionClocksIncluded)
+      console.warn(
+        "Legacy schema-v2 export lacks retention clocks. Confirm original closure/moderation dates before restoring private records; do not restart retention from the restore date.",
+      );
     console.log(
       JSON.stringify({ ...summary, backupRotation: rotation }, null, 2),
     );

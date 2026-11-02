@@ -51,14 +51,30 @@ before(async () => {
   await db.exec(
     "insert into storage.objects(bucket_id,name) values('project-images','orphan.webp'); insert into reviews(display_name,rating,body,consent,status) values('Approved',5,'Feedback',true,'approved'),('Pending',4,'Private feedback',true,'pending'),('No consent',3,'Private feedback',false,'pending'); insert into enquiries(name,contact_method,contact_details,description) values('Private customer','email','private@example.test','Private customer request');",
   );
+  // pg_cron is native-only. These stand-ins verify scheduled SQL, not the worker.
+  await db.exec(`create schema cron;
+    create table cron.job(jobid bigserial primary key,jobname text unique,schedule text,command text);
+    create table cron.job_run_details(jobid bigint,end_time timestamptz);
+    create function cron.schedule(text,text,text) returns bigint language sql as $$
+      insert into cron.job(jobname,schedule,command) values($1,$2,$3)
+      on conflict(jobname) do update set schedule=excluded.schedule,command=excluded.command
+      returning jobid;
+    $$;`);
   const directory = new URL("../../supabase/migrations/", import.meta.url);
   for (const file of (await readdir(directory))
     .filter(
       (file) =>
         file.endsWith(".sql") && file !== "20261101110949_foundation.sql",
     )
-    .sort())
-    await db.exec(await readFile(new URL(file, directory), "utf8"));
+    .sort()) {
+    const sql = await readFile(new URL(file, directory), "utf8");
+    await db.exec(
+      sql.replace(
+        "create extension if not exists pg_cron with schema pg_catalog;",
+        "-- Native pg_cron installation is checked on the hosted database.",
+      ),
+    );
+  }
 });
 after(async () => {
   await db?.close();
@@ -406,4 +422,248 @@ test("authenticated readers use one select policy per public content table", asy
   );
   assert.equal(policies.length, 5);
   assert.ok(policies.every((policy) => policy.count === 1));
+});
+
+test("retention clocks are database-controlled and repeated edits cannot extend them", async () => {
+  await db.exec("begin");
+  try {
+    const enquiry = (
+      await rows(
+        "insert into enquiries(name,contact_method,contact_details,description,status) values('Synthetic','email','test@example.test','Synthetic enquiry','closed') returning id,closed_at::text,retention_expires_at::text",
+      )
+    )[0];
+    await db.query(
+      "update enquiries set closed_at=now()+interval '1 year',retention_expires_at=now()+interval '2 years',created_at=now()+interval '1 year' where id=$1",
+      [enquiry.id],
+    );
+    assert.deepEqual(
+      (
+        await rows(
+          "select closed_at::text,retention_expires_at::text from enquiries where id=$1",
+          [enquiry.id],
+        )
+      )[0],
+      {
+        closed_at: enquiry.closed_at,
+        retention_expires_at: enquiry.retention_expires_at,
+      },
+    );
+    assert.equal(
+      (
+        await rows(
+          "select retention_expires_at=closed_at+interval '2160 hours' as valid from enquiries where id=$1",
+          [enquiry.id],
+        )
+      )[0].valid,
+      true,
+    );
+    await db.query("update enquiries set status='reviewed' where id=$1", [
+      enquiry.id,
+    ]);
+    assert.deepEqual(
+      (
+        await rows(
+          "select closed_at,retention_expires_at from enquiries where id=$1",
+          [enquiry.id],
+        )
+      )[0],
+      { closed_at: null, retention_expires_at: null },
+    );
+    await db.query("update enquiries set status='closed' where id=$1", [
+      enquiry.id,
+    ]);
+    assert.ok(
+      (
+        await rows("select closed_at from enquiries where id=$1", [enquiry.id])
+      )[0].closed_at,
+    );
+
+    const review = (
+      await rows(
+        "insert into reviews(display_name,rating,body,consent) values('Synthetic',5,'Synthetic feedback',true) returning id,retention_started_at::text,retention_expires_at::text",
+      )
+    )[0];
+    for (const status of ["pending", "rejected", "pending"]) {
+      await db.query(
+        "update reviews set status=$2,retention_started_at=now()+interval '1 year' where id=$1",
+        [review.id, status],
+      );
+      assert.deepEqual(
+        (
+          await rows(
+            "select retention_started_at::text,retention_expires_at::text from reviews where id=$1",
+            [review.id],
+          )
+        )[0],
+        {
+          retention_started_at: review.retention_started_at,
+          retention_expires_at: review.retention_expires_at,
+        },
+      );
+    }
+    await db.query("update reviews set status='approved' where id=$1", [
+      review.id,
+    ]);
+    assert.deepEqual(
+      (
+        await rows(
+          "select retention_started_at,retention_expires_at from reviews where id=$1",
+          [review.id],
+        )
+      )[0],
+      { retention_started_at: null, retention_expires_at: null },
+    );
+    await db.query(
+      "update reviews set status='rejected',consent=false where id=$1",
+      [review.id],
+    );
+    assert.equal(
+      (
+        await rows(
+          "select retention_expires_at=retention_started_at+interval '720 hours' as valid from reviews where id=$1",
+          [review.id],
+        )
+      )[0].valid,
+      true,
+    );
+    await db.exec("set local role anon");
+    assert.equal(
+      (await rows("select id from reviews where id=$1", [review.id])).length,
+      0,
+    );
+  } finally {
+    await db.exec("rollback");
+  }
+});
+
+test("cleanup deletes only due records, is repeatable, and expired records cannot be resurrected", async () => {
+  await db.exec("begin");
+  try {
+    const expiredEnquiry = (
+      await rows(
+        "insert into enquiries(name,contact_method,contact_details,description,status) values('Synthetic expired','email','test@example.test','Synthetic enquiry','closed') returning id",
+      )
+    )[0].id;
+    const dueReview = (
+      await rows(
+        "insert into reviews(display_name,rating,body,consent,status) values('Synthetic due',5,'Synthetic feedback',true,'rejected') returning id",
+      )
+    )[0].id;
+    const expiredReview = (
+      await rows(
+        "insert into reviews(display_name,rating,body,consent) values('Synthetic expired',5,'Synthetic feedback',true) returning id",
+      )
+    )[0].id;
+    // Trusted fixture setup only: simulate elapsed time without waiting 90 days.
+    await db.exec(
+      "alter table enquiries disable trigger enquiry_retention; alter table reviews disable trigger review_retention",
+    );
+    await db.query(
+      "update enquiries set closed_at=now()-interval '2160 hours 1 second',retention_expires_at=now()-interval '1 second' where id=$1",
+      [expiredEnquiry],
+    );
+    await db.query(
+      "update reviews set retention_started_at=now()-interval '720 hours',retention_expires_at=now() where id=$1",
+      [dueReview],
+    );
+    await db.query(
+      "update reviews set retention_started_at=now()-interval '720 hours 1 second',retention_expires_at=now()-interval '1 second' where id=$1",
+      [expiredReview],
+    );
+    await db.exec(
+      "alter table enquiries enable trigger enquiry_retention; alter table reviews enable trigger review_retention",
+    );
+    for (const [sql, id] of [
+      ["update enquiries set status='new' where id=$1", expiredEnquiry],
+      ["update reviews set status='approved' where id=$1", dueReview],
+      [
+        "update reviews set retention_started_at=now() where id=$1",
+        expiredReview,
+      ],
+    ]) {
+      await db.exec("savepoint expired");
+      await assert.rejects(rows(sql, [id]), /Expired .* can only be deleted/);
+      await db.exec("rollback to savepoint expired");
+    }
+    // A closed record whose deadline is still in the future must survive.
+    await db.query(
+      "insert into enquiries(name,contact_method,contact_details,description,status) values('Synthetic future','email','future@example.test','Synthetic future enquiry','closed')",
+    );
+    const before = await rows(
+      "select id from enquiries where id<>$1 order by id",
+      [expiredEnquiry],
+    );
+    const reviewsBefore = await rows(
+      "select id from reviews where id<>$1 and id<>$2 order by id",
+      [dueReview, expiredReview],
+    );
+    const result = (
+      await rows("select private.purge_expired_submissions() as counts")
+    )[0].counts;
+    assert.deepEqual(result, { enquiries: 1, reviews: 2 });
+    assert.deepEqual(
+      await rows("select id from enquiries order by id"),
+      before,
+    );
+    assert.deepEqual(
+      await rows("select id from reviews order by id"),
+      reviewsBefore,
+    );
+    assert.deepEqual(
+      (await rows("select private.purge_expired_submissions() as counts"))[0]
+        .counts,
+      { enquiries: 0, reviews: 0 },
+    );
+  } finally {
+    await db.exec("rollback");
+  }
+});
+
+test("cleanup has no public RPC or execution grant, including for the website owner", async () => {
+  for (const [role, uid] of [
+    ["anon", null],
+    ["authenticated", outsider],
+    ["authenticated", owner],
+  ]) {
+    await asRole(role, uid, async () => {
+      await assert.rejects(
+        rows("select private.purge_expired_submissions()"),
+        /permission denied/,
+      );
+    });
+  }
+  const functions = await rows(
+    "select n.nspname,p.prosecdef from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.proname='purge_expired_submissions'",
+  );
+  assert.deepEqual(functions, [{ nspname: "private", prosecdef: false }]);
+});
+
+test("hourly scheduler calls the same cleanup and prunes only its own old history", async () => {
+  await db.exec("begin");
+  try {
+    const jobs = await rows(
+      "select jobid,schedule,command from cron.job where jobname='em-carpentry-submission-retention'",
+    );
+    assert.equal(jobs.length, 1);
+    assert.equal(jobs[0].schedule, "0 * * * *");
+    await db.query(
+      "insert into cron.job_run_details(jobid,end_time) values($1,now()-interval '8 days'),($1,now()),(-99,now()-interval '8 days')",
+      [jobs[0].jobid],
+    );
+    await db.exec(jobs[0].command);
+    assert.equal(
+      (
+        await rows("select * from cron.job_run_details where jobid=$1", [
+          jobs[0].jobid,
+        ])
+      ).length,
+      1,
+    );
+    assert.equal(
+      (await rows("select * from cron.job_run_details where jobid=-99")).length,
+      1,
+    );
+  } finally {
+    await db.exec("rollback");
+  }
 });

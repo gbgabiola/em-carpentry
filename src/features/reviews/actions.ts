@@ -40,21 +40,32 @@ export async function moderateReview(
   const status = form.get("status");
   if (
     !id.success ||
-    !["approved", "rejected", "pending"].includes(String(status))
+    !["approved", "rejected", "pending", "withdraw-consent"].includes(
+      String(status),
+    )
   )
     return { error: "Invalid moderation request." };
   const result = await client
     .from("reviews")
-    .update({ status: status as "approved" | "rejected" | "pending" })
+    .update(
+      status === "withdraw-consent"
+        ? { status: "rejected", consent: false }
+        : { status: status as "approved" | "rejected" | "pending" },
+    )
     .eq("id", id.data)
     .select("id")
     .single();
   if (result.error)
     return {
       error:
-        "Could not update this review. Approval requires recorded publication consent.",
+        "Could not update this review. Approval requires recorded publication consent; expired reviews can only be deleted.",
     };
   revalidatePath("/reviews");
   revalidatePath("/admin/reviews");
-  return { success: "Moderation status updated." };
+  return {
+    success:
+      status === "withdraw-consent"
+        ? "Publication consent withdrawn. The review is hidden and cannot be reapproved without new permission."
+        : "Moderation status updated.",
+  };
 }

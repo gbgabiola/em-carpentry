@@ -274,3 +274,49 @@ test("offline CLI reports counts and safe errors without printing private values
     await rmdir(directory);
   }
 });
+
+test("schema-v3 backups preserve retention clocks and reject missing or inconsistent deadlines", () => {
+  const data = fixture();
+  data.schemaVersion = 3;
+  data.content.reviews[0].retention_started_at = null;
+  data.content.reviews[0].retention_expires_at = null;
+  data.content.enquiries[0].closed_at = null;
+  data.content.enquiries[0].retention_expires_at = null;
+  assert.equal(inspectBackup(data).retentionClocksIncluded, true);
+  assert.equal(inspectBackup(fixture()).retentionClocksIncluded, false);
+  data.content.reviews[0].status = "pending";
+  data.content.reviews[0].retention_started_at = at;
+  data.content.reviews[0].retention_expires_at =
+    "2026-12-02T00:00:00.123456+00:00";
+  data.content.enquiries[0].status = "closed";
+  data.content.enquiries[0].closed_at = at;
+  data.content.enquiries[0].retention_expires_at =
+    "2027-01-31T00:00:00.123456+00:00";
+  const original = JSON.stringify(data);
+  assert.equal(inspectBackup(data).schemaVersion, 3);
+  assert.equal(JSON.stringify(data), original);
+  for (const mutate of [
+    (x) => {
+      x.content.reviews[0].retention_expires_at = null;
+    },
+    (x) => {
+      x.content.reviews[0].retention_expires_at = "2026-12-03T00:00:00Z";
+    },
+    (x) => {
+      x.content.reviews[0].status = "approved";
+    },
+    (x) => {
+      x.content.enquiries[0].status = "new";
+    },
+    (x) => {
+      x.content.enquiries[0].closed_at = null;
+    },
+  ]) {
+    const invalid = structuredClone(data);
+    mutate(invalid);
+    assert.throws(() => inspectBackup(invalid), /retention clock/);
+  }
+  const missing = structuredClone(data);
+  delete missing.content.enquiries[0].closed_at;
+  assert.throws(() => inspectBackup(missing), /structure/);
+});

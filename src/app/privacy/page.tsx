@@ -65,9 +65,11 @@ export default async function PrivacyPage() {
         <p>
           The agreed policy keeps closed website enquiries for{" "}
           {retention.closedEnquiryDays} days after closure and pending or
-          rejected reviews for {retention.unpublishedReviewDays} days. Published
-          reviews are kept while displayed with valid publication consent.
-          Permission can be withdrawn by contacting the business.
+          rejected reviews for {retention.unpublishedReviewDays} days from
+          submission or removal from publication. Switching between pending and
+          rejected does not restart that period. Published reviews are kept
+          while displayed with valid publication consent. Permission can be
+          withdrawn by contacting the business.
         </p>
         <p>
           Website backup copies are to be rotated after {retention.backupDays}{" "}
@@ -77,10 +79,13 @@ export default async function PrivacyPage() {
         <h2>Before online submissions are introduced</h2>
         <p>
           Public enquiry and review submissions remain disabled while deletion
-          controls and secure intake are prepared. Automatic deletion is not
-          active yet. Before forms are enabled, this notice will explain the
-          information collected, consent and moderation, hosting providers and
-          relevant overseas processing.
+          controls are checked and secure intake is prepared. Database cleanup
+          runs hourly while the backend is active, removing expired records on
+          its next successful run. A provider pause or outage can delay
+          deletion. Downloaded backup rotation is handled separately. Before
+          forms are enabled, this notice will explain the information collected,
+          consent and moderation, hosting providers and relevant overseas
+          processing.
         </p>
       </div>
     </div>

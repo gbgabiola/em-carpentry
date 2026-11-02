@@ -51,6 +51,8 @@ export type Review = {
   source_url: string | null;
   consent: boolean;
   status: "pending" | "approved" | "rejected";
+  retention_started_at: string | null;
+  retention_expires_at: string | null;
   created_at: string;
 };
 export type Enquiry = {
@@ -61,6 +63,8 @@ export type Enquiry = {
   description: string;
   suburb: string;
   status: "new" | "reviewed" | "closed";
+  closed_at: string | null;
+  retention_expires_at: string | null;
   created_at: string;
 };
 export type BusinessSettings = {

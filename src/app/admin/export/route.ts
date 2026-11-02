@@ -34,7 +34,7 @@ export async function GET() {
   }
   return Response.json(
     {
-      schemaVersion: 2,
+      schemaVersion: 3,
       exportedAt: new Date().toISOString(),
       containsPrivateCustomerData: true,
       photoDownloadNote:

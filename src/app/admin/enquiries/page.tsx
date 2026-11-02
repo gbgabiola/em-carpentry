@@ -1,3 +1,5 @@
+import { RetentionDeadline } from "@/components/ui/RetentionDeadline";
+import { retention } from "@/config/retention";
 import { requireAdmin } from "@/lib/auth/admin";
 import { ActionForm } from "@/components/forms/ActionForm";
 import {
@@ -19,6 +21,11 @@ export default async function AdminEnquiriesPage() {
         intake are ready. No email notifications are configured. Check this
         inbox personally when intake is eventually enabled.
       </p>
+      <p>
+        Closed enquiries are deleted after {retention.closedEnquiryDays} days.
+        Cleanup runs hourly while the database is active. Reopening before the
+        deadline clears it; closing again starts a new period.
+      </p>
       {!enquiries.data.length && <p>No enquiries.</p>}
       {enquiries.data.map((enquiry) => (
         <article className="empty-panel" key={enquiry.id}>
@@ -28,6 +35,7 @@ export default async function AdminEnquiriesPage() {
           </p>
           <p>Suburb: {enquiry.suburb || "Not supplied"}</p>
           <p className="preserve-lines">{enquiry.description}</p>
+          <RetentionDeadline expiresAt={enquiry.retention_expires_at} />
           <ActionForm action={updateEnquiry} label="Update status">
             <input type="hidden" name="id" value={enquiry.id} />
             <label>

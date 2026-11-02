@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { retention } from "../../config/retention.ts";
 import { facebookUrl } from "../../lib/validation/schemas.ts";
 
 export class BackupValidationError extends Error {}
@@ -104,13 +105,53 @@ const contentSchema = z.strictObject({
     }),
   ),
 });
-const snapshotSchema = z.strictObject({
-  schemaVersion: z.literal(2),
+const retentionContentSchema = contentSchema.extend({
+  reviews: z.array(
+    contentSchema.shape.reviews.element.extend({
+      retention_started_at: timestamp.nullable(),
+      retention_expires_at: timestamp.nullable(),
+    }),
+  ),
+  enquiries: z.array(
+    contentSchema.shape.enquiries.element.extend({
+      closed_at: timestamp.nullable(),
+      retention_expires_at: timestamp.nullable(),
+    }),
+  ),
+});
+const snapshotFields = {
   exportedAt: timestamp,
   containsPrivateCustomerData: z.literal(true),
   photoDownloadNote: text(1000),
-  content: contentSchema,
-});
+};
+const snapshotSchema = z.discriminatedUnion("schemaVersion", [
+  z.strictObject({
+    ...snapshotFields,
+    schemaVersion: z.literal(2),
+    content: contentSchema,
+  }),
+  z.strictObject({
+    ...snapshotFields,
+    schemaVersion: z.literal(3),
+    content: retentionContentSchema,
+  }),
+]);
+
+function checkRetentionClock(
+  start: string | null,
+  end: string | null,
+  days: number,
+  required: boolean,
+) {
+  if (
+    required
+      ? start === null ||
+        end === null ||
+        Date.parse(end) - Date.parse(start) !== days * 86400000
+      : start !== null || end !== null
+  )
+    throw new BackupValidationError("Backup retention clock is inconsistent.");
+}
 
 function unique(values: readonly (string | number)[]) {
   if (new Set(values).size !== values.length)
@@ -126,6 +167,22 @@ export function inspectBackup(input: unknown) {
     throw new BackupValidationError(
       "Backup structure, version or field format is invalid.",
     );
+  if (parsed.data.schemaVersion === 3) {
+    for (const row of parsed.data.content.reviews)
+      checkRetentionClock(
+        row.retention_started_at,
+        row.retention_expires_at,
+        retention.unpublishedReviewDays,
+        row.status !== "approved",
+      );
+    for (const row of parsed.data.content.enquiries)
+      checkRetentionClock(
+        row.closed_at,
+        row.retention_expires_at,
+        retention.closedEnquiryDays,
+        row.status === "closed",
+      );
+  }
   const { content } = parsed.data;
   const counts = Object.fromEntries(
     Object.entries(content).map(([table, rows]) => [table, rows.length]),
@@ -166,7 +223,8 @@ export function inspectBackup(input: unknown) {
       );
   }
   return {
-    schemaVersion: 2,
+    schemaVersion: parsed.data.schemaVersion,
+    retentionClocksIncluded: parsed.data.schemaVersion === 3,
     exportedAt: parsed.data.exportedAt,
     counts,
     photoFilesRequired: content.project_images.length,
