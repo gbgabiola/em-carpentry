@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { retention } from "@/config/retention";
 import { getBusiness } from "@/features/business/data";
 import { isIntakeAvailable } from "@/features/intake/server";
@@ -9,6 +10,7 @@ export const metadata = createPageMetadata(
   "How EM Carpentry & Home Maintenance handles website enquiries, feedback, security and direct contact information.",
 );
 export default async function PrivacyPage() {
+  await connection();
   const business = await getBusiness();
   const intakeAvailable = isIntakeAvailable();
   return (

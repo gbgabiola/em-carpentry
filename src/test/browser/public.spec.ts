@@ -193,3 +193,20 @@ test("theme controls still work when browser storage is unavailable", async ({
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
+
+test("privacy notice follows runtime intake availability after a backend-free build", async ({
+  page,
+}) => {
+  await page.goto("/privacy");
+  await expect(
+    page.getByText("Online enquiry and review submissions are enabled.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Online enquiry and review submissions are currently switched off.",
+      { exact: false },
+    ),
+  ).toHaveCount(0);
+});

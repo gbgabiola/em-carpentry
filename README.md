@@ -51,7 +51,7 @@ Deploy through `npm run deploy:preview`, which keeps the complete Netlify adapte
 
 ## Owner tools and recovery
 
-The dashboard manages projects/photos, services, FAQs, business details, curated testimonials and private enquiries. Enquiry and review inboxes have status filters and 20-record pages; received dates use Melbourne time, and moderation shows submitted ratings and Facebook attribution. Photos accept JPEG/PNG/WebP up to 4 MiB and are converted to WebP with original metadata removed. Draft and archived content stays private.
+The dashboard manages projects/photos, services, FAQs, business details, curated testimonials and private enquiries. The dashboard overview shows New enquiry and Pending review counts with links to the filtered inboxes. Unavailable counts are labelled rather than reported as zero. Enquiry and review inboxes have status filters and 20-record pages; received dates use Melbourne time, and moderation shows submitted ratings and Facebook attribution. Photos accept JPEG/PNG/WebP up to 4 MiB and are converted to WebP with original metadata removed. Draft and archived content stays private.
 
 Download the dashboard JSON export and photo files separately. Inspect an export locally with:
 

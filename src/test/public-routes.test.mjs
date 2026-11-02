@@ -85,6 +85,11 @@ for (const route of routes) {
     );
     assert.match(html, /<title>[^<]+<\/title>/);
     assert.match(html, /name="description"/);
+    if (route === "/privacy")
+      assert.match(
+        html,
+        /Online enquiry and review submissions are currently switched off/,
+      );
   });
 }
 

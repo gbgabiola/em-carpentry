@@ -1,6 +1,11 @@
 // Accepted only by the loopback fixture server; never valid at hosted Auth.
 import { syntheticSession } from "../src/test/browser/owner-session.ts";
-const ownerSession = syntheticSession();
+const ownerSessions = new Map(
+  ["populated", "empty", "unavailable"].map((state) => {
+    const session = syntheticSession(true, state);
+    return [session.access_token, { session, state }];
+  }),
+);
 const outsiderSession = syntheticSession(false);
 const enquiries = Array.from({ length: 25 }, (_, index) => ({
   id: `40000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
@@ -38,12 +43,10 @@ function respond(response, status, value) {
 }
 export function serveOwnerFixture(request, response, url) {
   const token = request.headers.authorization?.replace(/^Bearer /, "");
+  const fixture = ownerSessions.get(token);
   const session =
-    token === ownerSession.access_token
-      ? ownerSession
-      : token === outsiderSession.access_token
-        ? outsiderSession
-        : null;
+    fixture?.session ??
+    (token === outsiderSession.access_token ? outsiderSession : null);
   if (url.pathname === "/auth/v1/user" && request.method === "GET") {
     respond(
       response,
@@ -53,12 +56,12 @@ export function serveOwnerFixture(request, response, url) {
     return true;
   }
   if (url.pathname === "/rest/v1/rpc/is_admin" && request.method === "POST") {
-    respond(response, session ? 200 : 401, session === ownerSession);
+    respond(response, session ? 200 : 401, !!fixture);
     return true;
   }
   if (
     !["/rest/v1/enquiries", "/rest/v1/reviews"].includes(url.pathname) ||
-    request.method !== "GET"
+    !["GET", "HEAD"].includes(request.method)
   )
     return false;
   if (!session) {
@@ -66,13 +69,30 @@ export function serveOwnerFixture(request, response, url) {
     respond(response, 401, { message: "Synthetic owner membership required" });
     return true;
   }
-  if (session !== ownerSession) {
+  if (!fixture) {
     respond(response, 403, { message: "Synthetic owner membership required" });
     return true;
   }
   let rows = url.pathname.endsWith("/enquiries") ? enquiries : reviews;
+  if (fixture.state === "empty") rows = [];
   const status = url.searchParams.get("status");
   if (status) rows = rows.filter((row) => `eq.${row.status}` === status);
+  if (request.method === "HEAD") {
+    if (
+      fixture.state === "unavailable" &&
+      url.pathname.endsWith("/enquiries")
+    ) {
+      response.writeHead(503);
+      response.end();
+      return true;
+    }
+    response.writeHead(200, {
+      "Content-Range": `*/${rows.length}`,
+      "Content-Type": "application/json",
+    });
+    response.end();
+    return true;
+  }
   rows = [...rows].sort((a, b) => b.id.localeCompare(a.id));
   const offset = Number(url.searchParams.get("offset") || 0);
   const limit = Number(url.searchParams.get("limit") || rows.length);

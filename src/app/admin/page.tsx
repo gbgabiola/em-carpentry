@@ -1,8 +1,11 @@
+import { InboxSummary } from "@/components/sections/InboxSummary";
+import { loadInboxSummary } from "@/features/intake/summary";
 import Link from "next/link";
 import { retention } from "@/config/retention";
 import { requireAdmin } from "@/lib/auth/admin";
 export default async function AdminPage() {
-  await requireAdmin();
+  const client = await requireAdmin();
+  const summary = await loadInboxSummary(client);
   return (
     <div className="page-stack">
       <h1>Owner dashboard</h1>
@@ -10,6 +13,10 @@ export default async function AdminPage() {
         Manage portfolio content and selected Facebook testimonials. Review
         private enquiries and moderate website feedback here. Check both inboxes
         regularly; automated email notifications are not configured.
+      </p>
+      <InboxSummary {...summary} />
+      <p className="text-sm text-muted">
+        Counts are checked when you open or reload this page.
       </p>
       <p>
         <a className="text-link" href="/admin/export">

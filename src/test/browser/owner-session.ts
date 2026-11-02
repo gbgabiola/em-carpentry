@@ -1,7 +1,17 @@
 const ownerId = "30000000-0000-4000-8000-000000000001";
 const outsiderId = "30000000-0000-4000-8000-000000000002";
-export function syntheticSession(owner = true) {
-  const id = owner ? ownerId : outsiderId;
+export type SyntheticInboxState = "populated" | "empty" | "unavailable";
+export function syntheticSession(
+  owner = true,
+  state: SyntheticInboxState = "populated",
+) {
+  const id = !owner
+    ? outsiderId
+    : state === "empty"
+      ? "30000000-0000-4000-8000-000000000003"
+      : state === "unavailable"
+        ? "30000000-0000-4000-8000-000000000004"
+        : ownerId;
   const encode = (value: unknown) =>
     Buffer.from(JSON.stringify(value)).toString("base64url");
   const user = {

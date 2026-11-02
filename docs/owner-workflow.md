@@ -10,6 +10,10 @@ Sign in at https://em-carpentry.netlify.app/login. Use Sign out on shared device
 4. Review text/photos before publishing. At least one photo is required. Feature on Home controls featured entries. Draft and Archived hide the project and its images from visitors.
 5. Remove photo permanently deletes its stored file and metadata; keep a backup first. Project deletion is not offered in the dashboard, so archive old entries.
 
+## Inbox overview
+
+The dashboard overview shows the number of New enquiries and Pending reviews, with links to those filtered inboxes. Counts refresh when you open or reload the page; there is no background polling or email alert. A zero means the count succeeded and found none. If a count is unavailable, open that inbox to check rather than assuming it is empty.
+
 ## Business content and feedback
 
 Use Services & FAQs to draft, order, confirm, publish or archive accurate content. Initial FAQs require review; no service inventory is prefilled. Under Business information, update About text, service area, Australian phone, email and the business Facebook page. Business name/logo remain developer-managed. Notify the developer of permanent contact changes to keep outage fallback details current.

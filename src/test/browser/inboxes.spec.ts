@@ -1,15 +1,19 @@
 import AxeBuilder from "@axe-core/playwright";
-import { syntheticSession } from "./owner-session";
+import { syntheticSession, type SyntheticInboxState } from "./owner-session";
 import { test, expect } from "./fixtures";
 import type { Page } from "@playwright/test";
 
-async function signInToFixture(page: Page, owner = true) {
+async function signInToFixture(
+  page: Page,
+  owner = true,
+  state: SyntheticInboxState = "populated",
+) {
   await page.context().addCookies([
     {
       name: "sb-127-auth-token",
       value:
         "base64-" +
-        Buffer.from(JSON.stringify(syntheticSession(owner))).toString(
+        Buffer.from(JSON.stringify(syntheticSession(owner, state))).toString(
           "base64url",
         ),
       url: "http://127.0.0.1:3107",
@@ -103,6 +107,7 @@ test("a signed-in non-owner cannot access filtered private inboxes", async ({
 }) => {
   await signInToFixture(page, false);
   for (const path of [
+    "/admin",
     "/admin/enquiries?status=new&page=2",
     "/admin/reviews?status=pending",
   ]) {
@@ -113,4 +118,68 @@ test("a signed-in non-owner cannot access filtered private inboxes", async ({
       page.getByText("synthetic-visitor@example.test", { exact: true }),
     ).toHaveCount(0);
   }
+});
+
+test("owner overview shows counts and links to the corresponding filtered inbox", async ({
+  page,
+}, testInfo) => {
+  await signInToFixture(page);
+  await page.goto("/admin");
+  const enquiries = page.getByRole("region", {
+    name: "New enquiries",
+    exact: true,
+  });
+  const reviews = page.getByRole("region", {
+    name: "Pending reviews",
+    exact: true,
+  });
+  await expect(enquiries).toContainText("21 waiting for review");
+  await expect(reviews).toContainText("21 waiting for moderation");
+  await expect(
+    page.getByText("synthetic-visitor@example.test", { exact: true }),
+  ).toHaveCount(0);
+  for (const theme of ["light", "dark"]) {
+    if (theme === "dark")
+      await page.getByRole("button", { name: /Dark mode/ }).click();
+    const result = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(result.violations.map((violation) => violation.id)).toEqual([]);
+  }
+  await page.screenshot({
+    path: testInfo.outputPath("synthetic-owner-overview.png"),
+    fullPage: true,
+  });
+  await enquiries.getByRole("link", { name: "Review new enquiries" }).click();
+  await expect(page).toHaveURL(/\/admin\/enquiries\?status=new$/);
+  await expect(page.locator("article")).toHaveCount(20);
+  await page.goto("/admin");
+  await page.getByRole("link", { name: "Moderate pending reviews" }).click();
+  await expect(page).toHaveURL(/\/admin\/reviews\?status=pending$/);
+});
+test("owner overview distinguishes an empty inbox from a failed count", async ({
+  page,
+}) => {
+  await signInToFixture(page, true, "empty");
+  await page.goto("/admin");
+  await expect(
+    page.getByRole("region", { name: "New enquiries", exact: true }),
+  ).toContainText("0 waiting for review");
+  await expect(
+    page.getByRole("region", { name: "Pending reviews", exact: true }),
+  ).toContainText("0 waiting for moderation");
+  await signInToFixture(page, true, "unavailable");
+  await page.reload();
+  const enquiries = page.getByRole("region", {
+    name: "New enquiries",
+    exact: true,
+  });
+  await expect(enquiries).toContainText(
+    "Count unavailable. Open the inbox to check.",
+  );
+  await expect(enquiries).not.toContainText("0 waiting for review");
+  await expect(enquiries.getByRole("link")).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Pending reviews", exact: true }),
+  ).toContainText("21 waiting for moderation");
 });
