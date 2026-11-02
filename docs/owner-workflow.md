@@ -1,50 +1,41 @@
 # Owner workflow
 
-The approved test site is https://em-carpentry.netlify.app, with sign-in at /login. Hosted sign-in and reload persistence have been confirmed by the user. Complete the remaining live checks in backend-setup.md and hosted-preview.md before final handover.
+Sign in at https://em-carpentry.netlify.app/login. Use Sign out on shared devices. [Client onboarding](client-onboarding.md) covers passwords and account recovery.
 
-1. Open /login and sign in with your provisioned owner account. There is no public registration. Use Sign out on shared devices.
-2. Under Projects, create a draft. Use a short, unique lower-case slug; changing it later changes the public URL. Add only verified descriptions and a general suburb, not customer addresses.
-3. Open Edit and manage photos. Upload approved JPEG, PNG or WebP photos up to 4 MiB (about 4.2 MB). Confirm permission and provide descriptive alt text. You can edit photo descriptions, order and Gallery/Before/After labels after upload. For a comparison, use exactly one Before photo and one After photo of the same view/framing. Enable comparison on the project and save. Visitors can drag or use arrow keys; full images remain in the gallery. Changing/removing a role so there is no unique pair hides the comparison until corrected.
-4. Publish only after checking the photos and text. At least one photo is required by the publishing action. Use Draft to unpublish or Archived to hide an older entry; project deletion is intentionally not offered. Featured entries appear on Home. Remove photo permanently deletes the stored image and its metadata; keep backups before removal.
-5. Under Reviews, manually copy feedback you have permission to republish, including a Facebook source link and agreed display name. Keep the original meaning. Facebook recommendations are not converted into stars. Pending and rejected content is private; only approved consented content appears publicly. Removing consent requires unpublishing/deleting the testimonial; contact the developer for any historical consent correction. No automatic Facebook import is used.
-6. Under Business information, edit About text and service area. You can also update the Australian telephone, email and business Facebook page. Use the business page rather than a personal profile. The business name/logo remain in verified source configuration. Do not introduce unverified licensing, awards, prices or response guarantees.
-7. Enquiries shows private records and their New/Reviewed/Closed state. Public intake remains closed until retention is agreed, so no new website enquiries are expected yet. No automatic email notification is configured. Use the contact fallbacks for now.
-8. Permanent review/enquiry deletion requires typing DELETE. Handle access/correction/deletion requests manually and document completion. Agree retention before collecting new customer data; no automatic retention purge has been enabled.
+## Projects and photos
 
-For a private draft/upload → publication → archive/removal test and account-security checks, follow [owner acceptance checks](owner-acceptance-checks.md). Use synthetic fixtures before customer content.
+1. Create a draft project with a short unique lower-case slug, accurate descriptions and an optional general suburb. Changing a published slug changes its public URL.
+2. Open Edit and manage photos. Upload approved JPEG, PNG or WebP files up to 4 MiB, confirm permission and add descriptive alt text. Images are resized/re-encoded to WebP with original metadata removed. Review identifying content visible in the photo.
+3. Edit photo descriptions, order and Gallery/Before/After roles. A comparison needs exactly one Before and one After image with matching framing, plus the project comparison setting.
+4. Review text/photos before publishing. At least one photo is required. Feature on Home controls featured entries. Draft and Archived hide the project and its images from visitors.
+5. Remove photo permanently deletes its stored file and metadata; keep a backup first. Project deletion is not offered in the dashboard, so archive old entries.
 
-## Export and recovery
+## Business content and feedback
 
-Use the dashboard’s Download business and customer data link for a paginated JSON export of all projects, photo metadata, reviews, enquiries and business settings. It includes private information: save it outside the public website and source repository. It does not contain account passwords, cookies or tokens. Photo bytes are separate; use each photo’s Download photo for backup link and retain the mapping to project_images.path in the export. Export before significant changes and agree a recurring backup routine at handover.
+Use Services & FAQs to draft, order, confirm, publish or archive accurate content. Initial FAQs require review; no service inventory is prefilled. Under Business information, update About text, service area, Australian phone, email and the business Facebook page. Business name/logo remain developer-managed. Notify the developer of permanent contact changes to keep outage fallback details current.
 
-After downloading the JSON, the developer can check its structure offline:
+Under Reviews, curate only genuine feedback you have permission to republish, with its Facebook source link and agreed display name. Preserve its meaning; do not turn recommendations into invented star ratings. Pending/rejected feedback stays private. Withdrawn permission requires unpublishing/deleting the testimonial.
+
+Enquiries contains private New/Reviewed/Closed records. Public intake is currently disabled and email notifications are not configured. Permanent enquiry/review deletion requires typing DELETE. Follow the agreed retention and access/correction/deletion process before collecting new data.
+
+## Backups
+
+Use Download business and customer data for a schema-v2 JSON export of projects, photo metadata, reviews, enquiries, business settings, services and FAQs. Keep it in a protected location outside Git/public assets. It contains private content but no account passwords or sessions.
+
+Download every photo separately with Download photo for backup. The downloaded filename uses project_images.id; the original Storage location is project_images.path in the JSON. Preserve that mapping: the image-record ID and Storage object filename can differ.
+
+The developer can inspect a saved export locally:
 
 ```sh
 npm run check:backup -- /private/path/em-carpentry-export.json
 ```
 
-This command reads only the selected file. It validates the current schema version, all seven content tables, unique IDs/slugs/photo paths, image-to-project references and publication/consent constraints. It prints a timestamp and counts, never customer text or contact details, and does not rewrite the file, contact a provider or follow image paths. Files above 64 MiB are rejected by this inspection tool; use supported database backup tooling for larger datasets. Unexpected fields are rejected rather than silently removed, so preserve any original export and ask the developer to review schema differences.
+The command validates structure, unique IDs/slugs/paths, photo references and publication constraints. It prints counts only and does not alter files, follow photo paths or contact providers. Its inspection limit is 64 MiB. A pass does not prove freshness, completeness, photo integrity or a successful restore; use database backup tooling for larger datasets. Keep independent copies and include backups in the retention/deletion policy.
 
-A passing inspection does not prove completeness or freshness: omitted records cannot be discovered from a file alone. It also does not verify separate photo bytes, Auth recovery or a successful restore. Keep an independent protected copy outside Git/public assets, retain the photo path mapping and include backup copies in the agreed retention/deletion policy. Do not paste private exports into chat. Automated tests use synthetic snapshots. On 2 November 2026, a separate owner-provided local schema-v2 export passed structural/reference inspection without printing record contents or modifying the file. The referenced photo has since been supplied and passed local WebP decoding/metadata checks. A disposable in-memory SQL restore of all seven tables/seven rows also passed with preserved values and public/private visibility; full hosted Auth and Storage recovery remains untested.
+## Recovery and cleanup
 
-For a full database restore, the developer should retain migrations in Git and export public content data with the Supabase CLI to a secure, off-repository path. Example after linking the intended project: npx supabase db dump --linked --data-only --schema public --file /secure/off-repo/content.sql. Do not place backups in public/ or commit them. SQL backups do not include photo bytes. Dashboard photo downloads are named by project_images.id; during recovery, map each downloaded image-ID file to that row's project_images.path. The Storage object filename can differ from the image-record ID, so do not assume those UUIDs are interchangeable. Download the private bucket separately through authenticated Storage tooling, preserving object paths. Restoring user identities/sessions is separate: provision the owner account and membership in the destination project through the supported Auth workflow. Do not blindly restore old owner UUID memberships into a different Auth instance.
+For a separate recovery destination, apply schema migrations, restore public content respecting foreign keys, upload each photo at its original object path, provision the destination owner through Auth and grant the correct private membership. Verify private/public visibility and sessions before using the destination. Auth identities/sessions and photo bytes are separate from the JSON export; do not blindly restore old owner UUIDs.
 
-Test restoration into a disposable project before relying on a backup. Apply schema migrations, restore content respecting foreign keys, restore photo objects at their original paths, provision the destination owner, then verify drafts/reviews/enquiries remain private before publishing anything. JSON exports are portable source data; a one-click JSON importer has not been implemented.
+A developer SQL export can supplement dashboard backups through the supported Supabase CLI. Save dumps outside Git/public assets. Test full provider Auth/Storage recovery, not only local SQL import. If the Free backend pauses, the developer restores it through the provider dashboard; keep direct contact fallbacks available and do not enable paid recovery options without approval.
 
-Supabase Free can pause after inactivity. The developer checks the provider dashboard and restores the project; no artificial keep-alive has been added. Public pages fall back to direct contact options when portfolio/review data is unavailable. Never upgrade a plan without approval.
-
-## Upload cleanup
-
-If uploading an object succeeds but attaching its database record fails, the action attempts to remove the object. If cleanup also fails, the action reports it. The developer must compare private Storage object paths with project_images.path, verify an object has no reference, then remove that specific orphan through Storage. Do not bulk-delete guessed paths or directly delete storage.objects SQL rows. A metadata deletion failure after a photo has been removed is reported separately; retry the Remove photo action to remove the leftover record.
-
-## Services and FAQs
-
-Use Services & FAQs in the owner navigation. Create or edit an entry, set its display order, review the text and confirm accuracy before publishing. Draft and archived entries remain private. Archive old entries rather than deleting source copy. The four initial FAQ entries are drafts; none is automatically treated as owner-approved. No service inventory has been prefilled. Never publish unverified licensing, regulated-trade services, pricing or response guarantees. Published service summaries appear on Home and the full text appears on Services.
-
-When the database is unavailable, current service/FAQ content may be hidden. Contact displays previously verified fallback details with an explicit notice; header/CTA call shortcuts route visitors there. Tell the developer about permanent contact changes so the verified source fallback can also be kept current.
-
-Exports now use schema version 2 and include services, FAQs, contact settings and project comparison preferences in addition to the earlier tables. Keep separate photo bytes and restore all migrations before importing data.
-
-## Your account and password
-
-Use Account security in the admin navigation to change your website password. Enter the current password and a different new passphrase of at least 12 characters twice. The provider verifies the current password before the change. No Supabase dashboard or database access is needed by the client. Other devices may retain access until their current sign-in expires; contact the developer for urgent access revocation or forgotten-password recovery. One-time setup is described in [client onboarding](client-onboarding.md).
+If an upload succeeds but attaching its photo record fails, the application attempts cleanup and reports any remaining orphan. The developer must compare exact Storage paths with project_images.path before removing a verified orphan through the supported Storage API. Do not edit storage.objects directly or bulk-delete guessed paths. If the stored photo was removed but its metadata deletion failed, retry the dashboard removal action.

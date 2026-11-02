@@ -1,34 +1,26 @@
-# Owner content guide
+# Content guide
 
-The owner interface is now implemented at /login and /admin. It requires a provisioned Supabase project and owner membership; follow backend-setup.md and owner-workflow.md. The business name/logo and verified fallback details remain in source configuration; About text, service area, telephone, email and the business Facebook URL can be edited through the owner interface once connected.
+EM Carpentry & Home Maintenance operates in Australia since 2018 and serves Geelong, Victoria, and nearby areas. Public contacts are +61 497 175 163, emcarpentry.maintenance@gmail.com and https://www.facebook.com/EMscarpentryworks. Use Australian English and the business Facebook page.
 
-Before publishing, provide the approved service inventory, logo source and usage rights, authentic project photos and publication consent, descriptions and alt text, and any generalised locations suitable for public display. Avoid customer addresses and identifying details in project content. The supplied em-logo.jpg is now present; an optimised public copy is used without changing its proportions. Confirm publication rights before launch.
+## Publication
 
-Only genuine, approved reviews with publication consent may be shown. No reviews or project examples are seeded. Confirm review moderation, quotation fields, retention/deletion periods and whether photo attachments are needed before these workflows are implemented.
+- Confirm the actual service inventory before publishing categories or descriptions. Do not invent hours, prices, qualifications, licensing, awards, customer counts or response guarantees.
+- Use authentic completed-project photos with publication permission and descriptive alt text. Prefer a suburb over an address; check visible identifying details as well as metadata.
+- Preserve the supplied logo's proportions and confirm usage rights. Source business name/logo and verified fallback details live in src/config/site.ts.
+- Publish only genuine testimonials with permission and attribution. Facebook recommendations do not imply a star rating, and no automatic review import is configured.
+- Review services and FAQs under /admin/content and confirm accuracy before publishing. Four starter FAQs are drafts, not automatically approved business content.
 
-Business hours, pricing, licensing, qualifications, awards and response guarantees have not been verified and must not be invented. Use Australian English and the business Facebook page. Confirm and test any Messenger deep link before adding it.
+Update About text, service area, telephone, email and the business Facebook URL through the dashboard. Tell the developer about permanent contact changes so source fallback details and relevant metadata can stay consistent. Keep unsupported claims out of structured data.
 
-Later handover must explain secure owner sign-in, project/photo editing, publishing and archiving, review moderation, private enquiries, data deletion and independent exports. The Free test site is hosted, and the user confirmed sign-in, photo upload, publishing/archiving and password change. See hosted-preview.md for independently verified checks and remaining handover gates.
+## Customer submissions
 
-Public pages now include About, Services, Projects, Reviews, Contact, FAQ and a preview Privacy notice. Service/project/review placeholders deliberately contain no unverified examples. Manage services and FAQs under /admin/content once connected and after both migrations have been applied. Review and approve each draft before publishing. The theme switch saves only the browser’s display preference and collects no enquiry data.
+Approved planned fields are:
 
-Search metadata and business structured data use the verified source details. When changing business information, update src/config/site.ts and the relevant page descriptions consistently. Do not add fabricated reviews, ratings, prices, opening hours or a street address to structured data. Search indexing stays disabled until approved content and launch checks are complete.
+- Enquiry: name, email or phone, project description and optional suburb.
+- Review: display name, rating, written feedback and publication consent.
 
-## Confirmed intake fields
+Customer accounts and photo attachments are not required. Submissions remain disabled until retention/deletion, review moderation and secure intake controls are agreed and implemented. No automatic enquiry-email delivery is configured. Direct phone, email and business Facebook links remain available.
 
-The user approved the following fields on 1 November 2026, with submissions disabled until retention is agreed:
+## Maintenance
 
-- Quotation enquiry: name, email or phone, project description and optional suburb. No photo attachments.
-- Website review: display name, rating, written feedback and publication consent. No customer account or photo attachment.
-
-The user clarified that most existing ratings, reviews and testimonials come from the business Facebook page. No Facebook content has been imported or approved for republication. Recommendation pending confirmation: link to the business page and allow owner-curated testimonials with permission and source attribution, rather than depending on automatic review synchronisation. This does not remove the planned website feedback workflow. The user subsequently authorised the recommended Supabase and manually provisioned owner email/password approach; see decision 0004. Public submissions still await retention agreement.
-
-## Current owner workflow
-
-See [owner workflow](owner-workflow.md) for draft/publish/archive, photo uploads and metadata editing, manual Facebook curation, moderation, private enquiries, permanent deletion and export. No actual project/customer content has been seeded. Complete live verification before relying on the owner interface.
-
-The second migration adds private FAQ drafts from the verified starter copy; no offered-service inventory is seeded. Owner approval is required for publishing both services and FAQs. Before/after comparison is optional and requires one suitable pair plus the project setting; visual alignment must be checked by the owner.
-
-## Backup inspection before significant content changes
-
-Download the dashboard export and keep it outside public assets, Git and chat, with separate copies of approved photo bytes. The developer can run npm run check:backup -- /private/path/em-carpentry-export.json to inspect schema and internal references offline without printing customer content. This does not prove the backup is complete or restorable; rehearse recovery separately and include backup copies in the agreed retention/deletion process. No provider credentials or environment variables are needed by the inspection command.
+Keep projects/photos and business copy current through the [owner workflow](owner-workflow.md). Export data and save photo bytes before significant changes. The developer can inspect an export offline with npm run check:backup; a passing inspection does not prove a full restore. Include backup copies in the agreed deletion process and verify provider recovery separately.
